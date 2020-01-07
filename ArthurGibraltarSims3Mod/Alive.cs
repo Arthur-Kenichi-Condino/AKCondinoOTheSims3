@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Sims3.Gameplay.Abstracts;
 using Sims3.Gameplay.Utilities;
 using Sims3.SimIFace;
 namespace ArthurGibraltarSims3Mod{
@@ -8,17 +9,23 @@ namespace ArthurGibraltarSims3Mod{
         [Tunable]
         protected static bool kIExistNow=(false);
           static Alive(){
-            World.OnWorldLoadFinishedEventHandler+=OnWorldLoadFinished;
-            World.OnWorldQuitEventHandler        +=OnWorldQuit;
+            World.sOnWorldLoadFinishedEventHandler+=OnWorldLoadFinished;
+            World.sOnWorldQuitEventHandler        +=OnWorldQuit;
           }
         private static void OnWorldLoadFinished(object sender,EventArgs e){
              new AlarmTask(5,DaysOfTheWeek.All,AutoPause);
+             //---------------------------------------------------------------
+             new AlarmTask(1,TimeUnit.Hours,CheckShowVenues,1,TimeUnit.Hours);
         }
         private static void OnWorldQuit(object sender,EventArgs e){
     AlarmTask.DisposeAll();
         }
         static void AutoPause(){
       Sims3.Gameplay.Gameflow.SetGameSpeed(Gameflow.GameSpeed.Pause,Sims3.Gameplay.Gameflow.SetGameSpeedContext.GameStates);
+        }
+        static void CheckShowVenues(){
+                 foreach(ShowVenue show in Sims3.Gameplay.Queries.GetObjects<ShowVenue>()){
+                 }
         }
     }
     public class AlarmTask{

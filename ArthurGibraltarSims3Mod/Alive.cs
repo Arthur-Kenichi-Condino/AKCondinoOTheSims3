@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using Sims3.Gameplay.Abstracts;
+using Sims3.Gameplay.CAS;
 using Sims3.Gameplay.Objects.Elevator;
+using Sims3.Gameplay.Objects.Lighting;
 using Sims3.Gameplay.Utilities;
 using Sims3.SimIFace;
 namespace ArthurGibraltarSims3Mod{
@@ -23,17 +25,103 @@ namespace ArthurGibraltarSims3Mod{
         private static void OnWorldQuit(object sender,EventArgs e){
     AlarmTask.DisposeAll();
         }
+        //==================================================================================================================
         static void AutoPause(){
       Sims3.Gameplay.Gameflow.SetGameSpeed(Gameflow.GameSpeed.Pause,Sims3.Gameplay.Gameflow.SetGameSpeedContext.GameStates);
-        }
-        static void CheckShowVenues(){
-                 foreach(ShowVenue show in Sims3.Gameplay.Queries.GetObjects<ShowVenue>()){
+                       foreach(ShowVenue showVenue in Sims3.Gameplay.Queries.GetObjects<ShowVenue>()){
+           foreach(ISearchLight light in showVenue.LotCurrent.GetObjects<ISearchLight>()){
+                                light.TurnOff();
+        SearchLight searchLight=light as SearchLight;
+                 if(searchLight!=null){
+                    searchLight.mSMC?.Dispose();
+                    searchLight.mSMC=null;
                  }
+           }
+                                         showVenue.EndPlayerConcert();
+                       }
         }
+        //==================================================================================================================
+       static readonly Dictionary<ShowVenue,ShowDetectedData>ShowDetected=new Dictionary<ShowVenue,ShowDetectedData>();
+        static void CheckShowVenues(){
+                 foreach(ShowVenue showVenue in Sims3.Gameplay.Queries.GetObjects<ShowVenue>()){
+                                if(showVenue.ShowInProgress||
+                                   showVenue.ShowType!=ShowVenue.ShowTypes.kNoShow){
+                                                         if(!ShowDetected.ContainsKey(showVenue)){
+                                                             ShowDetected.Add(        showVenue,new ShowDetectedData(SimClock.CurrentTicks));
+                                                         }
+                                }
+                 }
+List<KeyValuePair<ShowVenue,ShowDetectedData>>toRemove=new List<KeyValuePair<ShowVenue,ShowDetectedData>>();
+                             foreach(var showDetectedData in ShowDetected){
+                                     if( showDetectedData.Key.HasBeenDestroyed){
+                                              toRemove.Add(showDetectedData);
+                                     }else
+                                     if(!showDetectedData.Key.ShowInProgress&&
+                                         showDetectedData.Key.ShowType==ShowVenue.ShowTypes.kNoShow){
+           foreach(ISearchLight light in showDetectedData.Key.LotCurrent.GetObjects<ISearchLight>()){
+                                light.TurnOff();
+        SearchLight searchLight=light as SearchLight;
+                 if(searchLight!=null){
+                    searchLight.mSMC?.Dispose();
+                    searchLight.mSMC=null;
+                 }
+           }
+                                              toRemove.Add(showDetectedData);
+                                     }else
+                                     if(
+                                     SimClock.CurrentTicks-showDetectedData.Value.ShowStartTimeTicks>SimClock.kSimulatorTicksPerSimMinute*300){//  Reset
+           foreach(ISearchLight light in showDetectedData.Key.LotCurrent.GetObjects<ISearchLight>()){
+                                light.TurnOff();
+        SearchLight searchLight=light as SearchLight;
+                 if(searchLight!=null){
+                    searchLight.mSMC?.Dispose();
+                    searchLight.mSMC=null;
+                 }
+           }
+                                         showDetectedData.Key.EndPlayerConcert();
+                                              toRemove.Add(showDetectedData);
+                                     }
+                             }
+                                for(int i=0;i<toRemove.Count;i++){
+                          ShowDetected.Remove(toRemove[i].Key);
+                                }
+                                              toRemove.Clear();
+        }
+        protected class ShowDetectedData{
+                 public ShowDetectedData(long showStartTimeTicks){
+                           ShowStartTimeTicks=showStartTimeTicks;
+                 }
+            public        readonly long                          ShowStartTimeTicks;
+        }
+        //==================================================================================================================
         static void RecoverElevator(){
                    foreach(ElevatorDoors elevator in Sims3.Gameplay.Queries.GetObjects<ElevatorDoors>()){
+                           ElevatorInterior.ElevatorPortalComponent 
+                                                    portal=elevator.InteriorObj.ElevatorPortal as ElevatorInterior.ElevatorPortalComponent;
+                                                 if(portal!=null){
+                    //  Medium reset sims: reset and put in same lot
+foreach(SimDescription sim in new List<SimDescription>(
+                                                    portal.mAssignedSims.Keys)){
+                    if(sim.CreatedSim!=null){
+                    }
+}
+                                                    portal.FreeAllRoutingLanes();
+                                                 }
+                                         elevator.SetObjectToReset();
+                   }
+                   foreach(Door door in Sims3.Gameplay.Queries.GetObjects<Door>()){
+                //  Soft reset sims: reset and don't change position
+foreach(SimDescription sim in new List<SimDescription>(
+                                door.ActorsUsingMeAsSimDescriptions)){
+                    if(sim.CreatedSim!=null){
+                    }
+}
+                                door.PortalComponent?.FreeAllRoutingLanes();
+                                //
+                                door.SetObjectToReset();
                    }
         }
+        //==================================================================================================================
     }
     public class AlarmTask{
           public AlarmTask(float time,

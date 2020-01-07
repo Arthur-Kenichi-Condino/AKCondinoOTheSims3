@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Sims3.Gameplay.Abstracts;
+using Sims3.Gameplay.Objects.Elevator;
 using Sims3.Gameplay.Utilities;
 using Sims3.SimIFace;
 namespace ArthurGibraltarSims3Mod{
@@ -16,6 +17,8 @@ namespace ArthurGibraltarSims3Mod{
              new AlarmTask(5,DaysOfTheWeek.All,AutoPause);
              //---------------------------------------------------------------
              new AlarmTask(1,TimeUnit.Hours,CheckShowVenues,1,TimeUnit.Hours);
+             //---------------------------------------------------------------
+             new AlarmTask(1,TimeUnit.Hours,RecoverElevator,1,TimeUnit.Hours);
         }
         private static void OnWorldQuit(object sender,EventArgs e){
     AlarmTask.DisposeAll();
@@ -26,6 +29,10 @@ namespace ArthurGibraltarSims3Mod{
         static void CheckShowVenues(){
                  foreach(ShowVenue show in Sims3.Gameplay.Queries.GetObjects<ShowVenue>()){
                  }
+        }
+        static void RecoverElevator(){
+                   foreach(ElevatorDoors elevator in Sims3.Gameplay.Queries.GetObjects<ElevatorDoors>()){
+                   }
         }
     }
     public class AlarmTask{

@@ -277,8 +277,8 @@ foreach(SimDescription sim in new List<SimDescription>(
                                         Vector3 resetRawDest=destination;
                                                                                             if(stuckSimData.Detections<=2){
                                                                                             }
-                                        Vector3 forward=new Vector3(0,0,1);
                                                Vector3 resetValidatedDest;
+                                                                      Vector3 forward;
 World.FindGoodLocationParams fglParams=new World.FindGoodLocationParams(resetRawDest);
                              fglParams.BooleanConstraints=FindGoodLocationBooleans.Routable|
                                                           FindGoodLocationBooleans.PreferEmptyTiles|
@@ -294,12 +294,13 @@ if(!GlobalFunctions.FindGoodLocation(sim,fglParams,out resetValidatedDest,out fo
                                          fglParams.BooleanConstraints=FindGoodLocationBooleans.None;
     GlobalFunctions.FindGoodLocation(sim,fglParams,out resetValidatedDest,out forward);
 }
-                        //ths.SetForward(fwd);
-                        //ths.RemoveFromWorld();
-                        //ths.AddToWorld();
-                        //ths.SetHiddenFlags(HiddenFlags.Nothing);
-                        //ths.SetOpacity(1f, 0f);
-                        //ths.SimRoutingComponent.ForceUpdateDynamicFootprint();
+                                       sim.SetPosition(resetValidatedDest);
+                                                               sim.SetForward(forward);
+                                                sim.RemoveFromWorld();
+                                                sim.     AddToWorld();
+                                                    sim.SetHiddenFlags(HiddenFlags.Nothing);
+                                                        sim.SetOpacity(1f,0f);
+                                       sim.SimRoutingComponent.ForceUpdateDynamicFootprint();
                                              }
                                                                                                stuckSimData.Resetting=(false);//  Pode detectar novos eventos Stuck
         }

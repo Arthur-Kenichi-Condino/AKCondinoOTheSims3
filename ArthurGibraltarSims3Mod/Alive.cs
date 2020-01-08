@@ -15,9 +15,13 @@ namespace ArthurGibraltarSims3Mod{
         [Tunable]
         protected static bool kIExistNow=(false);
           static Alive(){
+            LoadSaveManager.ObjectGroupsPreLoad+=OnPreLoad;
             World.sOnWorldLoadFinishedEventHandler+=OnWorldLoadFinished;
             World.sOnWorldQuitEventHandler        +=OnWorldQuit;
           }
+        private static void OnPreLoad(){
+            Route.PostPlanCallback+=OnPostPlan;
+        }
         private static void OnWorldLoadFinished(object sender,EventArgs e){
              //---------------------------------------------------------------
             foreach(var tuning in InteractionTuning.sAllTunings.Values){
@@ -25,6 +29,10 @@ namespace ArthurGibraltarSims3Mod{
                         tuning.AddFlags(InteractionTuning.FlagField.DisallowAutonomous);
                      }
             }
+            //Sims3.Gameplay.Actors.SimRoutingComponent.;
+            //Sims3.Gameplay.Actors.Sim.
+            //Sims3.Gameplay.Abstracts.GameObject
+            //autonomous sweep
              //---------------------------------------------------------------
              new AlarmTask(5,DaysOfTheWeek.All,AutoPause);
              //---------------------------------------------------------------
@@ -191,6 +199,9 @@ foreach(SimDescription sim in new List<SimDescription>(
                                   //
                                   stairs.SetObjectToReset();
                    }
+        }
+        //==================================================================================================================
+        protected static void OnPostPlan(Route r,string routeType,string result){
         }
         //==================================================================================================================
     }

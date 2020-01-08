@@ -20,7 +20,8 @@ namespace ArthurGibraltarSims3Mod{
             World.sOnWorldQuitEventHandler        +=OnWorldQuit;
           }
         private static void OnPreLoad(){
-            Route.PostPlanCallback+=OnPostPlan;
+            Route.AboutToPlanCallback+=OnAboutToPlan;
+            Route.   PostPlanCallback+=   OnPostPlan;
         }
         private static void OnWorldLoadFinished(object sender,EventArgs e){
              //---------------------------------------------------------------
@@ -28,11 +29,17 @@ namespace ArthurGibraltarSims3Mod{
                      if(tuning.FullInteractionName=="Sims3.Gameplay.Objects.Gardening.Plant+Graaiins+Definition"){
                         tuning.AddFlags(InteractionTuning.FlagField.DisallowAutonomous);
                      }
+                     if(tuning.FullInteractionName=="Sims3.Gameplay.Services.ResortMaintenance+AutonomousSweep+Definition"){
+                        tuning.AddFlags(InteractionTuning.FlagField.DisallowAutonomous);
+                     }
             }
             //Sims3.Gameplay.Actors.SimRoutingComponent.;
             //Sims3.Gameplay.Actors.Sim.
-            //Sims3.Gameplay.Abstracts.GameObject
-            //autonomous sweep
+            //Sims3.Gameplay.Abstracts.GameObject.
+            //foreach(var speciesData in){
+            //}
+            //Sims3.Metadata.SpeciesDefinitions
+            //Sims3.SimIFace.Route.
              //---------------------------------------------------------------
              new AlarmTask(5,DaysOfTheWeek.All,AutoPause);
              //---------------------------------------------------------------
@@ -201,7 +208,10 @@ foreach(SimDescription sim in new List<SimDescription>(
                    }
         }
         //==================================================================================================================
-        protected static void OnPostPlan(Route r,string routeType,string result){
+        protected static void OnAboutToPlan(Route r,string routeType,Vector3 point){
+                                                  r.CanPlayReactionsAtEndOfRoute=(false);
+        }
+        protected static void    OnPostPlan(Route r,string routeType,string result){
         }
         //==================================================================================================================
     }

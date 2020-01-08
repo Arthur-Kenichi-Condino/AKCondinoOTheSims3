@@ -58,7 +58,7 @@ namespace ArthurGibraltarSims3Mod{
         }
         //==================================================================================================================
         static void AutoPause(){
-      Sims3.Gameplay.Gameflow.SetGameSpeed(Gameflow.GameSpeed.Pause,Sims3.Gameplay.Gameflow.SetGameSpeedContext.GameStates);
+      Sims3.Gameplay.Gameflow.SetGameSpeed(Sims3.Gameplay.Gameflow.GameSpeed.Pause,Sims3.Gameplay.Gameflow.SetGameSpeedContext.GameStates);
                        foreach(ShowVenue showVenue in Sims3.Gameplay.Queries.GetObjects<ShowVenue>()){
            foreach(ISearchLight light in showVenue.LotCurrent.GetObjects<ISearchLight>()){
                                 light.TurnOff();
@@ -232,8 +232,6 @@ foreach(SimDescription sim in new List<SimDescription>(
  Sims3.SimIFace.Route.SetAvoidanceFieldSmoothing( r.Follower.ObjectId,0);
         }
         protected static void    OnPostPlan(Route r,string routeType,string result){
-                                              if(!r.PlanResult.Succeeded()){
-                                                  r.CanPlayReactionsAtEndOfRoute=(false);
                                           var sim=r.Follower.Target as Sim;
                                           if((sim!=null)&&
                                              (sim.SimDescription!=null)){
@@ -243,13 +241,23 @@ foreach(SimDescription sim in new List<SimDescription>(
                                                              StuckSims.Add(        sim.SimDescription.SimDescriptionId,    stuckSim);
                                                          }
                                                                                                                         if(stuckSim.Resetting)return;
+                                              if(!r.PlanResult.Succeeded()){
+                                                  r.CanPlayReactionsAtEndOfRoute=(false);
                                                                                                                            stuckSim.Detections++;
-                                                                                                                        if(stuckSim.Detections>1){
+                                              }else{
+                                                                                                                           stuckSim.Detections=0;
+                                              }
+                                                                                                                        if(stuckSim.PositionPreceding!=sim.Position){
+                                                                                                                           stuckSim.PositionPrecedingTicks=SimClock.CurrentTicks;
+                                                                                                                           stuckSim.PositionPreceding=(sim.Position);
+                                                                                                                        }
+                                                                                                                        if(stuckSim.Detections>1||
+                                                                                                     SimClock.CurrentTicks-stuckSim.PositionPrecedingTicks>SimClock.kSimulatorTicksPerSimMinute*5){
                                                                                                                            stuckSim.Resetting=( true);
+                  Alive.WriteLog("detected_a_stuck_sim:reset:"+sim.Name);
                     new ResetStuckSimTask(sim,r.GetDestPoint(),"Unroutable");
                                                                                                                         }
                                           }
-                                              }
         }
         protected class ResetStuckSimTask:AlarmTask{
         const                  string                        _CLASS_NAME=".ResetStuckSimTask:AlarmTask.";
@@ -263,20 +271,22 @@ foreach(SimDescription sim in new List<SimDescription>(
                  }
             protected override void OnPerform(){
                                base.OnPerform();
-                              ResetStuckSim(_Sim,_Sim.SimDescription,StuckSims[_Sim.SimDescription.SimDescriptionId],Destination,Suffix);
+                              ResetStuckSim(_Sim,Destination,Suffix);
             }
         }
-        protected static void ResetStuckSim(Sim sim,SimDescription simDescription,StuckSimData stuckSimData,Vector3 destination,string suffix){
+        protected static void ResetStuckSim(Sim sim,Vector3 destination,string suffix){
                                              if(sim!=null&&
                                                !sim.HasBeenDestroyed&&
                                                 sim.SimDescription!=null){
+                  Alive.WriteLog("sim_is_stuck:reset_sim_in_progress:"+sim.Name);
                                         Lot lot=sim.LotHome;
                                          if(lot==null){
                                             lot=sim.VirtualLotHome;
                                          }
                                         Vector3 resetRawDest=destination;
-                                                                                            if(stuckSimData.Detections<=2){
-                                                                                            }
+                                                                                            //if(stuckSimData.Detections<=2){
+                                                //resetRawDest=Sim.ActiveActor.Position;
+                                                                                            //}
                                                Vector3 resetValidatedDest;
                                                                       Vector3 forward;
 World.FindGoodLocationParams fglParams=new World.FindGoodLocationParams(resetRawDest);
@@ -300,9 +310,11 @@ if(!GlobalFunctions.FindGoodLocation(sim,fglParams,out resetValidatedDest,out fo
                                                 sim.     AddToWorld();
                                                     sim.SetHiddenFlags(HiddenFlags.Nothing);
                                                         sim.SetOpacity(1f,0f);
-                                       sim.SimRoutingComponent.ForceUpdateDynamicFootprint();
+                                       sim.SimRoutingComponent?.ForceUpdateDynamicFootprint();
+                                                          if(StuckSims.TryGetValue(sim.SimDescription.SimDescriptionId,out StuckSimData stuckSim)){
+                                                                                                                                        stuckSim.Resetting=(false);//  Pode detectar novos eventos Stuck
+                                                          }
                                              }
-                                                                                               stuckSimData.Resetting=(false);//  Pode detectar novos eventos Stuck
         }
                static Dictionary<ulong,StuckSimData>         StuckSims=new Dictionary<ulong,StuckSimData>();
         protected class StuckSimData{
@@ -313,6 +325,18 @@ if(!GlobalFunctions.FindGoodLocation(sim,fglParams,out resetValidatedDest,out fo
         public                 long                             PositionPrecedingTicks=0;
         public                 InteractionInstance           InteractionPreceding;
                  public StuckSimData(){}
+        }
+        //==================================================================================================================
+        public static void WriteLog(string text){
+            try{
+                                                      uint fileHandle=(0x0);
+            string str=Simulator.CreateScriptErrorFile(ref fileHandle);
+                                                        if(fileHandle!=0x0){
+             CustomXmlWriter xmlWriter=new CustomXmlWriter(fileHandle);
+                             xmlWriter.WriteToBuffer(text);
+                             xmlWriter.WriteEndDocument();
+                                                        }
+            }catch{}
         }
         //==================================================================================================================
     }
@@ -360,6 +384,9 @@ if(!GlobalFunctions.FindGoodLocation(sim,fglParams,out resetValidatedDest,out fo
                 try{
                    runningTask=ModTask.Perform(AlarmFunction);
                 }catch(Exception exception){
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source);
                 }finally{
            if(disposeOnTimer){
               Dispose();
@@ -400,7 +427,13 @@ public static
             try{
                                      ModTaskFunction();
             }catch(ResetException exception){
+                   Alive.WriteLog(exception.Message+"\n\n"+
+                                  exception.StackTrace+"\n\n"+
+                                  exception.Source);
             }catch(     Exception exception){
+                   Alive.WriteLog(exception.Message+"\n\n"+
+                                  exception.StackTrace+"\n\n"+
+                                  exception.Source);
             }finally{
                                                        Simulator.DestroyObject(ObjectId);                    
             }

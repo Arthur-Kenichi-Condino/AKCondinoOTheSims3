@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Sims3.Gameplay.Abstracts;
+using Sims3.Gameplay.Actors;
 using Sims3.Gameplay.Autonomy;
 using Sims3.Gameplay.CAS;
 using Sims3.Gameplay.Core;
@@ -40,6 +41,7 @@ namespace ArthurGibraltarSims3Mod{
             //}
             //Sims3.Metadata.SpeciesDefinitions
             //Sims3.SimIFace.Route.
+            //Sims3.SimIFace.
              //---------------------------------------------------------------
              new AlarmTask(5,DaysOfTheWeek.All,AutoPause);
              //---------------------------------------------------------------
@@ -209,9 +211,14 @@ foreach(SimDescription sim in new List<SimDescription>(
         }
         //==================================================================================================================
         protected static void OnAboutToPlan(Route r,string routeType,Vector3 point){
+ Sims3.SimIFace.Route.SetAvoidanceFieldRangeScale(r.Follower.ObjectId,0);
+ Sims3.SimIFace.Route.SetAvoidanceFieldSmoothing( r.Follower.ObjectId,0);
                                                   r.CanPlayReactionsAtEndOfRoute=(false);
         }
         protected static void    OnPostPlan(Route r,string routeType,string result){
+                                                  r.CanPlayReactionsAtEndOfRoute=(false);
+                                              if(!r.PlanResult.Succeeded()){
+                                              }
         }
         //==================================================================================================================
     }

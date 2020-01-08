@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 using Sims3.Gameplay.Abstracts;
+using Sims3.Gameplay.Autonomy;
 using Sims3.Gameplay.CAS;
+using Sims3.Gameplay.Core;
+using Sims3.Gameplay.Objects;
 using Sims3.Gameplay.Objects.Elevator;
 using Sims3.Gameplay.Objects.Lighting;
 using Sims3.Gameplay.Utilities;
@@ -16,11 +19,19 @@ namespace ArthurGibraltarSims3Mod{
             World.sOnWorldQuitEventHandler        +=OnWorldQuit;
           }
         private static void OnWorldLoadFinished(object sender,EventArgs e){
+             //---------------------------------------------------------------
+            foreach(var tuning in InteractionTuning.sAllTunings.Values){
+                     if(tuning.FullInteractionName=="Sims3.Gameplay.Objects.Gardening.Plant+Graaiins+Definition"){
+                        tuning.AddFlags(InteractionTuning.FlagField.DisallowAutonomous);
+                     }
+            }
+             //---------------------------------------------------------------
              new AlarmTask(5,DaysOfTheWeek.All,AutoPause);
              //---------------------------------------------------------------
              new AlarmTask(1,TimeUnit.Hours,CheckShowVenues,1,TimeUnit.Hours);
              //---------------------------------------------------------------
              new AlarmTask(1,TimeUnit.Hours,RecoverElevator,1,TimeUnit.Hours);
+             //---------------------------------------------------------------
         }
         private static void OnWorldQuit(object sender,EventArgs e){
     AlarmTask.DisposeAll();
@@ -97,9 +108,11 @@ List<KeyValuePair<ShowVenue,ShowDetectedData>>toRemove=new List<KeyValuePair<Sho
         static void RecoverElevator(){
                    foreach(ElevatorDoors elevator in Sims3.Gameplay.Queries.GetObjects<ElevatorDoors>()){
                            ElevatorInterior.ElevatorPortalComponent 
-                                                    portal=elevator.InteriorObj.ElevatorPortal as ElevatorInterior.ElevatorPortalComponent;
+                                                    portal=
+                                         elevator.InteriorObj.ElevatorPortal as 
+                           ElevatorInterior.ElevatorPortalComponent;
                                                  if(portal!=null){
-                    //  Medium reset sims: reset and put in same lot
+//  Medium reset sims: reset and put in the same lot
 foreach(SimDescription sim in new List<SimDescription>(
                                                     portal.mAssignedSims.Keys)){
                     if(sim.CreatedSim!=null){
@@ -107,18 +120,76 @@ foreach(SimDescription sim in new List<SimDescription>(
 }
                                                     portal.FreeAllRoutingLanes();
                                                  }
+                                         //
                                          elevator.SetObjectToReset();
                    }
                    foreach(Door door in Sims3.Gameplay.Queries.GetObjects<Door>()){
-                //  Soft reset sims: reset and don't change position
+                      Door.DoorPortalComponent 
+                               portal=
+                                door.PortalComponent as 
+                      Door.DoorPortalComponent;
+                            if(portal!=null){
+//  Soft reset sims: reset and don't change position
 foreach(SimDescription sim in new List<SimDescription>(
                                 door.ActorsUsingMeAsSimDescriptions)){
                     if(sim.CreatedSim!=null){
                     }
 }
-                                door.PortalComponent?.FreeAllRoutingLanes();
+                               portal.FreeAllRoutingLanes();
+                            }
                                 //
                                 door.SetObjectToReset();
+                   }
+                   foreach(StaircaseSpiral staircaseSpiral in Sims3.Gameplay.Queries.GetObjects<StaircaseSpiral>()){
+           StaircaseSpiral.StaircaseSpiralPortalComponent
+                                          portal=
+                                           staircaseSpiral.PortalComponent as 
+           StaircaseSpiral.StaircaseSpiralPortalComponent;
+                                       if(portal!=null){
+//  Soft reset sims: reset and don't change position
+foreach(SimDescription sim in new List<SimDescription>(
+                                           staircaseSpiral.ActorsUsingMeAsSimDescriptions)){
+                    if(sim.CreatedSim!=null){
+                    }
+}
+                                          portal.FreeAllRoutingLanes();
+                                       }
+                                           //
+                                           staircaseSpiral.SetObjectToReset();
+                   }
+                   foreach(Ladder ladder in Sims3.Gameplay.Queries.GetObjects<Ladder>()){
+                    Ladder.LadderPortalComponent
+                                 portal=
+                                  ladder.PortalComponent as 
+                    Ladder.LadderPortalComponent;
+                              if(portal!=null){
+//  Soft reset sims: reset and don't change position
+foreach(SimDescription sim in new List<SimDescription>(
+                                  ladder.ActorsUsingMeAsSimDescriptions)){
+                    if(sim.CreatedSim!=null){
+                    }
+}
+                                 portal.FreeAllRoutingLanes();
+                              }
+                                  //
+                                  ladder.SetObjectToReset();
+                   }
+                   foreach(Stairs stairs in Sims3.Gameplay.Queries.GetObjects<Stairs>()){
+                    Stairs.StairsPortalComponent
+                                 portal=
+                                  stairs.PortalComponent as 
+                    Stairs.StairsPortalComponent;
+                              if(portal!=null){
+//  Soft reset sims: reset and don't change position
+foreach(SimDescription sim in new List<SimDescription>(
+                                  stairs.ActorsUsingMeAsSimDescriptions)){
+                    if(sim.CreatedSim!=null){
+                    }
+}
+                                 portal.FreeAllRoutingLanes();
+                              }
+                                  //
+                                  stairs.SetObjectToReset();
                    }
         }
         //==================================================================================================================

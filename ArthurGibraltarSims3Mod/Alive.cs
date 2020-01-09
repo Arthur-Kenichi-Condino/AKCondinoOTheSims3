@@ -3,14 +3,17 @@ using System.Collections.Generic;
 using System.Text;
 using Sims3.Gameplay;
 using Sims3.Gameplay.Abstracts;
+using Sims3.Gameplay.ActiveCareer.ActiveCareers;
 using Sims3.Gameplay.Actors;
 using Sims3.Gameplay.Autonomy;
 using Sims3.Gameplay.CAS;
+using Sims3.Gameplay.Controllers;
 using Sims3.Gameplay.Core;
 using Sims3.Gameplay.Interactions;
 using Sims3.Gameplay.Objects;
 using Sims3.Gameplay.Objects.Elevator;
 using Sims3.Gameplay.Objects.Lighting;
+using Sims3.Gameplay.Passport;
 using Sims3.Gameplay.Utilities;
 using Sims3.SimIFace;
 namespace ArthurGibraltarSims3Mod{
@@ -48,9 +51,9 @@ namespace ArthurGibraltarSims3Mod{
              //---------------------------------------------------------------
              new AlarmTask(5,DaysOfTheWeek.All,AutoPause);
              //---------------------------------------------------------------
-             new AlarmTask(1,TimeUnit.Hours,CheckShowVenues,1,TimeUnit.Hours);
+             new AlarmTask(1,TimeUnit.Hours,CheckShowVenues       ,1,TimeUnit.Hours);
              //---------------------------------------------------------------
-             new AlarmTask(1,TimeUnit.Hours,RecoverElevator,1,TimeUnit.Hours);
+             new AlarmTask(1,TimeUnit.Hours,ResetPortalsAndRouting,1,TimeUnit.Hours);
              //---------------------------------------------------------------
         }
         private static void OnWorldQuit(object sender,EventArgs e){
@@ -139,7 +142,13 @@ List<KeyValuePair<ShowVenue,ShowDetectedData>>toRemove=new List<KeyValuePair<Sho
             public        readonly long                          ShowStartTimeTicks;
         }
         //==================================================================================================================
-        static void RecoverElevator(){
+        static void ResetPortalsAndRouting(){
+                                Autonomy.kAutonomyDelayNormal           =0;
+                                Autonomy.kAutonomyDelayWhileMounted     =0;
+                                Autonomy.kAutonomyDelayDuringSocializing=0;
+                                SimRoutingComponent.kDefaultStandAndWaitDuration=2f;
+                                SimRoutingComponent.kMinimumPostPushStandAndWaitDuration=0f;
+                                SimRoutingComponent.kMaximumPostPushStandAndWaitDuration=1f;
                    foreach(ElevatorDoors elevator in Sims3.Gameplay.Queries.GetObjects<ElevatorDoors>()){
                            ElevatorInterior.ElevatorPortalComponent 
                                                     portal=
@@ -228,8 +237,8 @@ foreach(SimDescription sim in new List<SimDescription>(
         }
         //==================================================================================================================
         protected static void OnAboutToPlan(Route r,string routeType,Vector3 point){
- Sims3.SimIFace.Route.SetAvoidanceFieldRangeScale(r.Follower.ObjectId,0);
- Sims3.SimIFace.Route.SetAvoidanceFieldSmoothing( r.Follower.ObjectId,0);
+ Sims3.SimIFace.Route.SetAvoidanceFieldRangeScale(r.Follower.ObjectId,0.5f);
+ Sims3.SimIFace.Route.SetAvoidanceFieldSmoothing( r.Follower.ObjectId,1.0f);
         }
         protected static void    OnPostPlan(Route r,string routeType,string result){
                                           var sim=r.Follower.Target as Sim;
@@ -241,8 +250,10 @@ foreach(SimDescription sim in new List<SimDescription>(
                                                              StuckSims.Add(        sim.SimDescription.SimDescriptionId,    stuckSim);
                                                          }
                                                                                                                         if(stuckSim.Resetting)return;
+                                                                                                                               bool detected=(false);
                                               if(!r.PlanResult.Succeeded()){
                                                   r.CanPlayReactionsAtEndOfRoute=(false);
+                                                                                                                                    detected=( true);
                                                                                                                            stuckSim.Detections++;
                                               }else{
                                                                                                                            stuckSim.Detections=0;
@@ -251,10 +262,14 @@ foreach(SimDescription sim in new List<SimDescription>(
                                                                                                                            stuckSim.PositionPrecedingTicks=SimClock.CurrentTicks;
                                                                                                                            stuckSim.PositionPreceding=(sim.Position);
                                                                                                                         }
-                                                                                                                        if(stuckSim.Detections>1||
-                                                                                                     SimClock.CurrentTicks-stuckSim.PositionPrecedingTicks>SimClock.kSimulatorTicksPerSimMinute*5){
+                                                                                                  if(SimClock.CurrentTicks-stuckSim.PositionPrecedingTicks>SimClock.kSimulatorTicksPerSimMinute*5){
+                                                                                                                                if(!detected){
+                                                                                                                           stuckSim.Detections++;
+                                                                                                                                }
+                                                                                                  }
+                                                                                                                        if(stuckSim.Detections>1){
                                                                                                                            stuckSim.Resetting=( true);
-                  Alive.WriteLog("detected_a_stuck_sim:reset:"+sim.Name);
+                  //Alive.WriteLog("detected_a_stuck_sim:reset:"+sim.Name);
                     new ResetStuckSimTask(sim,r.GetDestPoint(),"Unroutable");
                                                                                                                         }
                                           }
@@ -270,23 +285,75 @@ foreach(SimDescription sim in new List<SimDescription>(
                                                                       Suffix=suffix;
                  }
             protected override void OnPerform(){
-                               base.OnPerform();
+                      //Alive.WriteLog("perform:ResetStuckSimTask");
                               ResetStuckSim(_Sim,Destination,Suffix);
+                               base.OnPerform();
             }
         }
         protected static void ResetStuckSim(Sim sim,Vector3 destination,string suffix){
                                              if(sim!=null&&
                                                !sim.HasBeenDestroyed&&
                                                 sim.SimDescription!=null){
-                  Alive.WriteLog("sim_is_stuck:reset_sim_in_progress:"+sim.Name);
+                  //Alive.WriteLog("sim_is_stuck:reset_sim_in_progress:sim:"+sim.Name+";destination:"+destination);
                                         Lot lot=sim.LotHome;
                                          if(lot==null){
                                             lot=sim.VirtualLotHome;
                                          }
+                                         if(lot==null){
+                                            lot=Sim.ActiveActor?.LotHome;
+                                         }
+                                                    bool addToWorld=( true);
                                         Vector3 resetRawDest=destination;
-                                                                                            //if(stuckSimData.Detections<=2){
-                                                //resetRawDest=Sim.ActiveActor.Position;
-                                                                                            //}
+                                                             StuckSims.TryGetValue(sim.SimDescription.SimDescriptionId,out StuckSimData stuckSim);   
+                                                          if(stuckSim!=null){
+                                                          //-------------------------
+                                                          if(stuckSim.Detections<=2){
+                                Daycare daycare;
+                                            if((sim.Household==null||
+                                              (!sim.Household.InWorld&&
+                                               !sim.Household.IsSpecialHousehold))&&
+                 (!Passport.IsHostedPassportSim(sim)&&
+                                                sim.SimDescription.AssignedRole==null)&&
+   (LunarCycleManager.sFullMoonZombies==null||  
+   !LunarCycleManager.sFullMoonZombies.Contains(sim.SimDescription))&&
+                                      ((daycare=sim.SimDescription.Occupation as Daycare)==null||
+                        !daycare.IsDaycareChild(sim.SimDescription))){
+                                                         addToWorld=(false);
+                                            }
+                                                   goto DestSet;
+                                                          }
+                                                          //-------------------------
+                                                          if(stuckSim.Detections<=3){
+                                         if(lot==null){
+                                            lot=RandomUtil.GetRandomObjectFromList(Sims3.Gameplay.Queries.GetObjects<Lot>());
+                                         }
+                                         if(lot!=null){
+                                                resetRawDest=lot.EntryPoint();
+                                                   goto DestSet;
+                                         }
+                                                          }
+                                                          //-------------------------
+                                                          if(stuckSim.Detections<=4){
+                                         if(lot==null){
+                                            lot=RandomUtil.GetRandomObjectFromList(Sims3.Gameplay.Queries.GetObjects<Lot>());
+                                         }
+                                         if(lot!=null){
+                            Mailbox mailbox=lot.FindMailbox();
+                                 if(mailbox!=null){
+                                                resetRawDest=mailbox.Position;
+                                                   goto DestSet;
+                                 }
+                                         }
+                                                          }
+                                                          //-------------------------
+                                                          if(stuckSim.Detections<=5){
+                                                resetRawDest=Sim.ActiveActor.Position;
+                                                             stuckSim.Detections=(1);
+                                                   goto DestSet;
+                                                          }
+                                                          //-------------------------
+                                                        DestSet:{}
+                                                          }
                                                Vector3 resetValidatedDest;
                                                                       Vector3 forward;
 World.FindGoodLocationParams fglParams=new World.FindGoodLocationParams(resetRawDest);
@@ -307,12 +374,17 @@ if(!GlobalFunctions.FindGoodLocation(sim,fglParams,out resetValidatedDest,out fo
                                        sim.SetPosition(resetValidatedDest);
                                                                sim.SetForward(forward);
                                                 sim.RemoveFromWorld();
+                                                      if(addToWorld){
                                                 sim.     AddToWorld();
                                                     sim.SetHiddenFlags(HiddenFlags.Nothing);
                                                         sim.SetOpacity(1f,0f);
+                                                      }else{
+                                                    sim.SetHiddenFlags(HiddenFlags.Everything);
+                                                        sim.SetOpacity(0f,0f);
+                                                      }
                                        sim.SimRoutingComponent?.ForceUpdateDynamicFootprint();
-                                                          if(StuckSims.TryGetValue(sim.SimDescription.SimDescriptionId,out StuckSimData stuckSim)){
-                                                                                                                                        stuckSim.Resetting=(false);//  Pode detectar novos eventos Stuck
+                                                          if(stuckSim!=null){
+                                                             stuckSim.Resetting=(false);//  Pode detectar novos eventos Stuck
                                                           }
                                              }
         }
@@ -382,18 +454,21 @@ if(!GlobalFunctions.FindGoodLocation(sim,fglParams,out resetValidatedDest,out fo
          bool disposeOnTimer;
         private void OnTimer(){
                 try{
+           if(disposeOnTimer){
+              Dispose();
+           }
                    runningTask=ModTask.Perform(AlarmFunction);
+           if(disposeOnTimer){
+                        runningTask=ObjectGuid.InvalidObjectGuid;//  After Dispose, which needs to be called before Perform for some reason
+           }
                 }catch(Exception exception){
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source);
                 }finally{
-           if(disposeOnTimer){
-              Dispose();
-           }
                 }
         }
-                              protected virtual void OnPerform(){}
+                              protected virtual void OnPerform(){/*Alive.WriteLog("perform:empty_0");*/}
         readonly static List<AlarmTask>AllScheduledTasks=new List<AlarmTask>();
   public void Dispose(){
 Simulator.DestroyObject(runningTask);
@@ -418,7 +493,7 @@ public static
                                      ModTaskFunction=func;
        }
     readonly Sims3.Gameplay.Function ModTaskFunction;
-                              protected virtual void OnPerform(){}
+                              protected virtual void OnPerform(){/*Alive.WriteLog("perform:empty_1");*/}
                               public static ObjectGuid Perform(Sims3.Gameplay.Function func){
       return new ModTask(func).AddToSimulator();
                               }

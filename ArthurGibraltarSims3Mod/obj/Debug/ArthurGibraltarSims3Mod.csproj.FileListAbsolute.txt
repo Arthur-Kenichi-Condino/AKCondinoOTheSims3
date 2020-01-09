@@ -1,4 +1,0 @@
-C:\Users\Arthur\AKCondinoOTheSims3\ArthurGibraltarSims3Mod\bin\Debug\ArthurGibraltarSims3Mod.dll
-C:\Users\Arthur\AKCondinoOTheSims3\ArthurGibraltarSims3Mod\bin\Debug\ArthurGibraltarSims3Mod.pdb
-C:\Users\Arthur\AKCondinoOTheSims3\ArthurGibraltarSims3Mod\obj\Debug\ArthurGibraltarSims3Mod.dll
-C:\Users\Arthur\AKCondinoOTheSims3\ArthurGibraltarSims3Mod\obj\Debug\ArthurGibraltarSims3Mod.pdb

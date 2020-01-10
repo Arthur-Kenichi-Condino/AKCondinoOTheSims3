@@ -27,11 +27,12 @@ namespace ArthurGibraltarSims3Mod{
             World.sOnWorldQuitEventHandler        +=OnWorldQuit;
           }
         private static void OnPreLoad(){
-            Route.AboutToPlanCallback+=OnAboutToPlan;
-            Route.   PostPlanCallback+=   OnPostPlan;
         }
         private static void OnWorldLoadFinished(object sender,EventArgs e){
+            Route.AboutToPlanCallback+=OnAboutToPlan;
+            Route.   PostPlanCallback+=   OnPostPlan;
              //---------------------------------------------------------------
+                try{
             foreach(var tuning in InteractionTuning.sAllTunings.Values){
                      if(tuning.FullInteractionName=="Sims3.Gameplay.Objects.Gardening.Plant+Graaiins+Definition"){
                         tuning.AddFlags(InteractionTuning.FlagField.DisallowAutonomous);
@@ -40,6 +41,12 @@ namespace ArthurGibraltarSims3Mod{
                         tuning.AddFlags(InteractionTuning.FlagField.DisallowAutonomous);
                      }
             }
+                }catch(Exception exception){
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source);
+                }finally{
+                }
             //Sims3.Gameplay.Actors.SimRoutingComponent.;
             //Sims3.Gameplay.Actors.Sim.
             //Sims3.Gameplay.Abstracts.GameObject.
@@ -57,10 +64,13 @@ namespace ArthurGibraltarSims3Mod{
              //---------------------------------------------------------------
         }
         private static void OnWorldQuit(object sender,EventArgs e){
+            Route.AboutToPlanCallback-=OnAboutToPlan;
+            Route.   PostPlanCallback-=   OnPostPlan;
     AlarmTask.DisposeAll();
         }
         //==================================================================================================================
         static void AutoPause(){
+                try{
       Sims3.Gameplay.Gameflow.SetGameSpeed(Sims3.Gameplay.Gameflow.GameSpeed.Pause,Sims3.Gameplay.Gameflow.SetGameSpeedContext.GameStates);
                        foreach(ShowVenue showVenue in Sims3.Gameplay.Queries.GetObjects<ShowVenue>()){
            foreach(ISearchLight light in showVenue.LotCurrent.GetObjects<ISearchLight>()){
@@ -87,10 +97,17 @@ namespace ArthurGibraltarSims3Mod{
     StuckSims.Remove(invalidSim);
          }
                                    stuckSimDataInvalid.Clear();
+                }catch(Exception exception){
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source);
+                }finally{
+                }
         }
         //==================================================================================================================
        static readonly Dictionary<ShowVenue,ShowDetectedData>ShowDetected=new Dictionary<ShowVenue,ShowDetectedData>();
         static void CheckShowVenues(){
+                try{
                  foreach(ShowVenue showVenue in Sims3.Gameplay.Queries.GetObjects<ShowVenue>()){
                                 if(showVenue.ShowInProgress||
                                    showVenue.ShowType!=ShowVenue.ShowTypes.kNoShow){
@@ -134,6 +151,12 @@ List<KeyValuePair<ShowVenue,ShowDetectedData>>toRemove=new List<KeyValuePair<Sho
                           ShowDetected.Remove(toRemove[i].Key);
                                 }
                                               toRemove.Clear();
+                }catch(Exception exception){
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source);
+                }finally{
+                }
         }
         protected class ShowDetectedData{
                  public ShowDetectedData(long showStartTimeTicks){
@@ -143,12 +166,26 @@ List<KeyValuePair<ShowVenue,ShowDetectedData>>toRemove=new List<KeyValuePair<Sho
         }
         //==================================================================================================================
         static void ResetPortalsAndRouting(){
+                try{
                                 Autonomy.kAutonomyDelayNormal           =0;
                                 Autonomy.kAutonomyDelayWhileMounted     =0;
                                 Autonomy.kAutonomyDelayDuringSocializing=0;
-                                SimRoutingComponent.kDefaultStandAndWaitDuration=2f;
-                                SimRoutingComponent.kMinimumPostPushStandAndWaitDuration=0f;
-                                SimRoutingComponent.kMaximumPostPushStandAndWaitDuration=1f;
+                                SimRoutingComponent.kDefaultStandAndWaitDuration=3f;
+                                SimRoutingComponent.kMinimumPostPushStandAndWaitDuration=1f;
+                                SimRoutingComponent.kMaximumPostPushStandAndWaitDuration=2f;
+                                SimRoutingComponent.kTotalSimMinutesToWaitForSimsToBePushed=1f;
+                                //------------------------------------------------------
+                                SimRoutingComponent.kAvoidanceReplanCheckFrequencyMin=6;
+                                SimRoutingComponent.kAvoidanceReplanCheckFrequencyMax=9;
+                                SimRoutingComponent.kAvoidanceReplanCheckOffsetMin=1;
+                                SimRoutingComponent.kAvoidanceReplanCheckOffsetMax=3;
+                }catch(Exception exception){
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source);
+                }finally{
+                }
+                try{
                    foreach(ElevatorDoors elevator in Sims3.Gameplay.Queries.GetObjects<ElevatorDoors>()){
                            ElevatorInterior.ElevatorPortalComponent 
                                                     portal=
@@ -234,13 +271,28 @@ foreach(SimDescription sim in new List<SimDescription>(
                                   //
                                   stairs.SetObjectToReset();
                    }
+                }catch(Exception exception){
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source);
+                }finally{
+                }
         }
         //==================================================================================================================
         protected static void OnAboutToPlan(Route r,string routeType,Vector3 point){
+                try{
  Sims3.SimIFace.Route.SetAvoidanceFieldRangeScale(r.Follower.ObjectId,0.5f);
  Sims3.SimIFace.Route.SetAvoidanceFieldSmoothing( r.Follower.ObjectId,1.0f);
+                                                  r.CanPlayReactionsAtEndOfRoute=(false);
+                }catch(Exception exception){
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source);
+                }finally{
+                }
         }
         protected static void    OnPostPlan(Route r,string routeType,string result){
+                try{
                                           var sim=r.Follower.Target as Sim;
                                           if((sim!=null)&&
                                              (sim.SimDescription!=null)){
@@ -252,7 +304,6 @@ foreach(SimDescription sim in new List<SimDescription>(
                                                                                                                         if(stuckSim.Resetting)return;
                                                                                                                                bool detected=(false);
                                               if(!r.PlanResult.Succeeded()){
-                                                  r.CanPlayReactionsAtEndOfRoute=(false);
                                                                                                                                     detected=( true);
                                                                                                                            stuckSim.Detections++;
                                               }else{
@@ -273,6 +324,12 @@ foreach(SimDescription sim in new List<SimDescription>(
                     new ResetStuckSimTask(sim,r.GetDestPoint(),"Unroutable");
                                                                                                                         }
                                           }
+                }catch(Exception exception){
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source);
+                }finally{
+                }
         }
         protected class ResetStuckSimTask:AlarmTask{
         const                  string                        _CLASS_NAME=".ResetStuckSimTask:AlarmTask.";
@@ -409,6 +466,14 @@ if(!GlobalFunctions.FindGoodLocation(sim,fglParams,out resetValidatedDest,out fo
                              xmlWriter.WriteEndDocument();
                                                         }
             }catch{}
+        }
+        //==================================================================================================================
+        public static bool IsRootMenuObject(Sims3.Gameplay.Interfaces.IGameObject obj){
+            if(obj is Sims3.Gameplay.Core.Lot){
+                      Sims3.Gameplay.Core.Lot lot=obj as Sims3.Gameplay.Core.Lot;
+        return( true);
+            }
+        return(false);
         }
         //==================================================================================================================
     }

@@ -167,6 +167,7 @@ List<KeyValuePair<ShowVenue,ShowDetectedData>>toRemove=new List<KeyValuePair<Sho
         //==================================================================================================================
         static void ResetPortalsAndRouting(){
                 try{
+                                Autonomy.kAllowEvenIfNotAllowedInRoomAutonomousMultiplier=0;
                                 Autonomy.kAutonomyDelayNormal           =0;
                                 Autonomy.kAutonomyDelayWhileMounted     =0;
                                 Autonomy.kAutonomyDelayDuringSocializing=0;

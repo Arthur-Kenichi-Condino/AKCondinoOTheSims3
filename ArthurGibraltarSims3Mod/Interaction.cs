@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 namespace ArthurGibraltarSims3Mod{
+    public class Interaction{
     //====================================================================================================================================================
     //       ModdedInteraction:the injecting part:from NRaas mods
     //====================================================================================================================================================
@@ -9,7 +10,7 @@ namespace ArthurGibraltarSims3Mod{
                                                                                                                                        public abstract void AddInteraction(InteractionInjectorList interactions);
         public override string GetInteractionName(){
                 try{
-                   return base.GetInteractionName()+", Modded";
+                   return Alive.Localize("Root:MenuName");
                 }catch(Exception exception){
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
@@ -18,7 +19,14 @@ namespace ArthurGibraltarSims3Mod{
                 }
         }
       protected virtual string GetInteractionName(Sims3.Gameplay.Interfaces.IActor actor,SimObj target,Sims3.SimIFace.GameObjectHit hit){
-                        return GetInteractionName()+", user: "+actor.Name;
+                try{
+                        return GetInteractionName();
+                }catch(Exception exception){
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source);
+                   return"ERROR_0_";
+                }
       }
         public override Sims3.Gameplay.Core.Lot GetTargetLot(){
                    Sims3.Gameplay.Core.Lot lot=Target as Sims3.Gameplay.Core.Lot;
@@ -63,14 +71,19 @@ namespace ArthurGibraltarSims3Mod{
                  void AddInteraction(InteractionInjectorList interactions);
     }//  COPY COMPLETED
     //-----------------------------------------------------------------------------------------------------------
+    //  InteractionInjectors
+    //-----------------------------------------------------------------------------------------------------------
     public class InteractionInjectorList{
           static InteractionInjectorList sMasterList=null;
    public static InteractionInjectorList  MasterList{
     get{
                                       if(sMasterList==null){
+                     string injectionNames="";
                 List<IAddInteraction>addInteractions=DerivativeSearch.Find<IAddInteraction>();
              foreach(IAddInteraction interaction in addInteractions){
+                            injectionNames+="AddInteraction "+interaction.GetType().ToString()+"\n";
              }
+             Alive.WriteLog(injectionNames);
                                          sMasterList=new InteractionInjectorList(addInteractions);
                                       }
                                   return(sMasterList);
@@ -89,7 +102,6 @@ namespace ArthurGibraltarSims3Mod{
        return( true);
                         }
               }
-
        return(false);}
         public InteractionInjectorList(List<IAddInteraction> interactions){
                       foreach(IAddInteraction interaction in interactions){
@@ -120,24 +132,61 @@ namespace ArthurGibraltarSims3Mod{
 public IEnumerable<KeyValuePair<Type,List<IInteractionInjector>>>Types{get{return(mTypes);}}
                        public bool IsEmpty{get{return(mTypes.Count==0);}}
         public void Add<ObjType>(Sims3.Gameplay.Interactions.InteractionDefinition definition)where ObjType:Sims3.Gameplay.Interfaces.IGameObject{
+                try{
                                       AddInjector(new InteractionInjector<ObjType>(definition,true));
+                }catch(Exception exception){
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source);
+                }
         }
         public void AddRoot(Sims3.Gameplay.Interactions.InteractionDefinition definition){
-                                      AddInjector(new InteractionRootInjector(definition));
+                try{
+                                      AddInjector(new InteractionInjectorRoot(definition));
+                }catch(Exception exception){
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source);
+                }
         }
         public void AddCustom(IInteractionInjector injector){
+                try{
                                        AddInjector(injector);
+                }catch(Exception exception){
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source);
+                }
         }
         public void AddNoDupTest<ObjType>(Sims3.Gameplay.Interactions.InteractionDefinition definition)where ObjType:Sims3.Gameplay.Interfaces.IGameObject{
-                                      AddInjector(new InteractionNoDupTestInjector<ObjType>(definition));
+                try{
+                                      AddInjector(new InteractionInjectorNoDupTest<ObjType>(definition));
+                }catch(Exception exception){
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source);
+                }
         }
             public void Replace<ObjType,T>(Sims3.Gameplay.Interactions.InteractionDefinition definition)where ObjType:Sims3.Gameplay.Interfaces.IGameObject where T:Sims3.Gameplay.Interactions.InteractionDefinition{
+                try{
                                               AddInjector(new InteractionReplacer<ObjType,T>(definition,true));
+                }catch(Exception exception){
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source);
+                }
             }
             public void ReplaceNoTest<ObjType,T>(Sims3.Gameplay.Interactions.InteractionDefinition definition)where ObjType:Sims3.Gameplay.Interfaces.IGameObject where T:Sims3.Gameplay.Interactions.InteractionDefinition{
+                try{
                                                     AddInjector(new InteractionReplacer<ObjType,T>(definition,false));
+                }catch(Exception exception){
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source);
+                }
             }
         public void Perform(Sims3.Gameplay.Abstracts.GameObject obj){
+                try{
                            List<IInteractionInjector>injectors=new List<IInteractionInjector>();
  foreach(KeyValuePair<Type,List<IInteractionInjector>>type in mTypes){
                                                    if(type.Key.IsAssignableFrom(obj.GetType())){
@@ -145,8 +194,12 @@ public IEnumerable<KeyValuePair<Type,List<IInteractionInjector>>>Types{get{retur
                                                    }
  }
                                                   if(injectors.Count==0)return;
-
                     Perform(obj,injectors);
+                }catch(Exception exception){
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source);
+                }
         }
      protected void Perform(Sims3.Gameplay.Abstracts.GameObject obj,IEnumerable<IInteractionInjector>injectors){
                 try{
@@ -199,6 +252,7 @@ public IEnumerable<KeyValuePair<Type,List<IInteractionInjector>>>Types{get{retur
  }
 protected virtual bool 
              Perform(Sims3.Gameplay.Abstracts.GameObject obj,Sims3.Gameplay.Interactions.InteractionDefinition definition,Dictionary<Type,bool>existing){
+                try{
                                                       if(obj is ObjType){
                                                                                                      Type type=definition.GetType();
                                                                                                                                             if(existing.ContainsKey(type))return(false);
@@ -207,24 +261,35 @@ protected virtual bool
                                                                                    obj.AddInventoryInteraction(definition);
                                                                                                                                                                           return( true);
                                                       }
+                }catch(Exception exception){
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source);
+                }
                                                                                                                                                                           return(false);
 }
     }//  COPY COMPLETED
-    public class InteractionNoDupTestInjector<ObjType>:InteractionInjector<ObjType>where ObjType:Sims3.Gameplay.Interfaces.IGameObject{
-       protected InteractionNoDupTestInjector(){}
-          public InteractionNoDupTestInjector(Sims3.Gameplay.Interactions.InteractionDefinition definition):base(definition){}
+    public class InteractionInjectorNoDupTest<ObjType>:InteractionInjector<ObjType>where ObjType:Sims3.Gameplay.Interfaces.IGameObject{
+       protected InteractionInjectorNoDupTest(){}
+          public InteractionInjectorNoDupTest(Sims3.Gameplay.Interactions.InteractionDefinition definition):base(definition){}
 protected override bool 
              Perform(Sims3.Gameplay.Abstracts.GameObject obj,Sims3.Gameplay.Interactions.InteractionDefinition definition,Dictionary<Type,bool>existing){
+                try{
                                                       if(obj is ObjType){
                                                                                             obj.AddInteraction(definition);
                                                                                    obj.AddInventoryInteraction(definition);
                                                                                                                                                                           return( true);
                                                       }
+                }catch(Exception exception){
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source);
+                }
                                                                                                                                                                           return(false);
 }
     }//  COPY COMPLETED
-    public class InteractionRootInjector:InteractionInjector<Sims3.Gameplay.Abstracts.GameObject>{
-          public InteractionRootInjector(Sims3.Gameplay.Interactions.InteractionDefinition definition):base(definition,true){}
+    public class InteractionInjectorRoot:InteractionInjector<Sims3.Gameplay.Abstracts.GameObject>{
+          public InteractionInjectorRoot(Sims3.Gameplay.Interactions.InteractionDefinition definition):base(definition,true){}
        public override List<Type>GetTypes(){
                        List<Type>list=new List<Type>();
                                  list.Add(typeof(Sims3.Gameplay.Actors.Sim));
@@ -233,19 +298,9 @@ protected override bool
        }
 protected override bool 
              Perform(Sims3.Gameplay.Abstracts.GameObject obj,Sims3.Gameplay.Interactions.InteractionDefinition definition, Dictionary<Type, bool> existing){
-                                               if(!IsRootMenuObject(obj))return(false);
+                              if(!Alive.IsRootMenuObject(obj))return(false);
  return base.Perform(obj,definition,existing);
 }
-        public static bool IsRootMenuObject(Sims3.Gameplay.Interfaces.IGameObject obj){
-                                                                               if(obj is Sims3.Gameplay.Core.  Lot){
-                                                                                return( true);
-                                                                               }
-                                                                               else 
-                                                                               if(obj is Sims3.Gameplay.Actors.Sim){
-                                                                                return( true);
-                                                                               }
-                                                                                return(false);
-        }
     }//  COPY COMPLETED
     public class InteractionReplacer<ObjType,T>:InteractionInjector<ObjType>where ObjType:Sims3.Gameplay.Interfaces.IGameObject where T:Sims3.Gameplay.Interactions.InteractionDefinition{
           public InteractionReplacer(Sims3.Gameplay.Interactions.InteractionDefinition definition,bool testExistence):base(definition){
@@ -255,17 +310,24 @@ protected override bool
 protected override bool 
              Perform(Sims3.Gameplay.Abstracts.GameObject obj,Sims3.Gameplay.Interactions.InteractionDefinition definition,Dictionary<Type,bool>existing){
                                                                                                                                      Type type=typeof(T);
+                try{
                                                                                      if(mTestExistence){
                                                                                                                                            if(!existing.ContainsKey(type))return(false);
                                                                                      }
     if(!base.Perform(obj,definition,existing))return(false);
                                                                                              RemoveInteraction(obj,type);
                                                                                                                                                existing.Remove(type);
+                }catch(Exception exception){
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source);
+                }
 return( true);}
         public static void RemoveInteraction<Y>(Sims3.Gameplay.Abstracts.GameObject obj)where Y:Sims3.Gameplay.Interactions.InteractionDefinition{
                            RemoveInteraction(obj,typeof(Y));
         }
         public static void RemoveInteraction   (Sims3.Gameplay.Abstracts.GameObject obj,Type type){
+                try{
                                                                                  if(obj.Interactions!=null){
                                                                           int index=0;
                                                                         while(index<obj.Interactions.Count){
@@ -289,8 +351,14 @@ return( true);}
                                                                             }
                                                                         }
                                                                         }
+                }catch(Exception exception){
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source);
+                }
         }
     }//  COPY COMPLETED
+    //-----------------------------------------------------------------------------------------------------------
     //====================================================================================================================================================
     //  AlikeModdedInteraction:the detect and execute interaction part:from NRaas mods
     //====================================================================================================================================================
@@ -331,8 +399,8 @@ return( true);}
             }
             protected IInteractionOptionItem<Sims3.Gameplay.Interfaces.IActor,TTarget,GameHitParameters<TTarget>>mOption;
                       IInteractionProxy<Sims3.Gameplay.Interfaces.IActor,TTarget,GameHitParameters<TTarget>>mProxy;
-                                                                                                       bool mPopup;
-                                                                                                       bool mAddRoot;
+                                                                                                  bool mPopup;
+                                                                                             bool mAddRoot;
               public AlikeModdedDefinition():this(false,false){}
               public AlikeModdedDefinition(bool popup,bool addRoot):this(null,null,popup,new string[0]){
                                                   mAddRoot=addRoot;
@@ -385,6 +453,7 @@ return( true);}
                     List<string>path,
                 List<Sims3.Gameplay.Autonomy.InteractionObjectPair>results)
             {
+                try{
                 GameHitParameters<TTarget>parameters=new GameHitParameters<TTarget>(actor,target,hit);
                                    foreach(IInteractionOptionItem<Sims3.Gameplay.Interfaces.IActor,TTarget,GameHitParameters<TTarget>>option in options){
                                                                                                                                   if(!option.Test(parameters))continue;
@@ -397,42 +466,172 @@ return( true);}
                                                                    results.Add(new Sims3.Gameplay.Autonomy.InteractionObjectPair(new AlikeModdedDefinition<SimInteraction>(proxy,option,popup,path.ToArray()),target));
                                                                                                                               }
                                    }
+                }catch(Exception exception){
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source);
+                }
             }
             public override bool Test(Sims3.Gameplay.Interfaces.IActor a,TTarget target,bool isAutonomous,ref Sims3.SimIFace.GreyedOutTooltipCallback greyedOutTooltipCallback){
                        if(!sTest.Test(a,target,mHit,ref greyedOutTooltipCallback))return(false);
                                                                                   return(!isAutonomous);
             }
-        }
-    }
-    //-----------------------------------------------------------------------------------------------------------
-    public class GameHitParameters<TTarget>:InteractionOptionParameters<Sims3.Gameplay.Interfaces.IActor,TTarget>where TTarget:class,Sims3.Gameplay.Interfaces.IGameObject{
-          public GameHitParameters(Sims3.Gameplay.Interfaces.IActor actor,TTarget target,Sims3.SimIFace.GameObjectHit hit):base(actor,target){
-                                                     mHit=hit;
-          }
-        public readonly Sims3.SimIFace.GameObjectHit mHit;
-        protected override void PrivateException(Exception exception){
+public OptionResult 
+             Perform(AlikeModdedInteraction<TOption,TTarget>interaction,Sims3.Gameplay.Interfaces.IActor actor,TTarget target,Sims3.SimIFace.GameObjectHit hit){
+                try{
+                if(mOption==null){
+               if((mPopup)||(VersionStamp.sPopupMenuStyle)){
+         List<Sims3.Gameplay.Autonomy.InteractionObjectPair>interactions=new List<Sims3.Gameplay.Autonomy.InteractionObjectPair>();
+                                 AddInteractions(null,actor,target,interactions);
+Sims3.Gameplay.UI.PieMenu.TestAndBringUpPieMenu(actor,new UIMouseEventArgsEx(),hit,interactions,Sims3.Gameplay.Core.InteractionMenuTypes.Normal);
+return(OptionResult.SuccessClose);
+               }else{
+                                                     return interaction.Perform(actor,target,hit);
+               }
+                }else 
+                if(mProxy!=null){
+            return mProxy.Perform(mOption,new GameHitParameters<TTarget>(actor,target,hit));
+                }else{
+            return mOption.Perform(new GameHitParameters<TTarget>(actor,target,hit));
+                }
+                }catch(Exception exception){
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source);
+return(OptionResult.Failure);
+                }
+}
+            public override string GetInteractionName(Sims3.Gameplay.Interfaces.IActor actor,TTarget target,Sims3.Gameplay.Autonomy.InteractionObjectPair iop){
+                try{
+                if(mOption==null){
+                      return sTest.GetInteractionName(actor,target,mHit);
+                }else{
+            return mOption.ToString();
+                }
+                }catch(Exception exception){
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source);
+                   return"ERROR_1_";
+                }
+            }
         }
-    }
+    }//  COPY COMPLETED
+    //-----------------------------------------------------------------------------------------------------------
+    //  
     //-----------------------------------------------------------------------------------------------------------
     public interface IInteractionProxy<TActor,TTarget,TParameters>where TParameters:InteractionOptionParameters<TActor,TTarget>{
                 OptionResult Perform(IInteractionOptionItem<TActor,TTarget,TParameters>option,TParameters parameters);
+    }//  COPY COMPLETED
+    //-----------------------------------------------------------------------------------------------------------
+    public interface IInteractionOptionList<TTarget>:IInteractionOptionItem<Sims3.Gameplay.Interfaces.IActor,TTarget,GameHitParameters<TTarget>>,IInteractionProxy<Sims3.Gameplay.Interfaces.IActor,TTarget,GameHitParameters<TTarget>>where TTarget:class,Sims3.Gameplay.Interfaces.IGameObject{
+                List<IInteractionOptionItem<Sims3.Gameplay.Interfaces.IActor,TTarget,GameHitParameters<TTarget>>>IOptions();
+    }//  COPY COMPLETED
+    public abstract class InteractionOptionItem<TActor,TTarget,TParameters>:ModdedOptionItem,IInteractionOptionItem<TActor,TTarget,TParameters>where TParameters:InteractionOptionParameters<TActor,TTarget>{
+                   public InteractionOptionItem(){}
+                   public InteractionOptionItem(string name,int count)
+                    :base(name,count){
+                   }
+                   public InteractionOptionItem(string name,int count,string icon,Sims3.SimIFace.ProductVersion version)
+                    :base(name,count,icon,version){
+                   }
+                   public InteractionOptionItem(string name,int count,Sims3.SimIFace.ResourceKey icon)
+                    :base(name,count,icon){
+                   }
+                   public InteractionOptionItem(string name,int count,Sims3.SimIFace.ThumbnailKey thumbnail)
+                    :base(name,count,thumbnail){
+                   }
+        public abstract string GetTitlePrefix();
+        public override string Name{get{
+                  string title=GetTitlePrefix();
+               if(string.IsNullOrEmpty(title)){
+                       return mName;
+               }
+               if(Sims3.Gameplay.Utilities.Localization.HasLocalizationString(title+":Title")){
+                         title+=":Title";
+               }else{
+                         title+=":MenuName";
+               }
+                       return Alive.Localize(title);
+            }
+        }
+        protected abstract OptionResult Run(TParameters parameters);
+        public static Sims3.Gameplay.Core.Lot GetLot(Sims3.Gameplay.Abstracts.GameObject target,Sims3.SimIFace.GameObjectHit hit){
+                      Sims3.Gameplay.Core.Lot lot=target as Sims3.Gameplay.Core.Lot;
+                                           if(lot!=null){
+                                       return lot;
+                                           }
+                                               if(target!=null){
+                                               if(target.LotCurrent!=null)
+                                           return target.LotCurrent;
+                                               }
+               return Sims3.Gameplay.Core.LotManager.GetLotAtPoint(hit.mPoint);
+        }
+        public bool Test(TParameters parameters){
+            try{
+                if(string.IsNullOrEmpty(Name))return(false);
+                        return Allow(parameters);
+            }catch(Exception exception){
+              Alive.WriteLog(exception.Message+"\n\n"+
+                             exception.StackTrace+"\n\n"+
+                             exception.Source);
+                InteractionOptionParameters<TActor,TTarget>.Exception(parameters,exception);
+                                              return(false);
+            }
+        }
+        protected virtual bool Allow(TParameters parameters){
+            Reset();
+                                              return( true);
+        }
+        public OptionResult Perform(TParameters parameters){
+                        Task.Result result=new Task.Result();
+            //  Used as a method of shortening the stack frame
+                           new Task(result,this,parameters).AddToSimulator();
+                              while(result.mResult==OptionResult.Unset){
+              Alive.Sleep();
+                              }
+                             return result.mResult;
+        }
+        public class Task:ModTask{
+InteractionOptionItem<TActor,TTarget,TParameters>mItem;
+                                     TParameters mParameters;
+              public Task(Result result,InteractionOptionItem<TActor,TTarget,TParameters>item,TParameters parameters){
+                                                 mResult=result;
+                                                                                   mItem=item;
+                                                                                              mParameters=parameters;
+              }
+                                          Result mResult;
+                             public class Result{
+                                public OptionResult mResult=OptionResult.Unset;
+                             }
+            protected override void OnPerform(){
+                try{
+                                                    mResult.mResult=mItem.Run(mParameters);
+                }catch(Exception exception){
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source);
+                InteractionOptionParameters<TActor,TTarget>.Exception(mParameters,exception);
+                                                    mResult.mResult=OptionResult.Failure;
+                }
+            }
+        }
     }
+    //-----------------------------------------------------------------------------------------------------------
+    public interface IPrimaryOption<TTarget>:IInteractionOptionItem<Sims3.Gameplay.Interfaces.IActor,TTarget,GameHitParameters<TTarget>>where TTarget:class,Sims3.Gameplay.Interfaces.IGameObject{}
     //-----------------------------------------------------------------------------------------------------------
     public interface IInteractionOptionItem<TActor,TTarget,TParameters>:IModdedOptionItem where TParameters:InteractionOptionParameters<TActor,TTarget>{
         string GetTitlePrefix();
         bool Test(TParameters parameters);
                 OptionResult Perform(TParameters parameters);
-    }
+    }//  COPY COMPLETED
     public enum OptionResult{
         Unset,
         SuccessRetain,
         SuccessLevelDown,
         SuccessClose,
         Failure,
-    }
+    }//  COPY COMPLETED
     public abstract class InteractionOptionParameters<TActor,TTarget>{
                                       public readonly TActor mActor;
                                              public readonly TTarget mTarget;
@@ -450,8 +649,78 @@ return( true);}
                                                                               }
         }
         protected abstract void PrivateException(Exception e);
-    }
+    }//  COPY COMPLETED
+    [Sims3.SimIFace.Persistable]
+    public abstract class ModdedOptionItem:IModdedOptionItem{
+                     protected string mName;
+        [Sims3.SimIFace.Persistable(false)]
+                        protected int mCount=-1;
+        [Sims3.SimIFace.Persistable(false)]
+protected Sims3.SimIFace.ThumbnailKey mThumbnail=Sims3.SimIFace.ThumbnailKey.kInvalidThumbnailKey;
+                   public ModdedOptionItem(){}
+                   public ModdedOptionItem(string name):this(name,-1){}
+                   public ModdedOptionItem(string name,int count){
+                                            mName=name;
+                                                    mCount=count;
+                   }
+                   public ModdedOptionItem(string name,int count,string icon,Sims3.SimIFace.ProductVersion version)
+                    :this(name,count){
+                    SetThumbnail(icon,version);
+                   }
+                   public ModdedOptionItem(string name,int count,Sims3.SimIFace.ResourceKey icon)
+                    :this(name,count){
+                    SetThumbnail(icon);
+                   }
+                   public ModdedOptionItem(string name, int count,Sims3.SimIFace.ThumbnailKey thumbnail)
+                    :this(name,count){
+                      mThumbnail=thumbnail;
+                   }
+                   public ModdedOptionItem(ModdedOptionItem source)
+                    :this(source.mName,source.mCount,source.mThumbnail){
+                   }
+        public void SetThumbnail(string icon,Sims3.SimIFace.ProductVersion version){
+                    SetThumbnail(Sims3.SimIFace.ResourceKey.CreatePNGKey(icon,Sims3.SimIFace.ResourceUtils.ProductVersionToGroupId(version)));
+        }
+        public void SetThumbnail(Sims3.SimIFace.ThumbnailKey key){
+                      mThumbnail=key;
+        }
+        public void SetThumbnail(Sims3.SimIFace.ResourceKey icon){
+                      mThumbnail=new Sims3.SimIFace.ThumbnailKey(icon,Sims3.SimIFace.ThumbnailSize.Medium);
+        }
+        public virtual string Name{get{return mName;}}
+        public bool IsSet{get{return(Count>0);}}
+        public virtual bool UsingCount{get{return(Count!=-1);}}
+        public int Count{get{return mCount;      }
+                         set{       mCount=value;}}
+    public void IncCount(){mCount++;}
+    public void IncCount(int count){mCount+=count;}
+        public virtual void Reset(){if(UsingCount){mCount=0;}}
+        public Sims3.SimIFace.ThumbnailKey Thumbnail{get{return mThumbnail;}}
+         public virtual string DisplayKey{get{return null;}}
+        public abstract string DisplayValue{get;}
+                   public virtual int ValueWidth{get{return 0;}}
+        public static int SortByName(ModdedOptionItem l,ModdedOptionItem r){
+            return l.Name.CompareTo(r.Name);
+        }
+        public virtual IModdedOptionItem Clone(){
+                        return MemberwiseClone() as IModdedOptionItem;
+        }
+        public interface IModdedOptionListProxy<T>where T:class,IModdedOptionItem{
+            void GetOptions(List<T>items);
+        }
+        public override string ToString(){
+            string displayValue=DisplayValue;
+                if(displayValue!=null){
+            return Name+"="+displayValue;
+                }else{
+            return Name;
+                }
+        }
+    }//  COPY COMPLETED
     //-----------------------------------------------------------------------------------------------------------
+    public interface IVersionOption:IModdedOptionItem{
+        string Prompt{get;}
+    }
     public interface IModdedOptionItem{
         string Name{get;}
         Sims3.SimIFace.ThumbnailKey Thumbnail{get;}
@@ -461,207 +730,53 @@ return( true);}
         string DisplayKey{get;}
         int ValueWidth{get;}
         IModdedOptionItem Clone();
-    }
-    public interface ICloseDialogOption
-    { }
-    [Persistable]
-    public abstract class CommonOptionItem : ICommonOptionItem
-    {
-        protected string mName;
-
-        [Persistable(false)]
-        protected int mCount = -1;
-
-        [Persistable(false)]
-        protected ThumbnailKey mThumbnail = ThumbnailKey.kInvalidThumbnailKey;
-
-        public CommonOptionItem()
-        { }
-        public CommonOptionItem(string name)
-            : this(name, -1)
-        { }
-        public CommonOptionItem(string name, int count)
-        {
-            mName = name;
-            mCount = count;
+    }//  COPY COMPLETED
+    public abstract class ModdedOptionList<T>:ModdedOptionItem where T:class,IModdedOptionItem{
+        public static List<T>AllOptions(){
+                      List<T>items=new List<T>();
+                   foreach(T item in DerivativeSearch.Find<T>()){
+IModdedOptionListProxy<T>proxy=
+                             item as IModdedOptionListProxy<T>;
+                      if(proxy!=null){
+                         proxy.GetOptions(items);
+                      }else{
+                             items.Add(item);
+                      }
+                   }
+                             items.Sort(new Comparison<T>(OnNameCompare));
+                      return items;
         }
-        public CommonOptionItem(string name, int count, string icon, ProductVersion version)
-            : this(name, count)
-        {
-            SetThumbnail(icon, version);
-        }
-        public CommonOptionItem(string name, int count, ResourceKey icon)
-            : this(name, count)
-        {
-            SetThumbnail(icon);
-        }
-        public CommonOptionItem(string name, int count, ThumbnailKey thumbnail)
-            : this(name, count)
-        {
-            mThumbnail = thumbnail;
-        }
-        public CommonOptionItem(CommonOptionItem source)
-            : this(source.mName, source.mCount, source.mThumbnail)
-        { }
-
-        public void SetThumbnail(string icon, ProductVersion version)
-        {
-            SetThumbnail (ResourceKey.CreatePNGKey(icon, ResourceUtils.ProductVersionToGroupId(version)));
-        }
-        public void SetThumbnail(ThumbnailKey key)
-        {
-            mThumbnail = key;
-        }
-        public void SetThumbnail(ResourceKey icon)
-        {
-            mThumbnail = new ThumbnailKey(icon, ThumbnailSize.Medium);
-        }
-
-        public virtual string Name
-        {
-            get
-            {
-                return mName;
-            }
-        }
-
-        public ThumbnailKey Thumbnail
-        {
-            get
-            {
-                return mThumbnail;
-            }
-        }
-
-        public abstract string DisplayValue
-        {
-            get;
-        }
-
-        public bool IsSet
-        {
-            get { return (Count > 0); }
-        }
-
-        public virtual bool UsingCount
-        {
-            get { return (Count != -1); }
-        }
-
-        public int Count
-        {
-            get { return mCount; }
-            set { mCount = value; }
-        }
-
-        public virtual string DisplayKey
-        {
-            get
-            {
-                return null;
-            }
-        }
-
-        public virtual int ValueWidth
-        {
-            get { return 0; }
-        }
-
-        public void IncCount()
-        {
-            mCount++;
-        }
-        public void IncCount(int count)
-        {
-            mCount += count;
-        }
-
-        public virtual void Reset()
-        {
-            if (UsingCount)
-            {
-                mCount = 0;
-            }
-        }
-
-        public override string ToString()
-        {
-            string displayValue = DisplayValue;
-            if (displayValue != null)
-            {
-                return Name + " = " + displayValue;
-            }
-            else
-            {
-                return Name;
-            }
-        }
-
-        public static int SortByName(CommonOptionItem l, CommonOptionItem r)
-        {
-            return l.Name.CompareTo(r.Name);
-        }
-
-        public virtual ICommonOptionItem Clone()
-        {
-            return MemberwiseClone() as ICommonOptionItem;
-        }
-    }
-    public abstract class ModdedOptionList<T> : CommonOptionItem
-        where T : class, ICommonOptionItem
-    {
-        public CommonOptionList()
-        { }
-        public CommonOptionList(string name)
-            : base(name)
-        { }
-
-        protected virtual int NumSelectable
-        {
-            get { return 1; }
-        }
-
-        public static int OnNameCompare(T left, T right)
-        {
-            try
-            {
-                return left.Name.CompareTo(right.Name);
-            }
-            catch (Exception e)
-            {
-                Common.Exception(Common.NewLine + "Left: " + left.GetType() + Common.NewLine + "Right: " + right.GetType(), e);
-                return 0;
-            }
-        }
-
-        public static List<T> AllOptions()
-        {
-            List<T> items = new List<T>();
-            foreach (T item in Common.DerivativeSearch.Find<T>())
-            {
-                ICommonOptionListProxy<T> proxy = item as ICommonOptionListProxy<T>;
-                if (proxy != null)
-                {
-                    proxy.GetOptions(items);
+                   public ModdedOptionList(){}
+                   public ModdedOptionList(string name):base(name){}
+        protected virtual int NumSelectable{get{return 1;}}
+        public static int OnNameCompare(T left,T right){
+                try{
+            return(left.Name.CompareTo(right.Name));
+                }catch(Exception exception){
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source);
+            return(0);
                 }
-                else
-                {
-                    items.Add(item);
-                }
-            }
-
-            items.Sort(new Comparison<T>(OnNameCompare));
-
-            return items;
         }
-
-        public abstract List<T> GetOptions();
-    }
-    public interface IInteractionOptionList<TTarget> : IInteractionOptionItem<IActor, TTarget, GameHitParameters< TTarget>>, IInteractionProxy<IActor, TTarget, GameHitParameters< TTarget>>
-        where TTarget : class, IGameObject
-    {
-        List<IInteractionOptionItem<IActor, TTarget, GameHitParameters< TTarget>>> IOptions();
-    }
+        public abstract List<T>GetOptions();
+    }//  COPY COMPLETED
+    //-----------------------------------------------------------------------------------------------------------
+    public interface ICloseDialogOption{
+    }//  COPY COMPLETED
+    //-----------------------------------------------------------------------------------------------------------
+    public class GameHitParameters<TTarget>:InteractionOptionParameters<Sims3.Gameplay.Interfaces.IActor,TTarget>where TTarget:class,Sims3.Gameplay.Interfaces.IGameObject{
+          public GameHitParameters(Sims3.Gameplay.Interfaces.IActor actor,TTarget target,Sims3.SimIFace.GameObjectHit hit):base(actor,target){
+                                                     mHit=hit;
+          }
+        public readonly Sims3.SimIFace.GameObjectHit mHit;
+        protected override void PrivateException(Exception exception){
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source);
+        }
+    }//  COPY COMPLETED
+    //-----------------------------------------------------------------------------------------------------------
     //====================================================================================================================================================
     //
     //====================================================================================================================================================
@@ -676,152 +791,120 @@ return( true);}
         static Dictionary<Type,List<object>>sItems=new Dictionary<Type,List<object>>();
      static List<System.Reflection.Assembly>sModules=null;
                      readonly static string sModuleName=null;
-
           static DerivativeSearch(){
-                                            sModuleName=VersionStamp.sNamespace+" Base Module";
+                                            sModuleName=VersionStamp.sNamespace+"Module";
           }
-
-            public static List<T> Find<T>()
-                where T : class
-            {
-                return Find<T>(Caching.Default, Scope.Module);
-            }
-            public static List<T> Find<T>(Caching caching)
-                where T : class
-            {
-                return Find<T>(caching, Scope.Module);
-            }
-            public static List<T> Find<T>(Scope scope)
-                where T : class
-            {
-                return Find<T>(Caching.Default, scope);
-            }
-            public static List<T> Find<T>(Caching caching, Scope scope)
-                where T : class
-            {
-                return FindOfType<T>(typeof(T), caching, scope);
-            }
-
-            public static List<T> FindOfType<T>(Type searchType)
-                where T : class
-            {
-                return FindOfType<T>(searchType, Caching.Default, Scope.Global);
-            }
-            public static List<T> FindOfType<T>(Type searchType, Caching caching, Scope scope)
-                where T : class
-            {
-                List<T> list = new List<T>();
-
-                List<object> existing = null;
-                if ((caching == Caching.Default) && (sItems.TryGetValue(searchType, out existing)))
-                {
-                    foreach (T item in existing)
-                    {
+   public static List<T>Find<T>()where T:class{
+                 return Find<T>(Caching.Default,Scope.Module);
+   }
+   public static List<T>Find<T>(Caching caching)where T:class{
+                 return Find<T>(caching,Scope.Module);
+   }
+   public static List<T>Find<T>(Scope scope)where T:class{
+                 return Find<T>(Caching.Default,scope);
+   }
+   public static List<T>Find<T>(Caching caching,Scope scope)where T:class{
+                 return FindOfType<T>(typeof(T),caching,scope);
+   }
+   public static List<T>FindOfType<T>(Type searchType)where T:class{
+                 return FindOfType<T>(searchType,Caching.Default,Scope.Global);
+   }
+   public static List<T>FindOfType<T>(Type searchType,Caching caching,Scope scope)where T:class{
+                 List<T>list=new List<T>();
+                 List<object>existing=null;
+    if((caching==Caching.Default)&&(sItems.TryGetValue(searchType,out existing))){
+                                                    foreach(T item in existing){
                         list.Add(item);
+                                                    }
+    }else{
+                      System.Reflection.Assembly myAssembly=typeof(Interaction).Assembly;
+     if(caching==Caching.Default){
+                             existing=new List<object>();
+       sItems.Add(searchType,existing);
+     }
+                 List<System.Reflection.Assembly>assemblies=sModules;
+     if(scope!=Scope.Module){
+                                                 assemblies=new List<System.Reflection.Assembly>(AppDomain.CurrentDomain.GetAssemblies());
+     }else 
+     if(assemblies==null){
+        assemblies=new List<System.Reflection.Assembly>();
+                    foreach(System.Reflection.Assembly assembly in AppDomain.CurrentDomain.GetAssemblies()){
+                                                   if((assembly!=myAssembly)&&(assembly.GetType(sModuleName)==null))continue;
+        assemblies.Add(assembly);
                     }
-                }
-                else
-                {
-                    Assembly myAssembly = typeof(Common).Assembly;
-
-                    if (caching == Caching.Default)
-                    {
-                        existing = new List<object>();
-                        sItems.Add(searchType, existing);
-                    }
-
-                    Common.StringBuilder msg = new Common.StringBuilder();
-
-                    List<Assembly> assemblies = sModules;
-
-                    if (scope != Scope.Module)
-                    {
-                        assemblies = new List<Assembly>(AppDomain.CurrentDomain.GetAssemblies());
-                    }
-                    else if (assemblies == null)
-                    {
-                        assemblies = new List<Assembly>();
-
-                        foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
-                        {
-                            if ((assembly != myAssembly) && (assembly.GetType(sModuleName) == null)) continue;
-
-                            assemblies.Add(assembly);
-                        }
-
-                        sModules = assemblies;
-                    }
-
-                    foreach (Assembly assembly in assemblies)
-                    {
-                        try
-                        {
-                            foreach (Type type in assembly.GetTypes())
-                            {
-                                if (type.IsAbstract) continue;
-
-                                if (type.IsGenericTypeDefinition) continue;
-
-                                if (!searchType.IsAssignableFrom(type)) continue;
-
-                                try
-                                {
-                                    System.Reflection.ConstructorInfo constructor = type.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, new Type[0], null);
-                                    if (constructor != null)
-                                    {
-                                        T item = constructor.Invoke(new object[0]) as T;
-                                        if (item != null)
-                                        {
-                                            list.Add(item);
-
-                                            if (existing != null)
-                                            {
-                                                existing.Add(item);
-                                            }
-                                        }
-                                    }
+                                                            sModules=assemblies;
+     }
+                    foreach(System.Reflection.Assembly assembly in assemblies){
+                        try{
+                                  foreach(Type type in assembly.GetTypes()){
+                                            if(type.IsAbstract)             continue;
+                                            if(type.IsGenericTypeDefinition)continue;
+               if(!searchType.IsAssignableFrom(type))                       continue;
+                                try{
+ System.Reflection.ConstructorInfo constructor=type.GetConstructor(System.Reflection.BindingFlags.Instance|
+                                                                   System.Reflection.BindingFlags.Public  |
+                                                                   System.Reflection.BindingFlags.NonPublic,null,new Type[0],null);
+                                if(constructor!=null){
+                            T item=constructor.Invoke(new object[0]) as T;
+                           if(item!=null){
+                        list.Add(item);
+              if(existing!=null){
+                 existing.Add(item);
+              }
+                           }
                                 }
-                                catch (Exception e)
-                                {
-                                    msg += Common.NewLine + type.ToString();
-                                    msg += Common.NewLine + e.Message;
-                                    msg += Common.NewLine + e.StackTrace;
+                                }catch(Exception exception){
+                                  Alive.WriteLog(exception.Message+"\n\n"+
+                                                 exception.StackTrace+"\n\n"+
+                                                 exception.Source);
                                 }
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            msg += Common.NewLine + assembly.FullName;
-                            msg += Common.NewLine + e.Message;
-                            msg += Common.NewLine + e.StackTrace;
+                                  }
+                        }catch(Exception exception){
+                          Alive.WriteLog(exception.Message+"\n\n"+
+                                         exception.StackTrace+"\n\n"+
+                                         exception.Source);
                         }
                     }
-
-                    WriteLog(msg);
-                }
-
-                return list;
-            }
-        }
+    }
+                 return list;
+   }
+    }
+    //-----------------------------------------------------------------------------------------------------------
     //====================================================================================================================================================
     //
     //====================================================================================================================================================
     public abstract class ProtoVersionStamp{public static bool sPopupMenuStyle=(false);}
+    //-----------------------------------------------------------------------------------------------------------
                   public class VersionStamp:ProtoVersionStamp{
-        public static readonly string sNamespace="Interaction";
+        public static readonly string sNamespace="Namespace";
                   public class Version:ProtoVersion<Sims3.Gameplay.Abstracts.GameObject>{
             protected override bool Allow(GameHitParameters<Sims3.Gameplay.Abstracts.GameObject>parameters){
-                                                                           if(!IsRootMenuObject(parameters.mTarget))return(false);
+                                                                     if(!Alive.IsRootMenuObject(parameters.mTarget))return(false);
                                                                               return base.Allow(parameters);
             }
                   }
-        public static readonly int sVersion=0;
+           public static readonly int sVersion=0;
                   }
+    //-----------------------------------------------------------------------------------------------------------
+    public abstract class ProtoVersion<TTarget>:InteractionOptionItem<Sims3.Gameplay.Interfaces.IActor,TTarget,GameHitParameters<TTarget>>,IPrimaryOption<TTarget>,IVersionOption where TTarget:class,Sims3.Gameplay.Interfaces.IGameObject{
+        public override string DisplayValue{get{return Sims3.SimIFace.EAText.GetNumberString(VersionStamp.sVersion);}}
+        public override string GetTitlePrefix(){
+            return"Version";
+        }
+        public virtual string Prompt{get{return Alive.Localize(GetTitlePrefix()+":Prompt",false,new object[]{VersionStamp.sVersion});}}
+        protected override OptionResult Run(GameHitParameters<TTarget> parameters){
+            Sims3.UI.SimpleMessageDialog.Show(Name,Prompt);
+                    return OptionResult.SuccessClose;
+        }
+    }
+    //-----------------------------------------------------------------------------------------------------------
     //====================================================================================================================================================
     //
     //====================================================================================================================================================
-    public class IWasHereDefinition:Sims3.Gameplay.Interactions.ImmediateInteractionDefinition<Sims3.Gameplay.Interfaces.IActor,Sims3.Gameplay.Interfaces.IGameObject,GameObject.DEBUG_Reset>{
+    public class IWasHereDefinition:Sims3.Gameplay.Interactions.ImmediateInteractionDefinition<Sims3.Gameplay.Interfaces.IActor,Sims3.Gameplay.Interfaces.IGameObject,Sims3.Gameplay.Abstracts.GameObject.DEBUG_Reset>{
 public static readonly Sims3.Gameplay.Interactions.InteractionDefinition Singleton=new IWasHereDefinition();
         public override bool Test(Sims3.Gameplay.Interfaces.IActor actor,Sims3.Gameplay.Interfaces.IGameObject target,bool isAutonomous,ref Sims3.SimIFace.GreyedOutTooltipCallback greyedOutTooltipCallback){return(false);}
     }//  COPY COMPLETED
+    //-----------------------------------------------------------------------------------------------------------
+    }
 }

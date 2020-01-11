@@ -457,6 +457,44 @@ if(!GlobalFunctions.FindGoodLocation(sim,fglParams,out resetValidatedDest,out fo
                  public StuckSimData(){}
         }
         //==================================================================================================================
+        public static bool IsRootMenuObject(Sims3.Gameplay.Interfaces.IGameObject obj){
+                                                                               if(obj is Sims3.Gameplay.Core.  Lot){
+                                                                                return( true);
+                                                                               }
+                                                                               else 
+                                                                               if(obj is Sims3.Gameplay.Actors.Sim){
+                                                                                return( true);
+                                                                               }
+                                                                                return(false);
+        }
+        //==================================================================================================================
+        public static string Localize(string key){
+                      return Localize(       key,    false,new object[0]);
+        }
+        public static string Localize(string key,bool isFemale,object[] parameters){
+                      return Localize(       key,     isFemale,  false, parameters);
+        }
+        public static string Localize(string key,bool isActorFemale,bool isTargetFemale,object[] parameters){
+                                                                                                         string result;
+                          if(Localize(       key,     isActorFemale,     isTargetFemale,         parameters,out result)){
+                                                                                                         return result;
+                          }else{
+                                                                                                         return Interaction.VersionStamp.sNamespace+"."+key;
+                          }
+        }
+          public static bool Localize(string key,bool isActorFemale,bool isTargetFemale,object[] parameters,out string result){
+                                                                                                                       result=null;
+            try{
+                                                                                                                       result=Localization.LocalizeString(new bool[]{isActorFemale,isTargetFemale},Interaction.VersionStamp.sNamespace+"."+key,parameters);
+            }catch(Exception exception){
+              Alive.WriteLog(exception.Message+"\n\n"+
+                             exception.StackTrace+"\n\n"+
+                             exception.Source);
+            }
+                                                                                               if(string.IsNullOrEmpty(result))return(false);
+                                                                                                                    if(result.StartsWith(Interaction.VersionStamp.sNamespace+"."))return(false);
+          return( true);}
+        //==================================================================================================================
         public static void WriteLog(string text){
             try{
                                                       uint fileHandle=(0x0);
@@ -469,12 +507,29 @@ if(!GlobalFunctions.FindGoodLocation(sim,fglParams,out resetValidatedDest,out fo
             }catch{}
         }
         //==================================================================================================================
-        public static bool IsRootMenuObject(Sims3.Gameplay.Interfaces.IGameObject obj){
-            if(obj is Sims3.Gameplay.Core.Lot){
-                      Sims3.Gameplay.Core.Lot lot=obj as Sims3.Gameplay.Core.Lot;
-        return( true);
+        public static bool Sleep(uint value){
+                      bool flag;
+            try{
+                if(Simulator.CheckYieldingContext(false)){
+                   Simulator.Sleep(value);
+                    return( true);
+                }
+                           flag=(false);
+            }catch(ResetException exception){
+                   Alive.WriteLog(exception.Message+"\n\n"+
+                                  exception.StackTrace+"\n\n"+
+                                  exception.Source);
+                           flag=(false);
+            }catch(     Exception exception){
+                   Alive.WriteLog(exception.Message+"\n\n"+
+                                  exception.StackTrace+"\n\n"+
+                                  exception.Source);
+                           flag=(false);
             }
-        return(false);
+                    return(flag );
+        }
+        public static bool Sleep(){
+                    return Sleep(0);
         }
         //==================================================================================================================
     }

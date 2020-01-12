@@ -711,7 +711,7 @@ protected Sims3.SimIFace.ThumbnailKey mThumbnail=Sims3.SimIFace.ThumbnailKey.kIn
         public override string ToString(){
             string displayValue=DisplayValue;
                 if(displayValue!=null){
-            return Name+"="+displayValue;
+            return Name+" = "+displayValue;
                 }else{
             return Name;
                 }
@@ -876,7 +876,7 @@ IModdedOptionListProxy<T>proxy=
     public abstract class ProtoVersionStamp{public static bool sPopupMenuStyle=(false);}
     //-----------------------------------------------------------------------------------------------------------
                   public class VersionStamp:ProtoVersionStamp{
-        public static readonly string sNamespace="Namespace";
+        public static readonly string sNamespace="Alive";
                   public class Version:ProtoVersion<Sims3.Gameplay.Abstracts.GameObject>{
             protected override bool Allow(GameHitParameters<Sims3.Gameplay.Abstracts.GameObject>parameters){
                                                                      if(!Alive.IsRootMenuObject(parameters.mTarget))return(false);
@@ -892,7 +892,7 @@ IModdedOptionListProxy<T>proxy=
             return"Version";
         }
         public virtual string Prompt{get{return Alive.Localize(GetTitlePrefix()+":Prompt",false,new object[]{VersionStamp.sVersion});}}
-        protected override OptionResult Run(GameHitParameters<TTarget> parameters){
+        protected override OptionResult Run(GameHitParameters<TTarget>parameters){
             Sims3.UI.SimpleMessageDialog.Show(Name,Prompt);
                     return OptionResult.SuccessClose;
         }

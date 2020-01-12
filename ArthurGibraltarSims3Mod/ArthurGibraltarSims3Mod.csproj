@@ -37,6 +37,7 @@
   <ItemGroup>
     <Compile Include="Alive.cs" />
     <Compile Include="Interaction.cs" />
+    <Compile Include="PrivacyInteraction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

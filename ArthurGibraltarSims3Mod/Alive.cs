@@ -16,6 +16,8 @@ using Sims3.Gameplay.Objects.Lighting;
 using Sims3.Gameplay.Passport;
 using Sims3.Gameplay.Utilities;
 using Sims3.SimIFace;
+using static ArthurGibraltarSims3Mod.Interaction;
+
 namespace ArthurGibraltarSims3Mod{
     public class Alive{
         const                  string                        _CLASS_NAME=".Alive.";
@@ -25,10 +27,36 @@ namespace ArthurGibraltarSims3Mod{
             LoadSaveManager.ObjectGroupsPreLoad+=OnPreLoad;
             World.sOnWorldLoadFinishedEventHandler+=OnWorldLoadFinished;
             World.sOnWorldQuitEventHandler        +=OnWorldQuit;
+            LotManager.EnteringBuildBuyMode+=OnEnteringBuildBuyMode;
+            LotManager. ExitingBuildBuyMode+= OnExitingBuildBuyMode;
+            World.sOnObjectPlacedInLotEventHandler+=OnObjectPlacedInLot;
           }
         private static void OnPreLoad(){
+                       using(TestSpan span=new TestSpan()){
+                        List<IPreLoad>helpers=DerivativeSearch.Find<IPreLoad>();
+                     foreach(IPreLoad helper in helpers){
+                       using(TestSpan helperSpan=new TestSpan()){
+                try{
+                                      helper.OnPreLoad();
+                }catch(Exception exception){
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source);
+                }
+                       }
+                     }
+                       }
+        }
+        public interface IPreLoad{
+                   void OnPreLoad();
         }
         private static void OnWorldLoadFinished(object sender,EventArgs e){
+                    using(TestSpan span=new TestSpan()){
+                           RegAllInteractions();//  Perform prior to calling the derivatives
+                    }
+                new DelayedEventListener(Sims3.Gameplay.EventSystem.EventTypeId.kBoughtObject,OnNewObject);
+                new DelayedEventListener(Sims3.Gameplay.EventSystem.EventTypeId.kSimInstantiated,OnNewSim);
+             //---------------------------------------------------------------
             Route.AboutToPlanCallback+=OnAboutToPlan;
             Route.   PostPlanCallback+=   OnPostPlan;
              //---------------------------------------------------------------
@@ -67,6 +95,167 @@ namespace ArthurGibraltarSims3Mod{
             Route.AboutToPlanCallback-=OnAboutToPlan;
             Route.   PostPlanCallback-=   OnPostPlan;
     AlarmTask.DisposeAll();
+        }
+        //------------------------------------------------------------------------------------------------------------------
+        private static void OnEnteringBuildBuyMode(){
+        }
+        private static void  OnExitingBuildBuyMode(){
+        }
+        //------------------------------------------------------------------------------------------------------------------
+             private static void OnNewSim(Sims3.Gameplay.EventSystem.Event e){
+                                InteractionInjectorList.MasterList.Perform(e.TargetObject as Sim);
+             }
+        protected static void OnNewObject(Sims3.Gameplay.EventSystem.Event e){
+                                InteractionInjectorList.MasterList.Perform(e.TargetObject as GameObject);
+        }
+        protected static void OnObjectPlacedInLot(object sender,EventArgs e){
+               GameObject obj=null;
+            try{
+                World.OnObjectPlacedInLotEventArgs args=e as World.OnObjectPlacedInLotEventArgs;
+                                                if(args!=null){
+                          obj=GameObject.GetObject(args.ObjectId);
+                       if(obj!=null){
+                                InteractionInjectorList.MasterList.Perform(obj);
+                       }
+                                                }
+            }catch(Exception exception){
+              Alive.WriteLog(exception.Message+"\n\n"+
+                             exception.StackTrace+"\n\n"+
+                             exception.Source);
+            }
+        }
+        //==================================================================================================================
+        public static void RegAllInteractions(){
+                           RegAllInteractions(0,false);
+                                          Lot activeLot=LotManager.ActiveLot;
+                                           if(activeLot!=null){
+                           RegAllInteractions(activeLot.LotId,false);
+                                           }
+                                          if((Household.ActiveHousehold!=null)&&
+                                             (Household.ActiveHousehold.LotHome!=null)&&
+                                             (Household.ActiveHousehold.LotHome!=activeLot)){
+                           RegAllInteractions(Household.ActiveHousehold.LotHome.LotId,false);
+                                          }
+           ModTask.Perform(RegAllInteractionsDelayed);
+        }
+        protected static void 
+                           RegAllInteractionsDelayed(){
+                           RegAllInteractions(0,true);
+        }
+        protected static void 
+                           RegAllInteractions(ulong lotId,bool full){
+                                                 InteractionInjectorList list=InteractionInjectorList.MasterList;
+                                                                      if(list.IsEmpty)return;
+bool localFull=full&(lotId==0);
+            foreach(KeyValuePair<Type,List<IInteractionInjector>>type in list.Types){
+                    Array results=null;
+                  if(lotId==0){
+           if(!full){
+                if(!InteractionInjectorList.IsAlwaysType(type.Key))continue;
+           }else{
+                Sleep();
+           }
+                          results=Sims3.SimIFace.Queries.GetObjects(type.Key);
+                  }else{
+           if(!full){
+                if(InteractionInjectorList.IsAlwaysType(type.Key))continue;//  These would have been handled by the (lotId==0) load
+           }
+                          results=Sims3.SimIFace.Queries.GetObjects(type.Key,lotId);
+                  }
+                       if(results==null)continue;
+int count=0;
+foreach(GameObject obj in results){
+                    using(TestSpan span=new TestSpan()){
+                        try{
+      list.Perform(obj);
+                        }catch(Exception exception){
+                          Alive.WriteLog(exception.Message+"\n\n"+
+                                         exception.StackTrace+"\n\n"+
+                                         exception.Source);
+                        }
+                    }
+  if(localFull){
+    count++;
+ if(count>250){
+                Sleep();
+    count=0;
+ }
+  }
+}
+            }
+        }
+        public class TestSpan:IDisposable{
+            DateTime mThen;
+              public TestSpan(){
+                     mThen=DateTime.Now;
+              }
+       public static TestSpan CreateSimple(){
+          return new TestSpan();
+       }
+            public long Duration{get{return(DateTime.Now-mThen).Ticks/TimeSpan.TicksPerMillisecond;}}
+            public void Dispose(){
+                        try{
+                        }catch(Exception exception){
+                          Alive.WriteLog(exception.Message+"\n\n"+
+                                         exception.StackTrace+"\n\n"+
+                                         exception.Source);
+                        }
+            }
+        }
+        //==================================================================================================================
+        public class DelayedEventListener:EventListenerTask{
+              public DelayedEventListener(Sims3.Gameplay.EventSystem.EventTypeId id,Func func):base(id,func){}
+protected override Sims3.Gameplay.EventSystem.ListenerAction OnProcess(Sims3.Gameplay.EventSystem.Event e){
+                DelayTask.Perform(e,mFunc);
+return Sims3.Gameplay.EventSystem.ListenerAction.Keep;}
+            public class DelayTask:ModTask{
+                Sims3.Gameplay.EventSystem.Event mEvent;
+                                            Func mFunc;
+                protected DelayTask(Sims3.Gameplay.EventSystem.Event e,Func func){
+                                                              mEvent=e;
+                                                                      mFunc=func;
+                }
+                  public static void Perform(Sims3.Gameplay.EventSystem.Event e,Func func){
+                      new DelayTask(e,func).AddToSimulator();
+                  }
+           protected override void OnPerform(){
+                try{
+                        mFunc(mEvent);
+                }catch(Exception exception){
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source);
+                }
+           }
+            }
+        }
+        public abstract class EventListenerTask{
+            public delegate void Func(Sims3.Gameplay.EventSystem.Event e);
+                       protected Func mFunc;
+protected Sims3.Gameplay.EventSystem.EventListener mListener;
+   public Sims3.Gameplay.EventSystem.EventListener  Listener{get{return mListener;}}
+                       public EventListenerTask(Sims3.Gameplay.EventSystem.EventTypeId id,Func func){
+                                                                                            if(func==null){
+                                      mFunc=OnPerform;
+                                                                                            }else{
+                                      mFunc=func;
+                                                                                            }
+            
+                                                   mListener=Sims3.Gameplay.EventSystem.EventTracker.AddListener(id,OnProcess);//  Must be immediate
+                       }
+protected abstract Sims3.Gameplay.EventSystem.ListenerAction OnProcess(Sims3.Gameplay.EventSystem.Event e);
+            protected virtual void OnPerform(Sims3.Gameplay.EventSystem.Event e){
+                try{
+                    throw new NotImplementedException();
+                }catch(Exception exception){
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source);
+                }
+            }
+            public void Dispose(){
+      Sims3.Gameplay.EventSystem.EventTracker.RemoveListener(mListener);
+            }
         }
         //==================================================================================================================
         static void AutoPause(){
@@ -322,7 +511,9 @@ foreach(SimDescription sim in new List<SimDescription>(
                                                                                                                         if(stuckSim.Detections>1){
                                                                                                                            stuckSim.Resetting=( true);
                   //Alive.WriteLog("detected_a_stuck_sim:reset:"+sim.Name);
-                    new ResetStuckSimTask(sim,r.GetDestPoint(),"Unroutable");
+                    if(  stuckSim.resetTask==null)
+                         stuckSim.resetTask=new ResetStuckSimTask(sim,r.GetDestPoint(),"Unroutable");
+                    else stuckSim.resetTask.Renew();
                                                                                                                         }
                                           }
                 }catch(Exception exception){
@@ -455,6 +646,7 @@ if(!GlobalFunctions.FindGoodLocation(sim,fglParams,out resetValidatedDest,out fo
         public                 long                             PositionPrecedingTicks=0;
         public                 InteractionInstance           InteractionPreceding;
                  public StuckSimData(){}
+            public ResetStuckSimTask resetTask=null;
         }
         //==================================================================================================================
         public static bool IsRootMenuObject(Sims3.Gameplay.Interfaces.IGameObject obj){
@@ -479,7 +671,7 @@ if(!GlobalFunctions.FindGoodLocation(sim,fglParams,out resetValidatedDest,out fo
                           if(Localize(       key,     isActorFemale,     isTargetFemale,         parameters,out result)){
                                                                                                          return result;
                           }else{
-                                                                                                         return Interaction.VersionStamp.sNamespace+"."+key;
+                                                                                                         return Interaction.VersionStamp.sNamespace+" "+"Mod Empty Interaction";
                           }
         }
           public static bool Localize(string key,bool isActorFemale,bool isTargetFemale,object[] parameters,out string result){
@@ -537,12 +729,23 @@ if(!GlobalFunctions.FindGoodLocation(sim,fglParams,out resetValidatedDest,out fo
           public AlarmTask(float time,
                         TimeUnit timeUnit,
                         Sims3.Gameplay.Function func):this(func){
-                   handle=AlarmManager.Global.AddAlarm(time,
-                                                       timeUnit,
+                   handle=AlarmManager.Global.AddAlarm(mTime    =time,
+                                                       mTimeUnit=timeUnit,
                                                      OnTimer,
                                                      "ArthurGibraltarSims3Mod_Once",AlarmType.NeverPersisted,null);
                                               disposeOnTimer=true;
           }
+                                                 float mTime;
+                                              TimeUnit mTimeUnit;
+            public void Renew(){
+Simulator.DestroyObject(runningTask);
+                        runningTask=ObjectGuid.InvalidObjectGuid;
+                   handle=AlarmManager.Global.AddAlarm(mTime,
+                                                       mTimeUnit,
+                                                     OnTimer,
+                                                     "ArthurGibraltarSims3Mod_Once",AlarmType.NeverPersisted,null);
+                                              disposeOnTimer=true;
+            }
           public AlarmTask(float time,
                         TimeUnit timeUnit,
                         Sims3.Gameplay.Function func,
@@ -576,11 +779,12 @@ if(!GlobalFunctions.FindGoodLocation(sim,fglParams,out resetValidatedDest,out fo
         private void OnTimer(){
                 try{
            if(disposeOnTimer){
-              Dispose();
+                          AlarmManager.Global.RemoveAlarm(handle);
+                                                          handle=(AlarmHandle.kInvalidHandle);
            }
                    runningTask=ModTask.Perform(AlarmFunction);
            if(disposeOnTimer){
-                        runningTask=ObjectGuid.InvalidObjectGuid;//  After Dispose, which needs to be called before Perform for some reason
+                    //
            }
                 }catch(Exception exception){
                   Alive.WriteLog(exception.Message+"\n\n"+
@@ -594,8 +798,10 @@ if(!GlobalFunctions.FindGoodLocation(sim,fglParams,out resetValidatedDest,out fo
   public void Dispose(){
 Simulator.DestroyObject(runningTask);
                         runningTask=ObjectGuid.InvalidObjectGuid;
+                                                       if(handle!=AlarmHandle.kInvalidHandle){
                           AlarmManager.Global.RemoveAlarm(handle);
-                                                          handle=AlarmHandle.kInvalidHandle;
+                                                          handle=(AlarmHandle.kInvalidHandle);
+                                                       }
                                        AllScheduledTasks.Remove(this);
   }
 public static 

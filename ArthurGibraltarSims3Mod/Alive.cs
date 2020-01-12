@@ -6,14 +6,19 @@ using Sims3.Gameplay.Abstracts;
 using Sims3.Gameplay.ActiveCareer.ActiveCareers;
 using Sims3.Gameplay.Actors;
 using Sims3.Gameplay.Autonomy;
+using Sims3.Gameplay.Careers;
 using Sims3.Gameplay.CAS;
 using Sims3.Gameplay.Controllers;
 using Sims3.Gameplay.Core;
 using Sims3.Gameplay.Interactions;
 using Sims3.Gameplay.Objects;
+using Sims3.Gameplay.Objects.Appliances;
+using Sims3.Gameplay.Objects.Beds;
 using Sims3.Gameplay.Objects.Elevator;
+using Sims3.Gameplay.Objects.FoodObjects;
 using Sims3.Gameplay.Objects.Lighting;
 using Sims3.Gameplay.Passport;
+using Sims3.Gameplay.Skills;
 using Sims3.Gameplay.Utilities;
 using Sims3.SimIFace;
 using static ArthurGibraltarSims3Mod.Interaction;
@@ -21,6 +26,7 @@ using static ArthurGibraltarSims3Mod.Interaction;
 namespace ArthurGibraltarSims3Mod{
     public class Alive{
         const                  string                        _CLASS_NAME=".Alive.";
+        public static readonly Random                        ModRandom=new Random();
         [Tunable]
         protected static bool kIExistNow=(false);
           static Alive(){
@@ -83,6 +89,15 @@ namespace ArthurGibraltarSims3Mod{
             //Sims3.Metadata.SpeciesDefinitions
             //Sims3.SimIFace.Route.
             //Sims3.SimIFace.
+             //---------------------------------------------------------------
+                     string recipeNames="Alive_recipeNames_LOG:NOT_ERROR\n";
+                foreach(var recipe in Recipe.NameToRecipeHash){
+                            recipeNames+="Recipe.NameToRecipeHash["+recipe.Key+"]="+recipe.Value+"\n";
+                }
+             Alive.WriteLog(recipeNames);
+             new AlarmTask(07,DaysOfTheWeek.All,FeedSims);
+             new AlarmTask(13,DaysOfTheWeek.All,FeedSims);
+             new AlarmTask(19,DaysOfTheWeek.All,FeedSims);
              //---------------------------------------------------------------
              new AlarmTask(5,DaysOfTheWeek.All,AutoPause);
              //---------------------------------------------------------------
@@ -258,9 +273,113 @@ protected abstract Sims3.Gameplay.EventSystem.ListenerAction OnProcess(Sims3.Gam
             }
         }
         //==================================================================================================================
+        static void FeedSims(){
+                try{
+            foreach(var sim in Sims3.Gameplay.Queries.GetObjects<Sim>()){
+                      if(sim.SimDescription!=null&&
+                         sim.InteractionQueue!=null&&sim.InteractionQueue.mInteractionList!=null&&
+                         sim.Motives!=null){
+                       if(sim.SimDescription.TeenOrAbove){
+                                Daycare daycare;
+                                            if((sim.Household==null||
+                                              (!sim.Household.InWorld&&
+                                               !sim.Household.IsSpecialHousehold))&&
+                 (!Passport.IsHostedPassportSim(sim)&&
+                                                sim.SimDescription.AssignedRole==null)&&
+   (LunarCycleManager.sFullMoonZombies==null||  
+   !LunarCycleManager.sFullMoonZombies.Contains(sim.SimDescription))&&
+                                      ((daycare=sim.SimDescription.Occupation as Daycare)==null||
+                        !daycare.IsDaycareChild(sim.SimDescription))){
+                                                         continue;
+                                            }
+                                        Lot lot=LotManager.ActiveLot;
+                                         if(lot==null){
+                                            lot=Household.ActiveHousehold?.LotHome;
+                                         }
+                                         if(lot!=null){
+                     if(!sim.IsGreetedOnLot(lot)&&
+                                           !lot.IsCommunityLot)continue;
+                            Fridge[]fridges;
+                                if((fridges=lot.GetObjects<Fridge>())!=null&&
+                                    fridges.Length>0){
+                        if(sim.SimDescription.IsVampire&&
+                           sim.Motives.IsVampireThirsty()){
+var interaction=Fridge_Have.Singleton.CreateInstanceWithCallbacks(fridges[ModRandom.Next(0,fridges.Length)],sim,new InteractionPriority(InteractionPriorityLevel.UserDirected),true,true,OnFridge_HaveStarted,OnFridge_HaveCompleted,OnFridge_HaveFailed) as Fridge_Have;
+ if(interaction!=null){
+    interaction.    Quantity=(Recipe.MealQuantity.Single);
+    interaction.ChosenRecipe=(Recipe.NameToRecipeHash["VampireJuiceEP7"]);
+                         sim.InteractionQueue.AddInteraction(interaction,false);
+ }
+                        }else
+                        if(sim.Motives.IsHungry()){
+var interaction=Fridge_Have.Singleton.CreateInstanceWithCallbacks(fridges[ModRandom.Next(0,fridges.Length)],sim,new InteractionPriority(InteractionPriorityLevel.UserDirected),true,true,OnFridge_HaveStarted,OnFridge_HaveCompleted,OnFridge_HaveFailed) as Fridge_Have;
+ if(interaction!=null){
+             Skill cooking;
+                        if(sim.SkillManager!=null&&
+                  (cooking=sim.SkillManager.GetElement(Sims3.Gameplay.Skills.SkillNames.Cooking))!=null){
+    interaction.ChosenRecipe=(Recipe.RandomRecipeOfSkillLevelRange(0,
+                                                                  cooking.SkillLevel)
+                             );
+                        }else{
+    interaction.    Quantity=(Recipe.MealQuantity.Single);
+    interaction.ChosenRecipe=(Recipe.NameToRecipeHash["MicrowaveMeal"]);
+                        }
+ if(interaction.ChosenRecipe==Recipe.NameToRecipeHash["Ambrosia"]){
+    interaction.    Quantity=(Recipe.MealQuantity.Single);
+    interaction.ChosenRecipe=(Recipe.NameToRecipeHash["MicrowaveMeal"]);
+ }
+ if(interaction.ChosenRecipe.IsPetFood){
+    interaction.    Quantity=(Recipe.MealQuantity.Single);
+    interaction.ChosenRecipe=(Recipe.NameToRecipeHash["MicrowaveMeal"]);
+ }
+                         sim.InteractionQueue.AddInteraction(interaction,false);
+ }
+                        }
+                                }
+                                         }
+                       }
+                      }
+            }
+                }catch(Exception exception){
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source);
+                }finally{
+                }
+        }
+        private static void OnFridge_HaveFailed(Sim s,float x){
+        }
+        private static void OnFridge_HaveStarted(Sim s,float x){
+        }
+        private static void OnFridge_HaveCompleted(Sim s,float x){
+        }
+        //==================================================================================================================
         static void AutoPause(){
                 try{
       Sims3.Gameplay.Gameflow.SetGameSpeed(Sims3.Gameplay.Gameflow.GameSpeed.Pause,Sims3.Gameplay.Gameflow.SetGameSpeedContext.GameStates);
+                try{
+                    foreach(Sim sim in Sims3.Gameplay.Queries.GetObjects<Sim>()){
+                      if(sim.InteractionQueue!=null&&sim.InteractionQueue.mInteractionList!=null){
+               for(int i=sim.InteractionQueue.mInteractionList.Count-1;i>=1;i--){
+                      if(sim.InteractionQueue.mInteractionList[i]is BedSleep        )continue;
+                      if(sim.InteractionQueue.mInteractionList[i]is WorkInRabbitHole)continue;
+                         sim.InteractionQueue.RemoveInteraction(i,false);
+               }
+                      }
+InteractionInstance 
+      currentInteraction;
+  if((currentInteraction=sim.InteractionQueue.GetCurrentInteraction())!=null){
+ if(!(currentInteraction is BedSleep        ||
+      currentInteraction is WorkInRabbitHole)){
+                         sim.InteractionQueue.CancelInteraction(currentInteraction.Id);
+ }
+  }
+                    }
+                }catch(Exception exception){
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source);
+                }
                        foreach(ShowVenue showVenue in Sims3.Gameplay.Queries.GetObjects<ShowVenue>()){
            foreach(ISearchLight light in showVenue.LotCurrent.GetObjects<ISearchLight>()){
                                 light.TurnOff();
@@ -386,6 +505,16 @@ List<KeyValuePair<ShowVenue,ShowDetectedData>>toRemove=new List<KeyValuePair<Sho
 foreach(SimDescription sim in new List<SimDescription>(
                                                     portal.mAssignedSims.Keys)){
                     if(sim.CreatedSim!=null){
+                                                                                               StuckSimData stuckSim;
+                                                         if(!StuckSims.TryGetValue(sim.SimDescriptionId,out stuckSim)){
+                                                                                                            stuckSim=new StuckSimData();
+                                                             StuckSims.Add(        sim.SimDescriptionId,    stuckSim);
+                                                         }
+                                                                         Vector3 destination=Vector3.Invalid;
+                                                               if(sim.CreatedSim.RoutingComponent!=null){
+                                                                  sim.CreatedSim.RoutingComponent.GetDestination(out destination);
+                                                               }
+                         stuckSim.resetTask=new ResetStuckSimTask(sim.CreatedSim,destination,"Elevator");
                     }
 }
                                                     portal.FreeAllRoutingLanes();
@@ -569,7 +698,9 @@ foreach(SimDescription sim in new List<SimDescription>(
                         !daycare.IsDaycareChild(sim.SimDescription))){
                                                          addToWorld=(false);
                                             }
+                                                          if(destination!=Vector3.Invalid){
                                                    goto DestSet;
+                                                          }
                                                           }
                                                           //-------------------------
                                                           if(stuckSim.Detections<=3){
@@ -596,6 +727,67 @@ foreach(SimDescription sim in new List<SimDescription>(
                                                           }
                                                           //-------------------------
                                                           if(stuckSim.Detections<=5){
+                                         if(lot==null){
+                                            lot=RandomUtil.GetRandomObjectFromList(Sims3.Gameplay.Queries.GetObjects<Lot>());
+                                         }
+                                         if(lot!=null){
+                             Door frontDoor=lot.FindFrontDoor();
+                               if(frontDoor!=null){
+                       int roomId=frontDoor.GetRoomIdOfDoorSide(CommonDoor.tSide.Front);
+                        if(roomId!=0){
+                           roomId=frontDoor.GetRoomIdOfDoorSide(CommonDoor.tSide.Back);
+                        }
+                        if(roomId==0){
+                    List<GameObject>objects=lot.GetObjectsInRoom<GameObject>(roomId);
+                                 if(objects.Count>0){
+                                                resetRawDest=RandomUtil.GetRandomObjectFromList(objects).Position;
+                                                   goto DestSet;
+                                 }
+                        }
+                               }
+                                         }
+                                                          }
+                                                          //-------------------------
+                                                          if(stuckSim.Detections<=6){
+                                            lot=RandomUtil.GetRandomObjectFromList(Sims3.Gameplay.Queries.GetObjects<Lot>());
+                                         if(lot!=null){
+                                                resetRawDest=lot.EntryPoint();
+                                                   goto DestSet;
+                                         }
+                                                          }
+                                                          //-------------------------
+                                                          if(stuckSim.Detections<=7){
+                                            lot=RandomUtil.GetRandomObjectFromList(Sims3.Gameplay.Queries.GetObjects<Lot>());
+                                         if(lot!=null){
+                            Mailbox mailbox=lot.FindMailbox();
+                                 if(mailbox!=null){
+                                                resetRawDest=mailbox.Position;
+                                                   goto DestSet;
+                                 }
+                                         }
+                                                          }
+                                                          //-------------------------
+                                                          if(stuckSim.Detections<=8){
+                                            lot=RandomUtil.GetRandomObjectFromList(Sims3.Gameplay.Queries.GetObjects<Lot>());
+                                         if(lot!=null){
+                             Door frontDoor=lot.FindFrontDoor();
+                               if(frontDoor!=null){
+                       int roomId=frontDoor.GetRoomIdOfDoorSide(CommonDoor.tSide.Front);
+                        if(roomId!=0){
+                           roomId=frontDoor.GetRoomIdOfDoorSide(CommonDoor.tSide.Back);
+                        }
+                        if(roomId==0){
+                    List<GameObject>objects=lot.GetObjectsInRoom<GameObject>(roomId);
+                                 if(objects.Count>0){
+                                                resetRawDest=RandomUtil.GetRandomObjectFromList(objects).Position;
+                                                   goto DestSet;
+                                 }
+                        }
+                               }
+                                         }
+                                                          }
+                                                          //-------------------------
+                                                          if(stuckSim.Detections<=9){
                                                 resetRawDest=Sim.ActiveActor.Position;
                                                              stuckSim.Detections=(1);
                                                    goto DestSet;

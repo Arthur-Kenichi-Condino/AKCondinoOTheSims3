@@ -78,7 +78,7 @@ namespace ArthurGibraltarSims3Mod{
    public static InteractionInjectorList  MasterList{
     get{
                                       if(sMasterList==null){
-                     string injectionNames="";
+                     string injectionNames="InteractionInjectorList_LOG:NOT_ERROR\n";
                 List<IAddInteraction>addInteractions=DerivativeSearch.Find<IAddInteraction>();
              foreach(IAddInteraction interaction in addInteractions){
                             injectionNames+="AddInteraction "+interaction.GetType().ToString()+"\n";

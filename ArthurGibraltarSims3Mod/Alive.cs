@@ -660,6 +660,11 @@ if(!GlobalFunctions.FindGoodLocation(sim,fglParams,out resetValidatedDest,out fo
                                                                                 return(false);
         }
         //==================================================================================================================
+        public static List<T>CloneList<T>(IEnumerable<T>old){
+                                                     if(old==null)return null;
+           return new List<T>(old);
+        }
+        //==================================================================================================================
         public static string Localize(string key){
                       return Localize(       key,    false,new object[0]);
         }

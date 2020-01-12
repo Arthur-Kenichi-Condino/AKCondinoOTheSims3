@@ -906,5 +906,129 @@ public static readonly Sims3.Gameplay.Interactions.InteractionDefinition Singlet
         public override bool Test(Sims3.Gameplay.Interfaces.IActor actor,Sims3.Gameplay.Interfaces.IGameObject target,bool isAutonomous,ref Sims3.SimIFace.GreyedOutTooltipCallback greyedOutTooltipCallback){return(false);}
     }//  COPY COMPLETED
     //-----------------------------------------------------------------------------------------------------------
+    //====================================================================================================================================================
+    //  
+    //====================================================================================================================================================
+    public class SpeedTrap{
+        public static void SetDelegates(Delegate onSleep){
+                                         OnSleep=onSleep;
+        }
+                         static Delegate OnSleep;
+                        public static void Sleep(){
+                                           Sleep(0);
+                        }
+                        public static void Sleep(uint tickCount){
+            try{
+                if(Sims3.SimIFace.Simulator.CheckYieldingContext(false)){
+                           End();
+                   Sims3.SimIFace.Simulator.Sleep(tickCount);
+                           Begin();
+                }
+            }catch(Sims3.SimIFace.ResetException exception){
+                                  Alive.WriteLog(exception.Message+"\n\n"+
+                                                 exception.StackTrace+"\n\n"+
+                                                 exception.Source);
+            }catch(     Exception exception){
+                   Alive.WriteLog(exception.Message+"\n\n"+
+                                  exception.StackTrace+"\n\n"+
+                                  exception.Source);
+            }
+                        }
+        public static void Begin(){
+                                      if(OnSleep!=null){
+                                         OnSleep.DynamicInvoke(new object[]{"Begin"});
+                                      }
+        }
+        public static void End(){
+                                      if(OnSleep!=null){
+                                         OnSleep.DynamicInvoke(new object[]{"End"});
+                                      }
+        }
+    }
+    //-----------------------------------------------------------------------------------------------------------
+    }
+    public class Tunings{ 
+        public static Sims3.Gameplay.Autonomy.InteractionTuning Inject<Target,OldType,NewType>(bool clone)where Target:Sims3.Gameplay.Interfaces.IGameObject
+            where OldType:Sims3.Gameplay.Interactions.InteractionDefinition
+            where NewType:Sims3.Gameplay.Interactions.InteractionDefinition
+        {
+            return Inject(typeof(OldType),typeof(Target),typeof(NewType),typeof(Target),clone);
+        }
+        protected static Sims3.Gameplay.Autonomy.InteractionTuning Inject(Type oldType,Type oldTarget,Type newType,Type newTarget,bool clone){
+                         Sims3.Gameplay.Autonomy.InteractionTuning tuning=null;
+            try{
+                                                                   tuning=Sims3.Gameplay.Autonomy.AutonomyTuning.GetTuning(newType.FullName,newTarget.FullName);
+                                                                if(tuning==null){
+                                                                   tuning=Sims3.Gameplay.Autonomy.AutonomyTuning.GetTuning(oldType,
+                                                                                                                           oldType.FullName,
+                                                                                                                           oldTarget);
+                                                                if(tuning==null)return null;
+                                                                                                                                    if(clone){
+                                                                   tuning=CloneTuning(tuning);
+                                                                                                                                    }
+                                                                          Sims3.Gameplay.Autonomy.AutonomyTuning.AddTuning(newType.FullName,newTarget.FullName,tuning);
+                                                                }
+                                                                          Sims3.Gameplay.Autonomy.InteractionObjectPair.sTuningCache.Remove(new Sims3.Gameplay.Utilities.Pair<Type,Type>(newType,newTarget));
+            }catch(Exception exception){
+              Alive.WriteLog(exception.Message+"\n\n"+
+                             exception.StackTrace+"\n\n"+
+                             exception.Source);
+            }
+                                                            return tuning;
+        }
+        private static Sims3.Gameplay.Autonomy.InteractionTuning CloneTuning(Sims3.Gameplay.Autonomy.InteractionTuning oldTuning){
+Sims3.Gameplay.Autonomy.InteractionTuning newTuning=new Sims3.Gameplay.Autonomy.InteractionTuning();
+                                          newTuning.mFlags                                       =oldTuning.mFlags;
+                                          newTuning.ActionTopic                                  =oldTuning.ActionTopic;
+                                          newTuning.AlwaysChooseBest                             =oldTuning.AlwaysChooseBest;
+                                          newTuning.Availability               =CloneAvailability(oldTuning.Availability);
+                                          newTuning.CodeVersion                                  =oldTuning.CodeVersion;
+                                          newTuning.FullInteractionName                          =oldTuning.FullInteractionName;
+                                          newTuning.FullObjectName                               =oldTuning.FullObjectName;
+                                          newTuning.mChecks                      =Alive.CloneList(oldTuning.mChecks);
+                                          newTuning.mTradeoff                      =CloneTradeoff(oldTuning.mTradeoff);
+                                          newTuning.PosturePreconditions                         =oldTuning.PosturePreconditions;
+                                          newTuning.ScoringFunction                              =oldTuning.ScoringFunction;
+                                          newTuning.ScoringFunctionOnlyAppliesToSpecificCommodity=oldTuning.ScoringFunctionOnlyAppliesToSpecificCommodity;
+                                          newTuning.ScoringFunctionString                        =oldTuning.ScoringFunctionString;
+                                          newTuning.ShortInteractionName                         =oldTuning.ShortInteractionName;
+                                          newTuning.ShortObjectName                              =oldTuning.ShortObjectName;
+                                   return newTuning;
+        }
+        private static Sims3.Gameplay.Autonomy.Availability CloneAvailability(Sims3.Gameplay.Autonomy.Availability old){
+Sims3.Gameplay.Autonomy.Availability result=new Sims3.Gameplay.Autonomy.Availability();
+                                     result.mFlags                         =old.mFlags;
+                                     result.AgeSpeciesAvailabilityFlags    =old.AgeSpeciesAvailabilityFlags;
+                                     result.CareerThresholdType            =old.CareerThresholdType;
+                                     result.CareerThresholdValue           =old.CareerThresholdValue;
+                                     result.ExcludingBuffs =Alive.CloneList(old.ExcludingBuffs);
+                                     result.ExcludingTraits=Alive.CloneList(old.ExcludingTraits);
+                                     result.MoodThresholdType              =old.MoodThresholdType;
+                                     result.MoodThresholdValue             =old.MoodThresholdValue;
+                                     result.MotiveThresholdType            =old.MotiveThresholdType;
+                                     result.MotiveThresholdValue           =old.MotiveThresholdValue;
+                                     result.RequiredBuffs  =Alive.CloneList(old.RequiredBuffs);
+                                     result.RequiredTraits =Alive.CloneList(old.RequiredTraits);
+                                     result.SkillThresholdType             =old.SkillThresholdType;
+                                     result.SkillThresholdValue            =old.SkillThresholdValue;
+                                     result.WorldRestrictionType           =old.WorldRestrictionType;
+                                     result.OccultRestrictions             =old.OccultRestrictions;
+                                     result.OccultRestrictionType          =old.OccultRestrictionType;
+                                     result.SnowLevelValue                 =old.SnowLevelValue;
+                                     result.WorldRestrictionWorldNames=Alive.CloneList(old.WorldRestrictionWorldNames);
+                                     result.WorldRestrictionWorldTypes=Alive.CloneList(old.WorldRestrictionWorldTypes);
+                              return result;
+        }
+        private static Sims3.Gameplay.Autonomy.Tradeoff CloneTradeoff(Sims3.Gameplay.Autonomy.Tradeoff old){
+Sims3.Gameplay.Autonomy.Tradeoff result=new Sims3.Gameplay.Autonomy.Tradeoff();
+                                 result.mFlags                  =old.mFlags;
+                                 result.mInputs =Alive.CloneList(old.mInputs);
+                                 result.mName                   =old.mName;
+                                 result.mNumParameters          =old.mNumParameters;
+                                 result.mOutputs=Alive.CloneList(old.mOutputs);
+                                 result.mVariableRestrictions   =old.mVariableRestrictions;
+                                 result.TimeEstimate            =old.TimeEstimate;
+                          return result;
+        }
     }
 }

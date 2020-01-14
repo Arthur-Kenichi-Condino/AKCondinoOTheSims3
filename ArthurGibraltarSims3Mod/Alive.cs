@@ -821,6 +821,18 @@ foreach(SimDescription sim in new List<SimDescription>(
                                                Vector3 resetValidatedDest;
                                                                       Vector3 forward;
 World.FindGoodLocationParams fglParams=new World.FindGoodLocationParams(resetRawDest);
+                                             if(sim.SimDescription.IsHorse){
+                             fglParams.BooleanConstraints=FindGoodLocationBooleans.Routable|
+                                                          FindGoodLocationBooleans.PreferEmptyTiles|
+                                                          FindGoodLocationBooleans.AllowOnSlopes|
+                                                          //FindGoodLocationBooleans.AllowIntersectionWithPlatformWalls|
+                                                          //FindGoodLocationBooleans.AllowInFrontOfDoors          |
+                                                          //FindGoodLocationBooleans.AllowOnStairTopAndBottomTiles|
+                                                          FindGoodLocationBooleans.AllowOffLot        |
+                                                          FindGoodLocationBooleans.AllowOnStreets     |
+                                                          FindGoodLocationBooleans.AllowOnBridges     |
+                                                          FindGoodLocationBooleans.AllowOnSideWalks   ;
+                                             }else{
                              fglParams.BooleanConstraints=FindGoodLocationBooleans.Routable|
                                                           FindGoodLocationBooleans.PreferEmptyTiles|
                                                           FindGoodLocationBooleans.AllowOnSlopes|
@@ -831,6 +843,7 @@ World.FindGoodLocationParams fglParams=new World.FindGoodLocationParams(resetRaw
                                                           FindGoodLocationBooleans.AllowOnStreets     |
                                                           FindGoodLocationBooleans.AllowOnBridges     |
                                                           FindGoodLocationBooleans.AllowOnSideWalks   ;
+                                             }
 if(!GlobalFunctions.FindGoodLocation(sim,fglParams,out resetValidatedDest,out forward)){
                                          fglParams.BooleanConstraints=FindGoodLocationBooleans.None;
     GlobalFunctions.FindGoodLocation(sim,fglParams,out resetValidatedDest,out forward);

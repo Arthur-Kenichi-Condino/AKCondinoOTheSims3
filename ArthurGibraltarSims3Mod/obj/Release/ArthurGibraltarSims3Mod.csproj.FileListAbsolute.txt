@@ -2,4 +2,3 @@ C:\Users\Arthur\AKCondinoOTheSims3\ArthurGibraltarSims3Mod\bin\Release\ArthurGib
 C:\Users\Arthur\AKCondinoOTheSims3\ArthurGibraltarSims3Mod\bin\Release\ArthurGibraltarSims3Mod.pdb
 C:\Users\Arthur\AKCondinoOTheSims3\ArthurGibraltarSims3Mod\obj\Release\ArthurGibraltarSims3Mod.dll
 C:\Users\Arthur\AKCondinoOTheSims3\ArthurGibraltarSims3Mod\obj\Release\ArthurGibraltarSims3Mod.pdb
-C:\Users\Arthur\AKCondinoOTheSims3\ArthurGibraltarSims3Mod\obj\Release\ArthurGibraltarSims3Mod.csprojAssemblyReference.cache

@@ -71,7 +71,10 @@ namespace ArthurGibraltarSims3Mod{
                      if(tuning.FullInteractionName=="Sims3.Gameplay.Objects.Gardening.Plant+Graaiins+Definition"){
                         tuning.AddFlags(InteractionTuning.FlagField.DisallowAutonomous);
                      }
-                     if(tuning.FullInteractionName=="Sims3.Gameplay.Services.ResortMaintenance+AutonomousSweep+Definition"){
+                     if(tuning.FullInteractionName=="Sims3.Gameplay.Core.SwipeSomethingAutonomous+Definition"){
+                        tuning.AddFlags(InteractionTuning.FlagField.DisallowAutonomous);
+                     }
+                     if(tuning.FullInteractionName=="Sims3.Gameplay.ActorSystems.TraitFunctions+SwipeSomething+Definition"){
                         tuning.AddFlags(InteractionTuning.FlagField.DisallowAutonomous);
                      }
             }
@@ -99,11 +102,11 @@ namespace ArthurGibraltarSims3Mod{
              new AlarmTask(13,DaysOfTheWeek.All,FeedSims);
              new AlarmTask(19,DaysOfTheWeek.All,FeedSims);
              //---------------------------------------------------------------
-             new AlarmTask(5,DaysOfTheWeek.All,AutoPause);
+             new AlarmTask( 5,DaysOfTheWeek.All,AutoPause);
              //---------------------------------------------------------------
-             new AlarmTask(1,TimeUnit.Hours,CheckShowVenues       ,1,TimeUnit.Hours);
+             new AlarmTask( 1,TimeUnit.Hours  ,CheckShowVenues       ,1,TimeUnit.Hours);
              //---------------------------------------------------------------
-             new AlarmTask(1,TimeUnit.Hours,ResetPortalsAndRouting,1,TimeUnit.Hours);
+             new AlarmTask( 5,TimeUnit.Minutes,ResetPortalsAndRouting,1,TimeUnit.Hours);
              //---------------------------------------------------------------
         }
         private static void OnWorldQuit(object sender,EventArgs e){
@@ -411,6 +414,20 @@ InteractionInstance
                                  exception.Source);
                 }finally{
                 }
+                try{
+                foreach(var jig in Sims3.Gameplay.Queries.GetObjects<SocialJig>()){
+                            jig.ClearParticipants();
+                }
+                foreach(var jig in Sims3.Gameplay.Queries.GetObjects<Jig>()){
+                            jig.SetObjectToReset();//
+                            jig.Destroy();
+                }
+                }catch(Exception exception){
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source);
+                }finally{
+                }
         }
         //==================================================================================================================
        static readonly Dictionary<ShowVenue,ShowDetectedData>ShowDetected=new Dictionary<ShowVenue,ShowDetectedData>();
@@ -475,7 +492,10 @@ List<KeyValuePair<ShowVenue,ShowDetectedData>>toRemove=new List<KeyValuePair<Sho
         //==================================================================================================================
         static void ResetPortalsAndRouting(){
                 try{
-                                Autonomy.kAllowEvenIfNotAllowedInRoomAutonomousMultiplier=0;
+            GameObject.kKleptoRespawnTimeDays=1;
+            GameObject.kAutonomyMultiplierForObjectSelectionWhenSomeSimIsRouting=0.1f;
+                                //------------------------------------------------------
+                                Autonomy.kAllowEvenIfNotAllowedInRoomAutonomousMultiplier=0f;
                                 Autonomy.kAutonomyDelayNormal           =0;
                                 Autonomy.kAutonomyDelayWhileMounted     =0;
                                 Autonomy.kAutonomyDelayDuringSocializing=0;
@@ -495,6 +515,9 @@ List<KeyValuePair<ShowVenue,ShowDetectedData>>toRemove=new List<KeyValuePair<Sho
                 }finally{
                 }
                 try{
+                   foreach(Sim sim in Sims3.Gameplay.Queries.GetObjects<Sim>()){
+                               sim.PlayRouteFailFrequency=Sim.RouteFailFrequency.NeverPlayRouteFail;
+                   }
                    foreach(ElevatorDoors elevator in Sims3.Gameplay.Queries.GetObjects<ElevatorDoors>()){
                            ElevatorInterior.ElevatorPortalComponent 
                                                     portal=
@@ -816,6 +839,13 @@ if(!GlobalFunctions.FindGoodLocation(sim,fglParams,out resetValidatedDest,out fo
                                                                sim.SetForward(forward);
                                                 sim.RemoveFromWorld();
                                                       if(addToWorld){
+                try{
+                                                sim.Posture?.CancelPosture(sim);
+                }catch(Exception exception){
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source);
+                }
                                                 sim.     AddToWorld();
                                                     sim.SetHiddenFlags(HiddenFlags.Nothing);
                                                         sim.SetOpacity(1f,0f);

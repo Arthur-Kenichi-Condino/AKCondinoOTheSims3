@@ -20,11 +20,11 @@ namespace ArthurGibraltarSims3Mod{
     public class PrivacyInteraction:AlikeModdedInteraction<IPrimaryOption<Sims3.Gameplay.Abstracts.GameObject>,Sims3.Gameplay.Abstracts.GameObject>{
         public static Sims3.Gameplay.Interactions.InteractionDefinition Singleton=new AlikeModdedDefinition<PrivacyInteraction>(true,true);
         public override void AddInteraction(InteractionInjectorList interactions){
-                                                                    interactions.AddRoot(Singleton);
-                                                                    interactions.Add<Sims3.Gameplay.Interfaces.IToiletOrUrinal>(Singleton);
-                                                                    interactions.Add<Sims3.Gameplay.Objects.Plumbing.IShowerable>(Singleton);
-                                                                    interactions.Add<Sims3.Gameplay.Objects.Plumbing.Bathtub>(Singleton);
-                                                                    interactions.Add<Sims3.Gameplay.Objects.Plumbing.Sink>(Singleton);
+                                                                    //interactions.AddRoot(Singleton);
+                                                                    //interactions.Add<Sims3.Gameplay.Interfaces.IToiletOrUrinal>(Singleton);
+                                                                    //interactions.Add<Sims3.Gameplay.Objects.Plumbing.IShowerable>(Singleton);
+                                                                    //interactions.Add<Sims3.Gameplay.Objects.Plumbing.Bathtub>(Singleton);
+                                                                    //interactions.Add<Sims3.Gameplay.Objects.Plumbing.Sink>(Singleton);
         }
         protected override OptionResult Perform(Sims3.Gameplay.Interfaces.IActor actor,Sims3.Gameplay.Abstracts.GameObject target,Sims3.SimIFace.GameObjectHit hit){
             try{

@@ -57,6 +57,9 @@ namespace ArthurGibraltarSims3Mod{
                    void OnPreLoad();
         }
         private static void OnWorldLoadFinished(object sender,EventArgs e){
+            Sims3.Gameplay.StoryProgression.EmigrateHousehold.kMultiplierForEmigratingKnownHousehold                  =0;
+            Sims3.Gameplay.StoryProgression.EmigrateHousehold.kMultiplierForEmigratingProtectedHousehold              =0;
+            Sims3.Gameplay.StoryProgression.EmigrateHousehold.kMultiplierForEmigratingAcademicCareerProfessorHousehold=0;
                     using(TestSpan span=new TestSpan()){
                            RegAllInteractions();//  Perform prior to calling the derivatives
                     }
@@ -122,6 +125,13 @@ namespace ArthurGibraltarSims3Mod{
         //------------------------------------------------------------------------------------------------------------------
              private static void OnNewSim(Sims3.Gameplay.EventSystem.Event e){
                                 InteractionInjectorList.MasterList.Perform(e.TargetObject as Sim);
+                try{
+                                                                          (e.TargetObject as Sim).PlayRouteFailFrequency=Sim.RouteFailFrequency.NeverPlayRouteFail;
+                }catch(Exception exception){
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source);
+                }
              }
         protected static void OnNewObject(Sims3.Gameplay.EventSystem.Event e){
                                 InteractionInjectorList.MasterList.Perform(e.TargetObject as GameObject);
@@ -317,12 +327,12 @@ var interaction=Fridge_Have.Singleton.CreateInstanceWithCallbacks(fridges[ModRan
                         if(sim.Motives.IsHungry()){
 var interaction=Fridge_Have.Singleton.CreateInstanceWithCallbacks(fridges[ModRandom.Next(0,fridges.Length)],sim,new InteractionPriority(InteractionPriorityLevel.UserDirected),true,true,OnFridge_HaveStarted,OnFridge_HaveCompleted,OnFridge_HaveFailed) as Fridge_Have;
  if(interaction!=null){
-             Skill cooking;
+           Cooking cooking;
                         if(sim.SkillManager!=null&&
-                  (cooking=sim.SkillManager.GetElement(Sims3.Gameplay.Skills.SkillNames.Cooking))!=null){
-    interaction.ChosenRecipe=(Recipe.RandomRecipeOfSkillLevelRange(0,
-                                                                  cooking.SkillLevel)
-                             );
+                  (cooking=sim.SkillManager.GetElement(Sims3.Gameplay.Skills.SkillNames.Cooking) as Cooking)!=null&&
+                   cooking.KnownRecipes!=null&&
+                   cooking.KnownRecipes.Count>0){
+    interaction.ChosenRecipe=(Recipe.NameToRecipeHash[cooking.KnownRecipes[ModRandom.Next(0,cooking.KnownRecipes.Count)]]);
                         }else{
     interaction.    Quantity=(Recipe.MealQuantity.Single);
     interaction.ChosenRecipe=(Recipe.NameToRecipeHash["MicrowaveMeal"]);
@@ -357,10 +367,22 @@ var interaction=Fridge_Have.Singleton.CreateInstanceWithCallbacks(fridges[ModRan
         private static void OnFridge_HaveCompleted(Sim s,float x){
         }
         //==================================================================================================================
+static Dictionary<Sim,Vector3>positions=new Dictionary<Sim,Vector3>();
         static void AutoPause(){
                 try{
       Sims3.Gameplay.Gameflow.SetGameSpeed(Sims3.Gameplay.Gameflow.GameSpeed.Pause,Sims3.Gameplay.Gameflow.SetGameSpeedContext.GameStates);
                 try{
+List<Sim>
+   toRemove=new List<Sim>();
+    foreach(var simPosData in positions){
+             if(simPosData.Key.HasBeenDestroyed){
+   toRemove.Add(simPosData.Key);
+             }
+    }
+                                 for(int i=0;i<toRemove.Count;i++){
+                              positions.Remove(toRemove[i]);
+                                 }
+   toRemove.Clear();
                     foreach(Sim sim in Sims3.Gameplay.Queries.GetObjects<Sim>()){
                       if(sim.InteractionQueue!=null&&sim.InteractionQueue.mInteractionList!=null){
                for(int i=sim.InteractionQueue.mInteractionList.Count-1;i>=1;i--){
@@ -377,6 +399,40 @@ InteractionInstance
                          sim.InteractionQueue.CancelInteraction(currentInteraction.Id);
  }
   }
+                try{
+     if(!positions.TryGetValue(sim,out Vector3 position)){
+         positions.Add(        sim,
+                               sim.Position);
+     }else{
+                      if(sim.Position==position){//  Stuck!
+                      if(sim.SimDescription!=null){
+                                                                                                              StuckSimData stuckSim;
+                                                         if(!StuckSims.TryGetValue(sim.SimDescription.SimDescriptionId,out stuckSim)){
+                                                                                                                           stuckSim=new StuckSimData();
+                                                             StuckSims.Add(        sim.SimDescription.SimDescriptionId,    stuckSim);
+                                                         }
+                                                                                                                       if(!stuckSim.Resetting){
+                                                                                                                           stuckSim.Detections++;
+                                                                         Vector3 destination=Vector3.Invalid;
+                                                               if(sim.RoutingComponent!=null){
+                                                                  sim.RoutingComponent.GetDestination(out destination);
+                                                               }
+
+                    if(  stuckSim.resetTask==null)
+                         stuckSim.resetTask=new ResetStuckSimTask(sim,destination,"Dummy");
+                    else stuckSim.resetTask.Renew();
+                                                                                                                       }
+                      }else{
+                         sim.SetObjectToReset();
+                      }
+                      }
+         positions[sim]=(sim.Position);
+     }
+                }catch(Exception exception){
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source);
+                }
                     }
                 }catch(Exception exception){
                   Alive.WriteLog(exception.Message+"\n\n"+
@@ -533,11 +589,16 @@ foreach(SimDescription sim in new List<SimDescription>(
                                                                                                             stuckSim=new StuckSimData();
                                                              StuckSims.Add(        sim.SimDescriptionId,    stuckSim);
                                                          }
+                                                                                                        if(!stuckSim.Resetting){
+                                                                                                            stuckSim.Detections++;
                                                                          Vector3 destination=Vector3.Invalid;
                                                                if(sim.CreatedSim.RoutingComponent!=null){
                                                                   sim.CreatedSim.RoutingComponent.GetDestination(out destination);
                                                                }
+                    if(  stuckSim.resetTask==null)
                          stuckSim.resetTask=new ResetStuckSimTask(sim.CreatedSim,destination,"Elevator");
+                    else stuckSim.resetTask.Renew();
+                                                                                                        }
                     }
 }
                                                     portal.FreeAllRoutingLanes();
@@ -655,7 +716,7 @@ foreach(SimDescription sim in new List<SimDescription>(
                                                                                                                            stuckSim.PositionPrecedingTicks=SimClock.CurrentTicks;
                                                                                                                            stuckSim.PositionPreceding=(sim.Position);
                                                                                                                         }
-                                                                                                  if(SimClock.CurrentTicks-stuckSim.PositionPrecedingTicks>SimClock.kSimulatorTicksPerSimMinute*5){
+                                                                                                  if(SimClock.CurrentTicks-stuckSim.PositionPrecedingTicks>SimClock.kSimulatorTicksPerSimMinute*10){
                                                                                                                                 if(!detected){
                                                                                                                            stuckSim.Detections++;
                                                                                                                                 }

@@ -688,6 +688,17 @@ List<KeyValuePair<ShowVenue,ShowDetectedData>>toRemove=new List<KeyValuePair<Sho
                 }finally{
                 }
                 try{
+List<Sim>
+   toRemove=new List<Sim>();
+    foreach(var simPosData in positions){
+             if(simPosData.Key.Position!=simPosData.Value){
+   toRemove.Add(simPosData.Key);
+             }
+    }
+                                 for(int i=0;i<toRemove.Count;i++){
+                              positions.Remove(toRemove[i]);
+                                 }
+   toRemove.Clear();
                    foreach(Sim sim in Sims3.Gameplay.Queries.GetObjects<Sim>()){
                                sim.PlayRouteFailFrequency=Sim.RouteFailFrequency.NeverPlayRouteFail;
                    }
@@ -997,20 +1008,29 @@ foreach(SimDescription sim in new List<SimDescription>(
                                                         DestSet:{}
                                                           }
                                                Vector3 resetValidatedDest;
-                                                                      Vector3 forward;
-World.FindGoodLocationParams fglParams=new World.FindGoodLocationParams(resetRawDest);
+                                                                      Vector3 forward=sim.ForwardVector;
                                              if(sim.SimDescription.IsHorse){
-                             fglParams.BooleanConstraints=FindGoodLocationBooleans.Routable|
-                                                          FindGoodLocationBooleans.PreferEmptyTiles|
-                                                          FindGoodLocationBooleans.AllowOnSlopes|
-                                                          //FindGoodLocationBooleans.AllowIntersectionWithPlatformWalls|
-                                                          //FindGoodLocationBooleans.AllowInFrontOfDoors          |
-                                                          //FindGoodLocationBooleans.AllowOnStairTopAndBottomTiles|
-                                                          FindGoodLocationBooleans.AllowOffLot        |
-                                                          FindGoodLocationBooleans.AllowOnStreets     |
-                                                          FindGoodLocationBooleans.AllowOnBridges     |
-                                                          FindGoodLocationBooleans.AllowOnSideWalks   ;
+                                 FindGoodLocationBooleans fglBooleans=FindGoodLocationBooleans.Routable|
+                                                                      FindGoodLocationBooleans.PreferEmptyTiles|
+                                                                      FindGoodLocationBooleans.AllowOnSlopes|
+                                                                      //FindGoodLocationBooleans.AllowIntersectionWithPlatformWalls|
+                                                                      //FindGoodLocationBooleans.AllowInFrontOfDoors          |
+                                                                      //FindGoodLocationBooleans.AllowOnStairTopAndBottomTiles|
+                                                                      FindGoodLocationBooleans.AllowOffLot        |
+                                                                      FindGoodLocationBooleans.AllowOnStreets     |
+                                                                      FindGoodLocationBooleans.AllowOnBridges     |
+                                                                      FindGoodLocationBooleans.AllowOnSideWalks   ;
+if(!GlobalFunctions.FindGoodLocationNearbyOnLevel(sim,sim.Level,ref resetRawDest,ref forward,fglBooleans)){
+    GlobalFunctions.FindGoodLocationNearbyOnLevel(sim,sim.Level,ref resetRawDest,ref forward,FindGoodLocationBooleans.None);
+}
+World.FindGoodLocationParams fglParams=new World.FindGoodLocationParams(resetRawDest);
+                             fglParams.BooleanConstraints=fglBooleans;
+if(!GlobalFunctions.FindGoodLocation(sim,fglParams,out resetValidatedDest,out forward)){
+                                         fglParams.BooleanConstraints=FindGoodLocationBooleans.None;
+    GlobalFunctions.FindGoodLocation(sim,fglParams,out resetValidatedDest,out forward);
+}
                                              }else{
+World.FindGoodLocationParams fglParams=new World.FindGoodLocationParams(resetRawDest);
                              fglParams.BooleanConstraints=FindGoodLocationBooleans.Routable|
                                                           FindGoodLocationBooleans.PreferEmptyTiles|
                                                           FindGoodLocationBooleans.AllowOnSlopes|
@@ -1021,11 +1041,11 @@ World.FindGoodLocationParams fglParams=new World.FindGoodLocationParams(resetRaw
                                                           FindGoodLocationBooleans.AllowOnStreets     |
                                                           FindGoodLocationBooleans.AllowOnBridges     |
                                                           FindGoodLocationBooleans.AllowOnSideWalks   ;
-                                             }
 if(!GlobalFunctions.FindGoodLocation(sim,fglParams,out resetValidatedDest,out forward)){
                                          fglParams.BooleanConstraints=FindGoodLocationBooleans.None;
     GlobalFunctions.FindGoodLocation(sim,fglParams,out resetValidatedDest,out forward);
 }
+                                             }
                                        sim.SetPosition(resetValidatedDest);
                                                                sim.SetForward(forward);
                                                 sim.RemoveFromWorld();

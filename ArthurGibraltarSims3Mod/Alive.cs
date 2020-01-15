@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using Sims3.Gameplay;
 using Sims3.Gameplay.Abstracts;
@@ -11,6 +12,7 @@ using Sims3.Gameplay.CAS;
 using Sims3.Gameplay.Controllers;
 using Sims3.Gameplay.Core;
 using Sims3.Gameplay.Interactions;
+using Sims3.Gameplay.Interfaces;
 using Sims3.Gameplay.Objects;
 using Sims3.Gameplay.Objects.Appliances;
 using Sims3.Gameplay.Objects.Beds;
@@ -111,6 +113,68 @@ namespace ArthurGibraltarSims3Mod{
              //---------------------------------------------------------------
              new AlarmTask( 5,TimeUnit.Minutes,ResetPortalsAndRouting,1,TimeUnit.Hours);
              //---------------------------------------------------------------
+                try{
+                                                                 var cookingAppliances=Sims3.Gameplay.Queries.GetObjects<ICookingAppliance>();
+                                                                  if(cookingAppliances!=null)
+                       foreach(ICookingAppliance cookingAppliance in cookingAppliances){
+                try{
+                                             var cookingApplianceGameObject=(cookingAppliance as GameObject);
+                                              if(cookingApplianceGameObject!=null){
+                                      var parent=cookingApplianceGameObject.Parent;
+                                bool slotted=(false);
+                                     Slot parentSlot=Slot.None;
+                                       if(parent!=null){
+                                var slots=parent.GetContainmentSlots();
+                foreach(var slot in slots){
+                                       if(parent.GetContainedObject(slot)==cookingApplianceGameObject){
+                                          parentSlot=slot;
+                                     slotted=( true);
+                                            break;
+                                       }
+                }
+                                       }
+                                                 cookingApplianceGameObject.SimLine?.DoReset();
+                                                 cookingApplianceGameObject.SetObjectToReset();
+                                                 cookingApplianceGameObject.ResetParentingHierarchy(true);
+                                                 cookingApplianceGameObject.RemoveFromWorld();
+                                                 cookingApplianceGameObject.     AddToWorld();
+                                                 cookingApplianceGameObject.SetHiddenFlags(HiddenFlags.Nothing);
+                                                 cookingApplianceGameObject.SetOpacity(1f,0.0f);
+                                                 cookingApplianceGameObject.AddToLot();
+                     LotManager.PlaceObjectOnLot(cookingApplianceGameObject,cookingApplianceGameObject.ObjectId);
+                                       if(parent!=null&&
+                                     slotted){
+                                                 cookingApplianceGameObject.ParentToSlot(parent,parentSlot);
+                                       }
+                                              if(cookingApplianceGameObject.LotCurrent==Household.ActiveHouseholdLot){
+                               string debugInfo="Alive_debugInfo_LOG:NOT_ERROR\n";
+                                      debugInfo+=cookingApplianceGameObject.ObjectInstanceName+"_l1\n";
+                                      debugInfo+=cookingApplianceGameObject.ObjectId+"_l2\n";
+                                      debugInfo+=cookingApplianceGameObject.ActorsUsingMe?.Count+"_l3\n";
+                                      debugInfo+=cookingApplianceGameObject.SimLine?.SimsInQueue?.Count+"_l4\n";
+                                      debugInfo+=cookingApplianceGameObject.SimLine?.FirstSim?.Name+"_l5\n";
+                       Alive.WriteLog(debugInfo);
+                                              }
+                                              }
+                }catch(Exception exception){
+     //  Get stack trace for the exception. with source file information
+           var st=new StackTrace(exception,true);
+     //  Get the top stack frame
+     var frame=st.GetFrame(0);
+    //  Get the line number from the stack frame
+var line=frame.GetFileLineNumber();
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source+"\n\n"+
+                                 line);
+                }
+                       }
+                }catch(Exception exception){
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source);
+                }finally{
+                }
         }
         private static void OnWorldQuit(object sender,EventArgs e){
             Route.AboutToPlanCallback-=OnAboutToPlan;
@@ -438,6 +502,59 @@ InteractionInstance
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source);
+                }
+                try{
+                                                                 var cookingAppliances=Sims3.Gameplay.Queries.GetObjects<ICookingAppliance>();
+                                                                  if(cookingAppliances!=null)
+                       foreach(ICookingAppliance cookingAppliance in cookingAppliances){
+                try{
+                                             var cookingApplianceGameObject=(cookingAppliance as GameObject);
+                                              if(cookingApplianceGameObject!=null){
+                                      var parent=cookingApplianceGameObject.Parent;
+                                bool slotted=(false);
+                                     Slot parentSlot=Slot.None;
+                                       if(parent!=null){
+                                var slots=parent.GetContainmentSlots();
+                foreach(var slot in slots){
+                                       if(parent.GetContainedObject(slot)==cookingApplianceGameObject){
+                                          parentSlot=slot;
+                                     slotted=( true);
+                                            break;
+                                       }
+                }
+                                       }
+                                                 cookingApplianceGameObject.SimLine?.DoReset();
+                                                 cookingApplianceGameObject.SetObjectToReset();
+                                                 cookingApplianceGameObject.ResetParentingHierarchy(true);
+                                                 cookingApplianceGameObject.RemoveFromWorld();
+                                                 cookingApplianceGameObject.     AddToWorld();
+                                                 cookingApplianceGameObject.SetHiddenFlags(HiddenFlags.Nothing);
+                                                 cookingApplianceGameObject.SetOpacity(1f,0.0f);
+                                                 cookingApplianceGameObject.AddToLot();
+                     LotManager.PlaceObjectOnLot(cookingApplianceGameObject,cookingApplianceGameObject.ObjectId);
+                                       if(parent!=null&&
+                                     slotted){
+                                                 cookingApplianceGameObject.ParentToSlot(parent,parentSlot);
+                                       }
+                                              }
+                }catch(Exception exception){
+     //  Get stack trace for the exception. with source file information
+           var st=new StackTrace(exception,true);
+     //  Get the top stack frame
+     var frame=st.GetFrame(0);
+    //  Get the line number from the stack frame
+var line=frame.GetFileLineNumber();
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source+"\n\n"+
+                                 line);
+                }
+                       }
+                }catch(Exception exception){
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source);
+                }finally{
                 }
                        foreach(ShowVenue showVenue in Sims3.Gameplay.Queries.GetObjects<ShowVenue>()){
            foreach(ISearchLight light in showVenue.LotCurrent.GetObjects<ISearchLight>()){

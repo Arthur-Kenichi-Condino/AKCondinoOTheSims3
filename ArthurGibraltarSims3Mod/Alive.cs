@@ -20,6 +20,7 @@ using Sims3.Gameplay.Objects.Elevator;
 using Sims3.Gameplay.Objects.FoodObjects;
 using Sims3.Gameplay.Objects.Lighting;
 using Sims3.Gameplay.Passport;
+using Sims3.Gameplay.Services;
 using Sims3.Gameplay.Skills;
 using Sims3.Gameplay.Utilities;
 using Sims3.SimIFace;
@@ -357,17 +358,21 @@ protected abstract Sims3.Gameplay.EventSystem.ListenerAction OnProcess(Sims3.Gam
                          sim.InteractionQueue!=null&&sim.InteractionQueue.mInteractionList!=null&&
                          sim.Motives!=null){
                        if(sim.SimDescription.TeenOrAbove){
-                                Daycare daycare;
                                             if((sim.Household==null||
                                               (!sim.Household.InWorld&&
                                                !sim.Household.IsSpecialHousehold))&&
                  (!Passport.IsHostedPassportSim(sim)&&
-                                                sim.SimDescription.AssignedRole==null)&&
-   (LunarCycleManager.sFullMoonZombies==null||  
-   !LunarCycleManager.sFullMoonZombies.Contains(sim.SimDescription))&&
-                                      ((daycare=sim.SimDescription.Occupation as Daycare)==null||
-                        !daycare.IsDaycareChild(sim.SimDescription))){
-                                                         continue;
+                                                sim.SimDescription.AssignedRole==null)){
+                                continue;
+                                            }
+if(LunarCycleManager.sFullMoonZombies!=null&&  
+   LunarCycleManager.sFullMoonZombies.Contains(sim.SimDescription)){
+                                continue;
+}
+                                            if(sim.SimDescription.IsBonehilda||
+                                              (sim.Service!=null&&
+                                               sim.Service.ServiceType==ServiceType.GrimReaper)){
+                                continue;
                                             }
                                         Lot lot=LotManager.ActiveLot;
                                          if(lot==null){
@@ -907,7 +912,9 @@ foreach(SimDescription sim in new List<SimDescription>(
    (LunarCycleManager.sFullMoonZombies==null||  
    !LunarCycleManager.sFullMoonZombies.Contains(sim.SimDescription))&&
                                       ((daycare=sim.SimDescription.Occupation as Daycare)==null||
-                        !daycare.IsDaycareChild(sim.SimDescription))){
+                        !daycare.IsDaycareChild(sim.SimDescription))&&
+                                               !sim.SimDescription.IsBonehilda&&
+                                                sim.Service==null){
                                                          addToWorld=(false);
                                             }
                                                           if(destination!=Vector3.Invalid){
@@ -1020,9 +1027,13 @@ foreach(SimDescription sim in new List<SimDescription>(
                                                                       FindGoodLocationBooleans.AllowOnStreets     |
                                                                       FindGoodLocationBooleans.AllowOnBridges     |
                                                                       FindGoodLocationBooleans.AllowOnSideWalks   ;
+                                                          if(stuckSim!=null){
+                                                          if(stuckSim.Detections<=5){
 if(!GlobalFunctions.FindGoodLocationNearbyOnLevel(sim,sim.Level,ref resetRawDest,ref forward,fglBooleans)){
     GlobalFunctions.FindGoodLocationNearbyOnLevel(sim,sim.Level,ref resetRawDest,ref forward,FindGoodLocationBooleans.None);
 }
+                                                          }
+                                                          }
 World.FindGoodLocationParams fglParams=new World.FindGoodLocationParams(resetRawDest);
                              fglParams.BooleanConstraints=fglBooleans;
 if(!GlobalFunctions.FindGoodLocation(sim,fglParams,out resetValidatedDest,out forward)){

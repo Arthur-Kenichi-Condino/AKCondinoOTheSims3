@@ -776,44 +776,13 @@ var line=frame.GetFileLineNumber();
                 try{
                     foreach(Sim sim in Sims3.Gameplay.Queries.GetObjects<Sim>()){
                     try{
-                      if(sim.InteractionQueue!=null&&sim.InteractionQueue.mInteractionList!=null){
-               for(int i=sim.InteractionQueue.mInteractionList.Count-1;i>=1;i--){
-                      if(sim.InteractionQueue.mInteractionList[i]is BedSleep        )continue;
-                      if(sim.InteractionQueue.mInteractionList[i]is WorkInRabbitHole)continue;
-                         sim.InteractionQueue.RemoveInteraction(i,false);
-               }
-InteractionInstance 
-      currentInteraction;
-  if((currentInteraction=sim.InteractionQueue.GetCurrentInteraction())!=null){
- if(!(currentInteraction is BedSleep        ||
-      currentInteraction is WorkInRabbitHole)){
-                         sim.InteractionQueue.CancelInteraction(currentInteraction.Id,ExitReason.CanceledByScript);
-                         sim.InteractionQueue.OnReset();
- }
-  }
-                      }
-                    }catch(Exception exception){
-         //  Get stack trace for the exception. with source file information
-               var st=new StackTrace(exception,true);
-         //  Get the top stack frame
-         var frame=st.GetFrame(0);
-         //  Get the line number from the stack frame
-    var line=frame.GetFileLineNumber();
-                      Alive.WriteLog(exception.Message+"\n\n"+
-                                     exception.StackTrace+"\n\n"+
-                                     exception.Source+"\n\n"+
-                                     line);
-                    }
-                    try{
      if(!positions.TryGetValue(sim,out Vector3 position)){
          positions.Add(        sim,
                                sim.Position);
+                                        ResetClearSimTask.CleanupBrokenSkills(sim.SimDescription);
+                                        ResetClearSimTask.        ResetCareer(sim.SimDescription);
      }else{
                       if(sim.Position==position){//  Stuck!
-                      if(sim.InteractionQueue==null||
-                         sim.InteractionQueue.Count==0){
-                                    new ResetClearSimTask(sim);
-                      }else
                       if(sim.Household==null||
                         !sim.Household.InWorld||
                          sim.Household.IsSpecialHousehold){
@@ -823,7 +792,16 @@ InteractionInstance
                          sim.Service.ServiceType==ServiceType.PizzaDelivery){
                                     new ResetClearSimTask(sim);
                       }else
+                      if(sim.InteractionQueue==null||
+                         sim.InteractionQueue.Count==0){
+                                    new ResetClearSimTask(sim);
+                      }else
                       if(sim.SimDescription!=null){
+                         sim.mbSendHomeOnNextReset=true;
+                         sim.     SetObjectToReset();
+                                        ResetClearSimTask.CleanupBrokenSkills(sim.SimDescription);
+                                        ResetClearSimTask.        ResetCareer(sim.SimDescription);
+                                        ResetClearSimTask.    ResetSituations(sim);
                                                                                                               StuckSimData stuckSim;
                                                          if(!StuckSims.TryGetValue(sim.SimDescription.SimDescriptionId,out stuckSim)){
                                                                                                                            stuckSim=new StuckSimData();
@@ -840,12 +818,43 @@ InteractionInstance
                     else stuckSim.resetTask.Renew();
                                                                                                                        }
                       }else{
-                         sim.mbSendHomeOnNextReset=true;
-                         sim.     SetObjectToReset();
+                                    new ResetClearSimTask(sim);
                       }
+                      }else{
+                                        ResetClearSimTask.CleanupBrokenSkills(sim.SimDescription);
+                                        ResetClearSimTask.        ResetCareer(sim.SimDescription);
                       }
          positions[sim]=(sim.Position);
      }
+                    }catch(Exception exception){
+         //  Get stack trace for the exception. with source file information
+               var st=new StackTrace(exception,true);
+         //  Get the top stack frame
+         var frame=st.GetFrame(0);
+         //  Get the line number from the stack frame
+    var line=frame.GetFileLineNumber();
+                      Alive.WriteLog(exception.Message+"\n\n"+
+                                     exception.StackTrace+"\n\n"+
+                                     exception.Source+"\n\n"+
+                                     line);
+                    }
+                    try{
+                      if(sim.InteractionQueue!=null&&sim.InteractionQueue.mInteractionList!=null){
+               for(int i=sim.InteractionQueue.mInteractionList.Count-1;i>=1;i--){
+                      if(sim.InteractionQueue.mInteractionList[i]is BedSleep        )continue;
+                      if(sim.InteractionQueue.mInteractionList[i]is WorkInRabbitHole)continue;
+                         sim.InteractionQueue.RemoveInteraction(i,false);
+               }
+InteractionInstance 
+      currentInteraction;
+  if((currentInteraction=sim.InteractionQueue.GetCurrentInteraction())!=null){
+ if(!(currentInteraction is BedSleep        ||
+      currentInteraction is WorkInRabbitHole)){
+                         sim.InteractionQueue.CancelInteraction(currentInteraction.Id,ExitReason.CanceledByScript);
+                         sim.InteractionQueue.OnReset();
+ }
+  }
+                      }
                     }catch(Exception exception){
          //  Get stack trace for the exception. with source file information
                var st=new StackTrace(exception,true);
@@ -1924,29 +1933,95 @@ var line=frame.GetFileLineNumber();
                                                      }
                                 BroomRidingSkill broomRidingSkill=sim.SkillManager.GetSkill<BroomRidingSkill>(SkillNames.BroomRiding);
                                               if(broomRidingSkill!=null){
-                        if(broomRidingSkill.mLotsVisited == null)
-                        {
-                            broomRidingSkill.mLotsVisited = new List<Lot>();
+                                              if(broomRidingSkill.mLotsVisited==null){
+                                                 broomRidingSkill.mLotsVisited=new List<Lot>();
+                                              }
+                                       for(int i=broomRidingSkill.mLotsVisited.Count-1;i>=0;i--){
+                                              if(broomRidingSkill.mLotsVisited[i]==null){
+                                                 broomRidingSkill.mLotsVisited.RemoveAt(i);
+                                              }
+                                       }
+                                              }
+                }catch(Exception exception){
+     //  Get stack trace for the exception. with source file information
+           var st=new StackTrace(exception,true);
+     //  Get the top stack frame
+     var frame=st.GetFrame(0);
+     //  Get the line number from the stack frame
+var line=frame.GetFileLineNumber();
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source+"\n\n"+
+                                 line);
+                }finally{
+                }
+            }
+               public static void ResetCareer(SimDescription sim){
+                try{
+                        Sims3.Gameplay.Careers.Career career=sim.Occupation as Sims3.Gameplay.Careers.Career;
+                                                   if(career!=null){
+                                                   if(career.HighestCareerLevelAchieved==null){
+                                                  if((career.mHighestLevelAchievedBranchName!=null)&&(career.mHighestLevelAchievedVal!=-1)){
+                                                      career.HighestCareerLevelAchieved=career.SharedData.CareerLevels[career.mHighestLevelAchievedBranchName][career.mHighestLevelAchievedVal];
+                                                  }else{
+                                                      career.HighestCareerLevelAchieved=career.CurLevel;
+                                                  }
+                                                   }
+                                                   }
+                }catch(Exception exception){
+     //  Get stack trace for the exception. with source file information
+           var st=new StackTrace(exception,true);
+     //  Get the top stack frame
+     var frame=st.GetFrame(0);
+     //  Get the line number from the stack frame
+var line=frame.GetFileLineNumber();
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source+"\n\n"+
+                                 line);
+                }finally{
+                }
+               }
+            public static void ResetSituations(Sim sim){
+                try{
+                                               if((sim.Autonomy!=null)&&
+                                                  (sim.Autonomy.SituationComponent!=null)&&
+                                                  (sim.Autonomy.SituationComponent.Situations!=null)){
+                    List<Situation> situations = new List<Situation>(sim.Autonomy.SituationComponent.Situations);
 
-                            if (log != null)
+                    foreach (Situation situation in situations)
+                    {
+                    try{
+                            FilmCareerSituation filmSituation = situation as FilmCareerSituation;
+                            if (filmSituation != null)
                             {
-                                log(" Missing LotsVisited Added: " + sim.FullName);
-                            }
-                        }
-
-                        for (int i = broomRidingSkill.mLotsVisited.Count - 1; i >= 0; i--)
-                        {
-                            if (broomRidingSkill.mLotsVisited[i] == null)
-                            {
-                                broomRidingSkill.mLotsVisited.RemoveAt(i);
-
-                                if (log != null)
+                                List<Sim> jobTargets = new List<Sim>();
+                                foreach (Sim target in filmSituation.mJobTargets)
                                 {
-                                    log(" Invalid LotsVisited Removed: " + sim.FullName);
+                                    if (target == null) continue;
+
+                                    jobTargets.Add(target);
                                 }
+
+                                filmSituation.mJobTargets = jobTargets;
                             }
-                        }
+
+                            situation.Exit();
+                    }catch(Exception exception){
+         //  Get stack trace for the exception. with source file information
+               var st=new StackTrace(exception,true);
+         //  Get the top stack frame
+         var frame=st.GetFrame(0);
+         //  Get the line number from the stack frame
+    var line=frame.GetFileLineNumber();
+                      Alive.WriteLog(exception.Message+"\n\n"+
+                                     exception.StackTrace+"\n\n"+
+                                     exception.Source+"\n\n"+
+                                     line);
+                    }finally{
                     }
+                    }
+                                               }
                 }catch(Exception exception){
      //  Get stack trace for the exception. with source file information
            var st=new StackTrace(exception,true);

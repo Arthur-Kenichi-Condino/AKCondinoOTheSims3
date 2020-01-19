@@ -796,12 +796,14 @@ var line=frame.GetFileLineNumber();
                          sim.InteractionQueue.Count==0){
                                     new ResetClearSimTask(sim);
                       }else
-                      if(sim.SimDescription!=null){
+                      if(sim.SimDescription!=null&&
+                         sim.SimDescription.CreatedSim==sim){
                          sim.mbSendHomeOnNextReset=true;
                          sim.     SetObjectToReset();
                                         ResetClearSimTask.CleanupBrokenSkills(sim.SimDescription);
                                         ResetClearSimTask.        ResetCareer(sim.SimDescription);
                                         ResetClearSimTask.    ResetSituations(sim);
+                                        ResetClearSimTask.       CleanupSlots(sim);
                                                                                                               StuckSimData stuckSim;
                                                          if(!StuckSims.TryGetValue(sim.SimDescription.SimDescriptionId,out stuckSim)){
                                                                                                                            stuckSim=new StuckSimData();
@@ -1887,6 +1889,47 @@ var line=frame.GetFileLineNumber();
                 }
                                                 }
             }
+               public static void CleanupSlots(Sim sim){
+                try{
+                              foreach(Slot slot in sim.GetContainmentSlots()){
+                                   IGameObject obj=sim.GetContainedObject(slot);
+                                            if(obj==null)continue;
+                    try{
+                                               obj.UnParent();
+                                               obj.RemoveFromUseList(sim);
+                                          if(!(obj is Sim)){
+                                               if((sim.Inventory==null)||(!sim.Inventory.TryToAdd(obj,false))){
+                                               obj.Destroy();
+                                               }
+                                          }
+                    }catch(Exception exception){
+         //  Get stack trace for the exception. with source file information
+               var st=new StackTrace(exception,true);
+         //  Get the top stack frame
+         var frame=st.GetFrame(0);
+         //  Get the line number from the stack frame
+    var line=frame.GetFileLineNumber();
+                      Alive.WriteLog(exception.Message+"\n\n"+
+                                     exception.StackTrace+"\n\n"+
+                                     exception.Source+"\n\n"+
+                                     line);
+                    }finally{
+                    }
+                              }
+                }catch(Exception exception){
+     //  Get stack trace for the exception. with source file information
+           var st=new StackTrace(exception,true);
+     //  Get the top stack frame
+     var frame=st.GetFrame(0);
+     //  Get the line number from the stack frame
+var line=frame.GetFileLineNumber();
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source+"\n\n"+
+                                 line);
+                }finally{
+                }
+               }
             public static void CleanupBrokenSkills(SimDescription sim){
                 try{
                                                                if(sim.SkillManager==null)return;
@@ -1987,26 +2030,19 @@ var line=frame.GetFileLineNumber();
                                                if((sim.Autonomy!=null)&&
                                                   (sim.Autonomy.SituationComponent!=null)&&
                                                   (sim.Autonomy.SituationComponent.Situations!=null)){
-                    List<Situation> situations = new List<Situation>(sim.Autonomy.SituationComponent.Situations);
-
-                    foreach (Situation situation in situations)
-                    {
+     List<Situation>situations=new List<Situation>(sim.Autonomy.SituationComponent.Situations);
+  foreach(Situation situation in situations){
                     try{
-                            FilmCareerSituation filmSituation = situation as FilmCareerSituation;
-                            if (filmSituation != null)
-                            {
-                                List<Sim> jobTargets = new List<Sim>();
-                                foreach (Sim target in filmSituation.mJobTargets)
-                                {
-                                    if (target == null) continue;
-
-                                    jobTargets.Add(target);
-                                }
-
-                                filmSituation.mJobTargets = jobTargets;
-                            }
-
-                            situation.Exit();
+                FilmCareerSituation filmSituation=situation as FilmCareerSituation;
+                                 if(filmSituation!=null){
+  List<Sim>jobTargets=new List<Sim>();
+              foreach(Sim target in filmSituation.mJobTargets){
+                       if(target==null)continue;
+           jobTargets.Add(target);
+              }
+                                    filmSituation.mJobTargets=jobTargets;
+                                 }
+                    situation.Exit();
                     }catch(Exception exception){
          //  Get stack trace for the exception. with source file information
                var st=new StackTrace(exception,true);
@@ -2020,7 +2056,7 @@ var line=frame.GetFileLineNumber();
                                      line);
                     }finally{
                     }
-                    }
+  }
                                                }
                 }catch(Exception exception){
      //  Get stack trace for the exception. with source file information

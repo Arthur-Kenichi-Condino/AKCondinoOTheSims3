@@ -29,6 +29,7 @@ using Sims3.Gameplay.Objects.Miscellaneous;
 using Sims3.Gameplay.Objects.Vehicles;
 using Sims3.Gameplay.Opportunities;
 using Sims3.Gameplay.Passport;
+using Sims3.Gameplay.Roles;
 using Sims3.Gameplay.Services;
 using Sims3.Gameplay.Situations;
 using Sims3.Gameplay.Skills;
@@ -779,8 +780,15 @@ var line=frame.GetFileLineNumber();
      if(!positions.TryGetValue(sim,out Vector3 position)){
          positions.Add(        sim,
                                sim.Position);
+                                        ResetClearSimTask.ResetPosture       (sim);
                                         ResetClearSimTask.CleanupBrokenSkills(sim.SimDescription);
-                                        ResetClearSimTask.        ResetCareer(sim.SimDescription);
+                                        ResetClearSimTask.ResetCareer        (sim.SimDescription);
+                                        //
+                                        ResetClearSimTask.CleanupSlots       (sim);
+                                        ResetClearSimTask.ResetInventory     (sim);
+                                        ResetClearSimTask.ResetRouting       (sim);
+                                        ResetClearSimTask.ResetSkillModifiers(sim.SimDescription);
+                                        ResetClearSimTask.ResetRole          (sim);
      }else{
                       if(sim.Position==position){//  Stuck!
                       if(sim.Household==null||
@@ -800,10 +808,15 @@ var line=frame.GetFileLineNumber();
                          sim.SimDescription.CreatedSim==sim){
                          sim.mbSendHomeOnNextReset=true;
                          sim.     SetObjectToReset();
+                                        ResetClearSimTask.ResetPosture       (sim);
                                         ResetClearSimTask.CleanupBrokenSkills(sim.SimDescription);
-                                        ResetClearSimTask.        ResetCareer(sim.SimDescription);
-                                        ResetClearSimTask.    ResetSituations(sim);
-                                        ResetClearSimTask.       CleanupSlots(sim);
+                                        ResetClearSimTask.ResetCareer        (sim.SimDescription);
+                                        ResetClearSimTask.ResetSituations    (sim);
+                                        ResetClearSimTask.CleanupSlots       (sim);
+                                        ResetClearSimTask.ResetInventory     (sim);
+                                        ResetClearSimTask.ResetRouting       (sim);
+                                        ResetClearSimTask.ResetSkillModifiers(sim.SimDescription);
+                                        ResetClearSimTask.ResetRole          (sim);
                                                                                                               StuckSimData stuckSim;
                                                          if(!StuckSims.TryGetValue(sim.SimDescription.SimDescriptionId,out stuckSim)){
                                                                                                                            stuckSim=new StuckSimData();
@@ -823,8 +836,15 @@ var line=frame.GetFileLineNumber();
                                     new ResetClearSimTask(sim);
                       }
                       }else{
+                                        ResetClearSimTask.ResetPosture       (sim);
                                         ResetClearSimTask.CleanupBrokenSkills(sim.SimDescription);
-                                        ResetClearSimTask.        ResetCareer(sim.SimDescription);
+                                        ResetClearSimTask.ResetCareer        (sim.SimDescription);
+                                        //
+                                        ResetClearSimTask.CleanupSlots       (sim);
+                                        ResetClearSimTask.ResetInventory     (sim);
+                                        ResetClearSimTask.ResetRouting       (sim);
+                                        ResetClearSimTask.ResetSkillModifiers(sim.SimDescription);
+                                        ResetClearSimTask.ResetRole          (sim);
                       }
          positions[sim]=(sim.Position);
      }
@@ -1846,13 +1866,77 @@ var line=frame.GetFileLineNumber();
                 }finally{
                 }
                  }
-            protected static void ResetPosture(Sim sim){
+                //  [NRaas:]EA is genius... Fix for genius coding in Bed.RelinquishOwnershipOfBed
+                public static void HandleDoubleBed(Sim newOwner,Bed bed,BedData entryPart){
+                                                    if(newOwner!=null&&
+                                                                    bed!=null&&
+                                                                                entryPart!=null){
+                        //  From BedMultiPart:ClaimOwnership
+                                            bool flag=(newOwner.Service!=null)&&
+                                                      (newOwner.Service.ServiceType==ServiceType.Butler);
+                                              if(flag||
+                                                     ((newOwner.Household!=null)&&
+                                                     ((newOwner.Household.LotHome==bed.LotCurrent)||
+                                                                    bed.IsTent))){
+                                                                    bed.RelinquishOwnershipOfBeds(newOwner,false);
+                                                                                entryPart.Owner=newOwner;
+                                             if(!flag){
+                                                       newOwner.Household.HouseholdSimsChanged+=new Household.HouseholdSimsChangedCallback(bed.HouseholdSimsChanged);
+                                             }
+                                              if(flag){
+                                                  BedData otherPart=bed.PartComponent.GetOtherPart(entryPart) as BedData;
+                                                      if((otherPart!=null)&&
+                                                         (otherPart.Owner==null)){
+                                                          otherPart.Owner=newOwner;
+                                                      }
+                                              }
+                                                       newOwner.Bed=bed;
+                                              }
+                                                    }
+                }
+               public static void ResetPosture(Sim sim){
+                try{
                                                 if(sim.Posture!=null){
                                                         int count=0;
                                    Posture posture=sim.Posture;
                                     while((posture!=null)&&(count<5)){
-                try{
+                    try{
                                            posture.OnReset(sim);
+                    }catch(Exception exception){
+         //  Get stack trace for the exception. with source file information
+               var st=new StackTrace(exception,true);
+         //  Get the top stack frame
+         var frame=st.GetFrame(0);
+         //  Get the line number from the stack frame
+    var line=frame.GetFileLineNumber();
+                      Alive.WriteLog(exception.Message+"\n\n"+
+                                     exception.StackTrace+"\n\n"+
+                                     exception.Source+"\n\n"+
+                                     line);
+                    }finally{
+                    }
+                                                            count++;
+                                           posture=posture.PreviousPosture;
+                                    }
+                                        if(posture!=null){
+                                           posture.PreviousPosture=null;
+                                        }
+                    try{
+                                                   sim.Posture=null;
+                    }catch(Exception exception){
+         //  Get stack trace for the exception. with source file information
+               var st=new StackTrace(exception,true);
+         //  Get the top stack frame
+         var frame=st.GetFrame(0);
+         //  Get the line number from the stack frame
+    var line=frame.GetFileLineNumber();
+                      Alive.WriteLog(exception.Message+"\n\n"+
+                                     exception.StackTrace+"\n\n"+
+                                     exception.Source+"\n\n"+
+                                     line);
+                                                   sim.mPosture=null;
+                    }
+                                                }
                 }catch(Exception exception){
      //  Get stack trace for the exception. with source file information
            var st=new StackTrace(exception,true);
@@ -1866,14 +1950,17 @@ var line=frame.GetFileLineNumber();
                                  line);
                 }finally{
                 }
-                                                            count++;
-                                           posture=posture.PreviousPosture;
-                                    }
-                                        if(posture!=null){
-                                           posture.PreviousPosture=null;
-                                        }
+            }
+            public static void ResetInventory(Sim sim){
                 try{
-                                                   sim.Posture=null;
+                                              if((sim.Inventory!=null)&&
+               (ParentsLeavingTownSituation.sAdultsInventories!=null)){
+                                                                                                List<InventoryItem>inventory;
+             if(ParentsLeavingTownSituation.sAdultsInventories.TryGetValue(sim.SimDescription.SimDescriptionId,out inventory)){
+                         RestoreInventoryFromList(sim.Inventory,inventory,false);
+                ParentsLeavingTownSituation.sAdultsInventories.Remove(sim.SimDescription.SimDescriptionId);
+             }
+                                              }
                 }catch(Exception exception){
      //  Get stack trace for the exception. with source file information
            var st=new StackTrace(exception,true);
@@ -1885,9 +1972,37 @@ var line=frame.GetFileLineNumber();
                                  exception.StackTrace+"\n\n"+
                                  exception.Source+"\n\n"+
                                  line);
-                                                   sim.mPosture=null;
+                }finally{
                 }
-                                                }
+            }
+            public static void RestoreInventoryFromList(Inventory ths,List<InventoryItem>items,bool deleteExisting){
+                                                                                                 if(deleteExisting){
+                                                                  ths.DestroyItems();
+                                                                                                 }
+                                                                                      if(items!=null){
+                                                           foreach(InventoryItem item in items){
+                                                              if(!ths.TryToAdd(item.Object,false)){
+                                                                               item.Object.Destroy();
+                                                              }
+                                                           }
+                                                                                      }
+            }
+            public static List<T>InventoryQuickFind<T>(Inventory ths)where T:GameObject{
+                       List<T>retList=new List<T>();
+                                                              if(ths!=null){
+                                 foreach(InventoryStack stack in ths.mItems.Values){
+                                                     if(stack.List.Count==0)continue;
+                                                     if(stack.List[0].Object is T){
+                          foreach(InventoryItem item in stack.List){
+                                        T local=item.Object as T;
+                                       if(local!=null){
+                              retList.Add(local);
+                                       }
+                          }
+                                                     }
+                                 }
+                                                              }
+                       return retList;
             }
                public static void CleanupSlots(Sim sim){
                 try{
@@ -1999,6 +2114,106 @@ var line=frame.GetFileLineNumber();
                 }finally{
                 }
             }
+            public static void ResetSkillModifiers(SimDescription sim){
+                try{
+                                                               if(sim.SkillManager==null)return;
+                                      CorrectOverallSkillModifier(sim);
+                                                                  sim.SkillManager.mSkillModifiers=new Dictionary<SkillNames,float>();
+                                        TraitManager traitManager=sim.TraitManager;
+                                                  if(traitManager!=null){
+                              foreach(Trait trait in traitManager.List){
+                                                     traitManager.AddTraitSkillGainModifiers(sim,trait.Guid);
+                              }
+                                                  }
+Dictionary<GameObject,bool>inventory=new Dictionary<GameObject,bool>();
+                                                              if((sim.CreatedSim!=null)&&
+                                                                 (sim.CreatedSim.Inventory!=null)){
+         foreach(GameObject obj in InventoryQuickFind<GameObject>(sim.CreatedSim.Inventory)){
+              inventory.Add(obj,true);
+         }
+                                                              }
+                                                           ulong eventId=(ulong)EventTypeId.kSkillLearnedSkill;
+                                        Dictionary<ulong,List<EventListener>>events;
+                if(!EventTracker.Instance.mListeners.TryGetValue(eventId,out events)){
+                                                                             events=null;
+                }else{
+                    EventTracker.Instance.mListeners.Remove(     eventId);
+                }
+                                                              if((sim.CreatedSim!=null)&&
+                                                                (!sim.CreatedSim.HasBeenDestroyed)){
+                                           foreach(Skill skill in sim.SkillManager.List){
+                  bool isChangingWorlds=GameStates.sIsChangingWorlds;
+                        //  Workaround for issue in IsIdTravelling
+                                        GameStates.sIsChangingWorlds=false;
+                    try{
+                                                         skill.OnSkillAddition(true);
+                    }catch(Exception exception){
+         //  Get stack trace for the exception. with source file information
+               var st=new StackTrace(exception,true);
+         //  Get the top stack frame
+         var frame=st.GetFrame(0);
+         //  Get the line number from the stack frame
+    var line=frame.GetFileLineNumber();
+                      Alive.WriteLog(exception.Message+"\n\n"+
+                                     exception.StackTrace+"\n\n"+
+                                     exception.Source+"\n\n"+
+                                     line);
+                    }finally{
+                                        GameStates.sIsChangingWorlds=isChangingWorlds;
+                    }
+                                           }
+                                                              }
+                                                                          if(events!=null){
+                    EventTracker.Instance.mListeners.Add(        eventId,    events);
+                                                                          }
+                                                              if((sim.CreatedSim!=null)&&
+                                                                 (sim.CreatedSim.Inventory!=null)){
+         foreach(GameObject obj in InventoryQuickFind<GameObject>(sim.CreatedSim.Inventory)){
+                        if(inventory.ContainsKey(obj))continue;
+                        try{
+                            sim.CreatedSim.Inventory.RemoveByForce(obj);
+                            obj.Destroy(); // Do not use FadeOut(), it hangs the game
+                        }catch{}
+         }
+                                                              }
+                                                               if(sim.OccultManager!=null){
+                                            OccultVampire vampire=sim.OccultManager.GetOccultType(Sims3.UI.Hud.OccultTypes.Vampire) as OccultVampire;
+                                                      if((vampire!=null)&&
+                                                         (vampire.AppliedNightBenefits)){
+                    try{
+                                                              if((sim.CreatedSim!=null)&&
+                                                                (!sim.CreatedSim.HasBeenDestroyed)){
+                                                          vampire.SunsetCallback();
+                                                              }
+                    }catch(Exception exception){
+         //  Get stack trace for the exception. with source file information
+               var st=new StackTrace(exception,true);
+         //  Get the top stack frame
+         var frame=st.GetFrame(0);
+         //  Get the line number from the stack frame
+    var line=frame.GetFileLineNumber();
+                      Alive.WriteLog(exception.Message+"\n\n"+
+                                     exception.StackTrace+"\n\n"+
+                                     exception.Source+"\n\n"+
+                                     line);
+                    }finally{
+                    }
+                                                      }
+                                                               }
+                }catch(Exception exception){
+     //  Get stack trace for the exception. with source file information
+           var st=new StackTrace(exception,true);
+     //  Get the top stack frame
+     var frame=st.GetFrame(0);
+     //  Get the line number from the stack frame
+var line=frame.GetFileLineNumber();
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source+"\n\n"+
+                                 line);
+                }finally{
+                }
+            }
                public static void ResetCareer(SimDescription sim){
                 try{
                         Sims3.Gameplay.Careers.Career career=sim.Occupation as Sims3.Gameplay.Careers.Career;
@@ -2025,6 +2240,43 @@ var line=frame.GetFileLineNumber();
                 }finally{
                 }
                }
+            public static void ResetRole(Sim sim){
+                try{
+                                          if(sim==null){                            return;}
+                                          if(sim.SimDescription.AssignedRole==null){return;}
+                                   Role role=sim.SimDescription.AssignedRole;
+                                     if(role.IsActive){
+                    try{
+                                        role.mIsActive=false;
+                                        role.StartRole();
+                    }catch(Exception exception){
+         //  Get stack trace for the exception. with source file information
+               var st=new StackTrace(exception,true);
+         //  Get the top stack frame
+         var frame=st.GetFrame(0);
+         //  Get the line number from the stack frame
+    var line=frame.GetFileLineNumber();
+                      Alive.WriteLog(exception.Message+"\n\n"+
+                                     exception.StackTrace+"\n\n"+
+                                     exception.Source+"\n\n"+
+                                     line);
+                    }finally{
+                    }              
+                                     }
+                }catch(Exception exception){
+     //  Get stack trace for the exception. with source file information
+           var st=new StackTrace(exception,true);
+     //  Get the top stack frame
+     var frame=st.GetFrame(0);
+     //  Get the line number from the stack frame
+var line=frame.GetFileLineNumber();
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source+"\n\n"+
+                                 line);
+                }finally{
+                }
+            }
             public static void ResetSituations(Sim sim){
                 try{
                                                if((sim.Autonomy!=null)&&
@@ -2057,6 +2309,65 @@ var line=frame.GetFileLineNumber();
                     }finally{
                     }
   }
+                                               }
+                }catch(Exception exception){
+     //  Get stack trace for the exception. with source file information
+           var st=new StackTrace(exception,true);
+     //  Get the top stack frame
+     var frame=st.GetFrame(0);
+     //  Get the line number from the stack frame
+var line=frame.GetFileLineNumber();
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source+"\n\n"+
+                                 line);
+                }finally{
+                }
+            }
+            public static void ResetRouting(Sim sim){
+                try{
+                                             if(sim==null)return;
+                  SimRoutingComponent component=sim.SimRoutingComponent;
+                                   if(component!=null){
+                                   if(component.LockedDoorsDuringPlan!=null&&
+                                      component.LockedDoorsDuringPlan.Count>0){
+                 foreach(Door door in component.LockedDoorsDuringPlan){
+                           if(door==null){continue;}                        
+PortalComponent portalComponent=
+                              door.PortalComponent;
+             if(portalComponent!=null){
+                portalComponent.FreeAllRoutingLanes();
+             }
+                              door.SetObjectToReset();
+                 }
+                                   }
+                                      component.LockedDoorsDuringPlan=new List<Door>();
+                                   }
+                }catch(Exception exception){
+     //  Get stack trace for the exception. with source file information
+           var st=new StackTrace(exception,true);
+     //  Get the top stack frame
+     var frame=st.GetFrame(0);
+     //  Get the line number from the stack frame
+var line=frame.GetFileLineNumber();
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source+"\n\n"+
+                                 line);
+                }finally{
+                }
+            }
+            public static void UpdateInterface(Sim sim){
+                try{
+                                               if((sim==Sim.ActiveActor)&&(Sims3.UI.Hud.HudController.Instance!=null)){
+                                       Sims3.Gameplay.UI.HudModel hudModel=Sims3.UI.Hud.HudController.Instance.mHudModel as Sims3.Gameplay.UI.HudModel;
+                                                               if(hudModel!=null){
+                                                                  hudModel.OnInteractionQueueDirtied();
+                                                               }
+                                               }
+                                               if((sim.Household!=null)&&
+                                                  (sim.Household.HouseholdSimsChanged!=null)){
+                                                   sim.Household.HouseholdSimsChanged(Sims3.Gameplay.CAS.HouseholdEvent.kSimAdded,sim,null);
                                                }
                 }catch(Exception exception){
      //  Get stack trace for the exception. with source file information
@@ -3026,7 +3337,8 @@ var line=frame.GetFileLineNumber();
                 return(false);
             }
             else 
-            if((ParentsLeavingTownSituation.Adults!=null)&&(ParentsLeavingTownSituation.Adults.Contains(sim.SimDescriptionId))){
+            if((ParentsLeavingTownSituation.Adults!=null)&&
+               (ParentsLeavingTownSituation.Adults.Contains(sim.SimDescriptionId))){
                 return(false);
             }
             else 

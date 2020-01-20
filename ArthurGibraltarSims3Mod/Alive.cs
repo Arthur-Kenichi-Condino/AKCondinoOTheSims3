@@ -780,15 +780,19 @@ var line=frame.GetFileLineNumber();
      if(!positions.TryGetValue(sim,out Vector3 position)){
          positions.Add(        sim,
                                sim.Position);
+                            if(sim.SimDescription!=null){
                                         ResetClearSimTask.ResetPosture       (sim);
-                                        ResetClearSimTask.CleanupBrokenSkills(sim.SimDescription);
-                                        ResetClearSimTask.ResetCareer        (sim.SimDescription);
-                                        //
-                                        ResetClearSimTask.CleanupSlots       (sim);
-                                        ResetClearSimTask.ResetInventory     (sim);
-                                        ResetClearSimTask.ResetRouting       (sim);
-                                        ResetClearSimTask.ResetSkillModifiers(sim.SimDescription);
-                                        ResetClearSimTask.ResetRole          (sim);
+                                            ResetClearSimTask.CleanupBrokenSkills(sim.SimDescription);
+                                                ResetClearSimTask.ResetCareer        (sim.SimDescription);
+                                                  //ResetClearSimTask.ResetSituations    (sim);
+                                                        ResetClearSimTask.CleanupSlots       (sim);
+                                                            ResetClearSimTask.ResetInventory     (sim);
+                                                                ResetClearSimTask.ResetRouting       (sim);
+                                                                    ResetClearSimTask.ResetSkillModifiers(sim.SimDescription);
+                                                                        ResetClearSimTask.ResetRole          (sim);
+                                                                            ResetClearSimTask.CleanupOpportunities(sim.SimDescription,false);
+                                        SafeStore.FixCareer(sim.Occupation,true);
+                            }
      }else{
                       if(sim.Position==position){//  Stuck!
                       if(sim.Household==null||
@@ -796,8 +800,7 @@ var line=frame.GetFileLineNumber();
                          sim.Household.IsSpecialHousehold){
                                     new ResetClearSimTask(sim);
                       }else
-                      if(sim.Service!=null&&
-                         sim.Service.ServiceType==ServiceType.PizzaDelivery){
+                      if(sim.Service!=null){
                                     new ResetClearSimTask(sim);
                       }else
                       if(sim.InteractionQueue==null||
@@ -809,14 +812,16 @@ var line=frame.GetFileLineNumber();
                          sim.mbSendHomeOnNextReset=true;
                          sim.     SetObjectToReset();
                                         ResetClearSimTask.ResetPosture       (sim);
-                                        ResetClearSimTask.CleanupBrokenSkills(sim.SimDescription);
-                                        ResetClearSimTask.ResetCareer        (sim.SimDescription);
-                                        ResetClearSimTask.ResetSituations    (sim);
-                                        ResetClearSimTask.CleanupSlots       (sim);
-                                        ResetClearSimTask.ResetInventory     (sim);
-                                        ResetClearSimTask.ResetRouting       (sim);
-                                        ResetClearSimTask.ResetSkillModifiers(sim.SimDescription);
-                                        ResetClearSimTask.ResetRole          (sim);
+                                            ResetClearSimTask.CleanupBrokenSkills(sim.SimDescription);
+                                                ResetClearSimTask.ResetCareer        (sim.SimDescription);
+                                                    ResetClearSimTask.ResetSituations    (sim);
+                                                        ResetClearSimTask.CleanupSlots       (sim);
+                                                            ResetClearSimTask.ResetInventory     (sim);
+                                                                ResetClearSimTask.ResetRouting       (sim);
+                                                                    ResetClearSimTask.ResetSkillModifiers(sim.SimDescription);
+                                                                        ResetClearSimTask.ResetRole          (sim);
+                                                                            ResetClearSimTask.CleanupOpportunities(sim.SimDescription,true);
+                                        SafeStore.FixCareer(sim.Occupation,true);
                                                                                                               StuckSimData stuckSim;
                                                          if(!StuckSims.TryGetValue(sim.SimDescription.SimDescriptionId,out stuckSim)){
                                                                                                                            stuckSim=new StuckSimData();
@@ -835,16 +840,20 @@ var line=frame.GetFileLineNumber();
                       }else{
                                     new ResetClearSimTask(sim);
                       }
-                      }else{
+                      }else{//  Had an old position registered; but it just has changed!
+                            if(sim.SimDescription!=null){
                                         ResetClearSimTask.ResetPosture       (sim);
-                                        ResetClearSimTask.CleanupBrokenSkills(sim.SimDescription);
-                                        ResetClearSimTask.ResetCareer        (sim.SimDescription);
-                                        //
-                                        ResetClearSimTask.CleanupSlots       (sim);
-                                        ResetClearSimTask.ResetInventory     (sim);
-                                        ResetClearSimTask.ResetRouting       (sim);
-                                        ResetClearSimTask.ResetSkillModifiers(sim.SimDescription);
-                                        ResetClearSimTask.ResetRole          (sim);
+                                            ResetClearSimTask.CleanupBrokenSkills(sim.SimDescription);
+                                                ResetClearSimTask.ResetCareer        (sim.SimDescription);
+                                                  //ResetClearSimTask.ResetSituations    (sim);
+                                                        ResetClearSimTask.CleanupSlots       (sim);
+                                                            ResetClearSimTask.ResetInventory     (sim);
+                                                                ResetClearSimTask.ResetRouting       (sim);
+                                                                    ResetClearSimTask.ResetSkillModifiers(sim.SimDescription);
+                                                                        ResetClearSimTask.ResetRole          (sim);
+                                                                            ResetClearSimTask.CleanupOpportunities(sim.SimDescription,false);
+                                        SafeStore.FixCareer(sim.Occupation,true);
+                            }
                       }
          positions[sim]=(sim.Position);
      }
@@ -1637,7 +1646,7 @@ var line=frame.GetFileLineNumber();
                 }finally{
                 }
         }
-        protected class ResetClearSimTask:AlarmTask{
+           public class ResetClearSimTask:AlarmTask{
                                Sim                           mSim;
                  public ResetClearSimTask(Sim sim):base(1,TimeUnit.Seconds,null){
                                          mSim=sim;
@@ -1772,9 +1781,9 @@ Sleep();
            if(occupation==null)continue;
               occupation.FormerBoss=null;
              }
-using(DreamCatcher.HouseholdStore store=new DreamCatcher.HouseholdStore(sim.Household,true)){
+ using(HouseholdStore store=new HouseholdStore(sim.Household,true)){
                         PlumbBob.DoSelectActor(sim,true);
-}
+ }
                     }catch(Exception exception){
          //  Get stack trace for the exception. with source file information
                var st=new StackTrace(exception,true);
@@ -2214,7 +2223,16 @@ var line=frame.GetFileLineNumber();
                 }finally{
                 }
             }
-               public static void ResetCareer(SimDescription sim){
+                public static void CorrectOverallSkillModifier(SimDescription sim){
+                                                                              sim.SkillManager.mOverallModifier=sim.SkillManager.mMoodModifier;
+                                                                          if((sim.CreatedSim!=null)&&
+                                                                             (sim.CreatedSim.BuffManager!=null)){
+                                                                           if(sim.CreatedSim.BuffManager.HasElement(BuffNames.IncreasedUnderstanding)){
+                                                                              sim.SkillManager.mOverallModifier+=ImprovedProtestSituation.kSkillIncreasePctRewardFromCause;
+                                                                           }
+                                                                          }
+                }
+            public static void ResetCareer(SimDescription sim){
                 try{
                         Sims3.Gameplay.Careers.Career career=sim.Occupation as Sims3.Gameplay.Careers.Career;
                                                    if(career!=null){
@@ -2239,7 +2257,7 @@ var line=frame.GetFileLineNumber();
                                  line);
                 }finally{
                 }
-               }
+            }
             public static void ResetRole(Sim sim){
                 try{
                                           if(sim==null){                            return;}
@@ -2276,6 +2294,51 @@ var line=frame.GetFileLineNumber();
                                  line);
                 }finally{
                 }
+            }
+            public static bool CleanupOpportunities(SimDescription sim,bool clean){
+                try{
+                                                                if(sim.OpportunityHistory==null){                      return false;}
+                                                                if(sim.OpportunityHistory.mCurrentOpportunities==null){return false;}
+                                        OpportunityManager manager=null;
+                                                                if(sim.CreatedSim!=null){
+                                                           manager=sim.CreatedSim.OpportunityManager;
+                                                                }
+                                                     for(int i=0;i<sim.OpportunityHistory.mCurrentOpportunities.Length;i++){
+                     OpportunityHistory.OpportunityExportInfo info=sim.OpportunityHistory.mCurrentOpportunities[i];
+                                                           if(info==null){
+                                                        if(manager!=null){
+                                                              info=new OpportunityHistory.OpportunityExportInfo();
+                                                                   sim.OpportunityHistory.mCurrentOpportunities[i]=info;
+                                                        }
+                                                           }else if(clean){
+                                                        if(manager==null){
+                                                                   sim.OpportunityHistory.mCurrentOpportunities[i]=null;
+                                                        }
+                                                           }
+                                                           if(info==null)continue;
+                                                           if(info.ListenerStates==null){
+                                                              info.ListenerStates=new EventListenerExportInfo[3];
+                                                           }
+                                                                          for(int index=0;index<3;index++){
+                                                           if(info.ListenerStates[index]==null){
+                                                              info.ListenerStates[index]=new EventListenerExportInfo();
+                                                           }
+                                                                          }
+                                                     }
+                }catch(Exception exception){
+     //  Get stack trace for the exception. with source file information
+           var st=new StackTrace(exception,true);
+     //  Get the top stack frame
+     var frame=st.GetFrame(0);
+     //  Get the line number from the stack frame
+var line=frame.GetFileLineNumber();
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source+"\n\n"+
+                                 line);
+                }finally{
+                }
+                return true;
             }
             public static void ResetSituations(Sim sim){
                 try{
@@ -2428,7 +2491,7 @@ static ChangingWorldsSuppression sChangingWorldsSuppression=new ChangingWorldsSu
                                                             if(createdSim.Inventory  !=null){
                                                     mInventory=createdSim.Inventory.DestroyInventoryAndStoreInList();
                                                             }
-                       mDreamStore=new DreamCatcher.DreamStore(createdSim,false,false);
+                                    mDreamStore=new DreamStore(createdSim,false,false);
                                               mReservedVehicle=createdSim.GetReservedVehicle();
                                                                createdSim.ReservedVehicle=null;
                                                             }   
@@ -2450,7 +2513,7 @@ SafeStore.Flag flags=(SafeStore.Flag.None);
                                    mDoll.mOwner=null;
                                 }
                                             mGenealogy=sim.mGenealogy;
-                   mRelations=SafeStore.StoreRelations(sim,null);
+                             mRelations=StoreRelations(sim);
                     //  Stops all event processing during the creation process
                     EventTracker.sCurrentlyUpdatingDreamsAndPromisesManagers=true;
                     //  Stops the interface from updating during OnCreation
@@ -2482,12 +2545,11 @@ Household.HouseholdSimsChangedCallback
                                       mChangedCallback=null;
                            Household mChangedHousehold=null;
 Dictionary<SimDescription,Relationship>
-                   mRelations=null;
+                             mRelations=null;
                                   Genealogy mGenealogy = null;
                      ImaginaryDoll mDoll=null;
                                  List<InventoryItem>mInventory=null;
-DreamCatcher.DreamStore 
-                       mDreamStore=null;
+                         DreamStore mDreamStore=null;
 SafeStore mSafeStore=null;
                                       Vehicle mReservedVehicle=null;
                      OpportunitiesChangedCallback mOpportunitiesChanged=null;
@@ -2530,9 +2592,9 @@ SafeStore mSafeStore=null;
                                                  (mSim.CreatedSim.Inventory!=null)){
                          RestoreInventoryFromList(mSim.CreatedSim.Inventory,mInventory,true);
                                                 }
-                           if(mDreamStore!=null){
-                              mDreamStore.Restore(mSim.CreatedSim);
-                           }
+                                 if(mDreamStore!=null){
+                                    mDreamStore.Restore(mSim.CreatedSim);
+                                 }
        if(mSafeStore!=null){
           mSafeStore.Dispose();
        }
@@ -2814,171 +2876,332 @@ var line=frame.GetFileLineNumber();
                                    }
             }
         }
-            private static Sim Perform(SimDescription ths, Vector3 position, ResourceKey outfitKey, bool forceAlwaysAnimate, OnReset reset)
-            {
-                Household.HouseholdSimsChangedCallback changedCallback = null;
-                Household changedHousehold = null;
-
-                bool isChangingWorlds = GameStates.sIsChangingWorlds;
-
-                bool isLifeEventManagerEnabled = LifeEventManager.sIsLifeEventManagerEnabled;
-
-                Corrections.RemoveFreeStuffAlarm(ths);
-
-                using (SafeStore store = new SafeStore(ths, SafeStore.Flag.LoadFixup | SafeStore.Flag.Selectable | SafeStore.Flag.Unselectable))
-                {
-                    try
-                    {
-                        // Stops the memories system from interfering
-                        LifeEventManager.sIsLifeEventManagerEnabled = false;
-
-                        // Stops UpdateInformationKnownAboutRelationships()
-                        GameStates.sIsChangingWorlds = true;
-
-                        if (ths.Household != null)
-                        {
-                            changedCallback = ths.Household.HouseholdSimsChanged;
-                            changedHousehold = ths.Household;
-
-                            ths.Household.HouseholdSimsChanged = null;
-                        }
-
-                        if (ths.CreatedSim != null)
-                        {
-                            AttemptToPutInSafeLocation(ths.CreatedSim, false);
-
-                            if (reset != null)
-                            {
-                                ths.CreatedSim.SetObjectToReset();
-
-                                reset(ths.CreatedSim, false);
-                            }
-
-                            return ths.CreatedSim;
-                        }
-
-                        if (ths.AgingState != null)
-                        {
-                            bool flag = outfitKey == ths.mDefaultOutfitKey;
-
-                            ths.AgingState.SimBuilderTaskDeferred = false;
-
-                            ths.AgingState.PreInstantiateSim(ref outfitKey);
-                            if (flag)
-                            {
-                                ths.mDefaultOutfitKey = outfitKey;
-                            }
-                        }
-
-                        int capacity = forceAlwaysAnimate ? 0x4 : 0x2;
-                        Hashtable overrides = new Hashtable(capacity);
-                        overrides["simOutfitKey"] = outfitKey;
-                        overrides["rigKey"] = CASUtils.GetRigKeyForAgeGenderSpecies((ths.Age | ths.Gender) | ths.Species);
-                        if (forceAlwaysAnimate)
-                        {
-                            overrides["enableSimPoseProcessing"] = 0x1;
-                            overrides["animationRunsInRealtime"] = 0x1;
-                        }
-
-                        string instanceName = "GameSim";
-                        ProductVersion version = ProductVersion.BaseGame;
-                        if (ths.Species != CASAgeGenderFlags.Human)
-                        {
-                            instanceName = "Game" + ths.Species;
-                            version = ProductVersion.EP5;
-                        }
-
-                        SimInitParameters initData = new SimInitParameters(ths);
-                        Sim target = GlobalFunctions.CreateObjectWithOverrides(instanceName, version, position, 0x0, Vector3.UnitZ, overrides, initData) as Sim;
-                        if (target != null)
-                        {
-                            if (target.SimRoutingComponent == null)
-                            {
-                                // Performed to ensure that a useful error message is produced when the Sim construction fails
-                                target.OnCreation();
-                                target.OnStartup();
-                            }
-
-                            target.SimRoutingComponent.EnableDynamicFootprint();
-                            target.SimRoutingComponent.ForceUpdateDynamicFootprint();
-
-                            ths.PushAgingEnabledToAgingManager();
-
-                            /* This code is idiotic
-                            if ((ths.Teen) && (target.SkillManager != null))
-                            {
-                                Skill skill = target.SkillManager.AddElement(SkillNames.Homework);
-                                while (skill.SkillLevel < SimDescription.kTeenHomeworkSkillStartLevel)
-                                {
-                                    skill.ForceGainPointsForLevelUp();
-                                }
-                            }
-                            */
-
-                            // Custom
-                            OccultTypeHelper.SetupForInstantiatedSim(ths.OccultManager);
-
-                            if (ths.IsAlien)
-                            {
-                                World.ObjectSetVisualOverride(target.ObjectId, eVisualOverrideTypes.Alien, null);
-                            }
-
-                            AttemptToPutInSafeLocation(target, false);
-
-                            EventTracker.SendEvent(EventTypeId.kSimInstantiated, null, target);
-
-                            /*
-                            MiniSimDescription description = MiniSimDescription.Find(ths.SimDescriptionId);
-                            if ((description == null) || (!GameStates.IsTravelling && (ths.mHomeWorld == GameUtils.GetCurrentWorld())))
-                            {
-                                return target;
-                            }
-                            description.UpdateInWorldRelationships(ths);
-                            */
-
-                            if (ths.HealthManager != null)
-                            {
-                                ths.HealthManager.Startup();
-                            }
-
-                            if (((ths.SkinToneKey.InstanceId == 15475186560318337848L) && !ths.OccultManager.HasOccultType(OccultTypes.Vampire)) && (!ths.OccultManager.HasOccultType(OccultTypes.Werewolf) && !ths.IsGhost))
-                            {
-                                World.ObjectSetVisualOverride(ths.CreatedSim.ObjectId, eVisualOverrideTypes.Genie, null);
-                            }
-
-                            if (ths.Household.IsAlienHousehold)
-                            {
-                                (Sims3.UI.Responder.Instance.HudModel as HudModel).OnSimCurrentWorldChanged(true, ths);
-                            }
-
-                            if (Household.RoommateManager.IsNPCRoommate(ths.SimDescriptionId))
-                            {
-                                Household.RoommateManager.AddRoommateInteractions(target);
-                            }
-                        }
-
-                        return target;
-                    }
-                    finally
-                    {
-                        LifeEventManager.sIsLifeEventManagerEnabled = isLifeEventManagerEnabled;
-
-                        GameStates.sIsChangingWorlds = isChangingWorlds;
-
-                        if ((changedHousehold != null) && (changedCallback != null))
-                        {
-                            changedHousehold.HouseholdSimsChanged = changedCallback;
-
-                            if (changedHousehold.HouseholdSimsChanged != null)
-                            {
-                                changedHousehold.HouseholdSimsChanged(Sims3.Gameplay.CAS.HouseholdEvent.kSimAdded, ths.CreatedSim, null);
-                            }
-                        }
-                    }
+            public static void RemoveFreeStuffAlarm(SimDescription sim){
+                //  Workaround for error in CelebrityManager:RemoveFreeStuffAlarm
+                                                               if((sim.CelebrityManager!=null)&&
+                                                                  (sim.CelebrityManager.mFreeStuffAlarmHandle!=AlarmHandle.kInvalidHandle)){
+                                   AlarmManager.Global.RemoveAlarm(sim.CelebrityManager.mFreeStuffAlarmHandle);
+                                                                   sim.CelebrityManager.mFreeStuffAlarmHandle=(AlarmHandle.kInvalidHandle);
+                                                               }
+            }
+            public static Dictionary<SimDescription,Relationship>StoreRelations(SimDescription sim){
+                          Dictionary<SimDescription,Relationship>relations;
+                                                 if(Relationship.sAllRelationships.TryGetValue(sim,out relations)){
+                          Dictionary<SimDescription,Relationship>newRelations=new Dictionary<SimDescription,Relationship>();
+                    Dictionary<ulong,SimDescription>required=new Dictionary<ulong,SimDescription>();
+                             foreach(SimDescription member in GetChildren(sim)){
+                           if(!required.ContainsKey(member.SimDescriptionId)){
+                               required.Add(        member.SimDescriptionId,member);
+                           }
+                             }
+                             foreach(SimDescription member in GetParents( sim)){
+                           if(!required.ContainsKey(member.SimDescriptionId)){
+                               required.Add(        member.SimDescriptionId,member);
+                           }
+                             }
+                             foreach(SimDescription member in GetSiblings(sim)){
+                           if(!required.ContainsKey(member.SimDescriptionId)){
+                               required.Add(        member.SimDescriptionId,member);
+                           }
+                             }
+                                                                                 Career career=sim.Occupation as Career;
+                                                                                    if((career!=null)&&
+                                                                                       (career.Boss!=null)){
+                           if(!required.ContainsKey(career.Boss.SimDescriptionId)){
+                               required.Add(        career.Boss.SimDescriptionId,career.Boss);
+                           }
+                                                                                    }
+                    Dictionary<ulong,SimDescription>existing=new Dictionary<ulong,SimDescription>();
+                foreach(KeyValuePair<SimDescription,Relationship>relation in new Dictionary<SimDescription,Relationship>(relations)){
+                                                              if(relation.Value.LTR.CurrentLTR==Sims3.UI.Controller.LongTermRelationshipTypes.Stranger){
+                                          SafeRemoveRelationship(relation.Value);
+                                                              }
+                                         if(existing.ContainsKey(relation.Key.SimDescriptionId))continue;
+                                                                                    SimDescription requiredSim;
+                                         if(required.TryGetValue(relation.Key.SimDescriptionId,out requiredSim)){
+                                                                        if(!object.ReferenceEquals(requiredSim,relation.Key))continue;
+                                         }
+                                                    existing.Add(relation.Key.SimDescriptionId,relation.Key);
+                                              RepairRelationship(relation.Value);
+                                                                 newRelations.Add(relation.Key,relation.Value);
                 }
-            }  
-        }
-        protected class ResetStuckSimTask:AlarmTask{
+                                                         Relationship.sAllRelationships.Remove(sim);
+                                                         Relationship.sAllRelationships.Add(   sim,newRelations);
+
+                                                          return relations;
+                                                 }
+            return null;}
+            public static void RestoreRelations(SimDescription sim,Dictionary<SimDescription,Relationship>relations){
+                                                                                                       if(relations!=null){
+                                                                Dictionary<SimDescription,Relationship>oldRelations;
+                                                 if(Relationship.sAllRelationships.TryGetValue(sim,out oldRelations)){
+                                                               List<SimDescription>remove=new List<SimDescription>();
+                                             foreach(KeyValuePair<SimDescription,Relationship>relation in relations){
+                                                                                                   if(!oldRelations.ContainsKey(relation.Key)){
+                                                                                   remove.Add(relation.Key);
+                                                                                                   }
+                                             }
+                                                   foreach(SimDescription other in remove){
+                                                                                                          relations.Remove(other);
+                                                   }
+                                                 }
+                         Relationship.sAllRelationships.Remove(sim);
+                         Relationship.sAllRelationships.Add(   sim,relations);
+                                                                                                       }
+            }
+            public static bool RepairRelationship(Relationship r){
+                          bool result=(false);
+                                              Dictionary<SimDescription,Relationship>relations;
+                if(!Relationship.sAllRelationships.TryGetValue(r.SimDescriptionA,out relations)){
+                                                                                     relations=new Dictionary<SimDescription,Relationship>();
+                    Relationship.sAllRelationships.Add(        r.SimDescriptionA,    relations);
+                }
+                                                                                 if(!relations.ContainsKey(r.SimDescriptionB)){
+                                                                                     relations.Add(        r.SimDescriptionB,r);
+
+                               result=( true);
+                                                                                 }
+                if(!Relationship.sAllRelationships.TryGetValue(r.SimDescriptionB,out relations)){
+                                                                                     relations=new Dictionary<SimDescription,Relationship>();
+                    Relationship.sAllRelationships.Add(        r.SimDescriptionB,    relations);
+                }
+                                                                                 if(!relations.ContainsKey(r.SimDescriptionA)){
+                                                                                     relations.Add(        r.SimDescriptionA,r);
+
+                               result=( true);
+                                                                                 }
+                        return result;
+            }
+            public static void SafeRemoveRelationship(Relationship r){
+                                                  Dictionary<SimDescription,Relationship>relations;
+                     if(Relationship.sAllRelationships.TryGetValue(r.SimDescriptionA,out relations)){
+                                                                                         relations.Remove(r.SimDescriptionB);
+                     }
+                     if(Relationship.sAllRelationships.TryGetValue(r.SimDescriptionB,out relations)){
+                                                                                         relations.Remove(r.SimDescriptionA);
+                     }
+            }
+                public static List<SimDescription>GetParents (SimDescription sim){
+                                                                        if((sim==null)||(sim.Genealogy==null)){
+                   return new List<SimDescription>();
+                                                                        }
+                   return GetSims(sim.Genealogy.Parents );
+                }
+                public static List<SimDescription>GetChildren(SimDescription sim){
+                                                                         if((sim==null)||(sim.Genealogy==null)){
+                   return new List<SimDescription>();
+                                                                         }
+                   return GetSims(sim.Genealogy.Children);
+                }
+                public static List<SimDescription>GetSiblings(SimDescription sim){
+                                                                         if((sim==null)||(sim.Genealogy==null)){
+                   return new List<SimDescription>();
+                                                                         }
+                   return GetSims(sim.Genealogy.Siblings);
+                }
+                    public static List<SimDescription>GetSims(List<Genealogy>genes){
+                                  List<SimDescription>list=new List<SimDescription>();
+                                                                          if(genes!=null){
+                                                   foreach(Genealogy gene in genes){
+                                           SimDescription sim=GetSim(gene);
+                                                       if(sim==null)continue;
+                                                 list.Add(sim);
+                                                   }
+                                                                          }
+                                               return list;
+                    }
+                        public static SimDescription GetSim(Genealogy genealogy){
+                                                                   if(genealogy==null)return null;
+                try{
+                                                               return genealogy.SimDescription;
+                }catch(Exception exception){
+     //  Get stack trace for the exception. with source file information
+           var st=new StackTrace(exception,true);
+     //  Get the top stack frame
+     var frame=st.GetFrame(0);
+     //  Get the line number from the stack frame
+var line=frame.GetFileLineNumber();
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source+"\n\n"+
+                                 line);
+                }finally{
+                }
+                                                               return null;
+                        }
+            public static Urnstone FindGhostsGrave(SimDescription sim){
+                  foreach(Urnstone urnstone in Sims3.Gameplay.Queries.GetObjects<Urnstone>()){
+         if(object.ReferenceEquals(urnstone.DeadSimsDescription,sim)){
+                            return urnstone;
+         }
+                  }
+                            return null;
+            }
+           }
+            //private static Sim Perform(SimDescription ths, Vector3 position, ResourceKey outfitKey, bool forceAlwaysAnimate, OnReset reset)
+            //{
+            //    Household.HouseholdSimsChangedCallback changedCallback = null;
+            //    Household changedHousehold = null;
+
+            //    bool isChangingWorlds = GameStates.sIsChangingWorlds;
+
+            //    bool isLifeEventManagerEnabled = LifeEventManager.sIsLifeEventManagerEnabled;
+
+            //    RemoveFreeStuffAlarm(ths);
+
+            //    using (SafeStore store = new SafeStore(ths, SafeStore.Flag.LoadFixup | SafeStore.Flag.Selectable | SafeStore.Flag.Unselectable))
+            //    {
+            //        try
+            //        {
+            //            // Stops the memories system from interfering
+            //            LifeEventManager.sIsLifeEventManagerEnabled = false;
+
+            //            // Stops UpdateInformationKnownAboutRelationships()
+            //            GameStates.sIsChangingWorlds = true;
+
+            //            if (ths.Household != null)
+            //            {
+            //                changedCallback = ths.Household.HouseholdSimsChanged;
+            //                changedHousehold = ths.Household;
+
+            //                ths.Household.HouseholdSimsChanged = null;
+            //            }
+
+            //            if (ths.CreatedSim != null)
+            //            {
+            //                AttemptToPutInSafeLocation(ths.CreatedSim, false);
+
+            //                if (reset != null)
+            //                {
+            //                    ths.CreatedSim.SetObjectToReset();
+
+            //                    reset(ths.CreatedSim, false);
+            //                }
+
+            //                return ths.CreatedSim;
+            //            }
+
+            //            if (ths.AgingState != null)
+            //            {
+            //                bool flag = outfitKey == ths.mDefaultOutfitKey;
+
+            //                ths.AgingState.SimBuilderTaskDeferred = false;
+
+            //                ths.AgingState.PreInstantiateSim(ref outfitKey);
+            //                if (flag)
+            //                {
+            //                    ths.mDefaultOutfitKey = outfitKey;
+            //                }
+            //            }
+
+            //            int capacity = forceAlwaysAnimate ? 0x4 : 0x2;
+            //            Hashtable overrides = new Hashtable(capacity);
+            //            overrides["simOutfitKey"] = outfitKey;
+            //            overrides["rigKey"] = CASUtils.GetRigKeyForAgeGenderSpecies((ths.Age | ths.Gender) | ths.Species);
+            //            if (forceAlwaysAnimate)
+            //            {
+            //                overrides["enableSimPoseProcessing"] = 0x1;
+            //                overrides["animationRunsInRealtime"] = 0x1;
+            //            }
+
+            //            string instanceName = "GameSim";
+            //            ProductVersion version = ProductVersion.BaseGame;
+            //            if (ths.Species != CASAgeGenderFlags.Human)
+            //            {
+            //                instanceName = "Game" + ths.Species;
+            //                version = ProductVersion.EP5;
+            //            }
+
+            //            SimInitParameters initData = new SimInitParameters(ths);
+            //            Sim target = GlobalFunctions.CreateObjectWithOverrides(instanceName, version, position, 0x0, Vector3.UnitZ, overrides, initData) as Sim;
+            //            if (target != null)
+            //            {
+            //                if (target.SimRoutingComponent == null)
+            //                {
+            //                    // Performed to ensure that a useful error message is produced when the Sim construction fails
+            //                    target.OnCreation();
+            //                    target.OnStartup();
+            //                }
+
+            //                target.SimRoutingComponent.EnableDynamicFootprint();
+            //                target.SimRoutingComponent.ForceUpdateDynamicFootprint();
+
+            //                ths.PushAgingEnabledToAgingManager();
+
+            //                /* This code is idiotic
+            //                if ((ths.Teen) && (target.SkillManager != null))
+            //                {
+            //                    Skill skill = target.SkillManager.AddElement(SkillNames.Homework);
+            //                    while (skill.SkillLevel < SimDescription.kTeenHomeworkSkillStartLevel)
+            //                    {
+            //                        skill.ForceGainPointsForLevelUp();
+            //                    }
+            //                }
+            //                */
+
+            //                // Custom
+            //                OccultTypeHelper.SetupForInstantiatedSim(ths.OccultManager);
+
+            //                if (ths.IsAlien)
+            //                {
+            //                    World.ObjectSetVisualOverride(target.ObjectId, eVisualOverrideTypes.Alien, null);
+            //                }
+
+            //                AttemptToPutInSafeLocation(target, false);
+
+            //                EventTracker.SendEvent(EventTypeId.kSimInstantiated, null, target);
+
+            //                /*
+            //                MiniSimDescription description = MiniSimDescription.Find(ths.SimDescriptionId);
+            //                if ((description == null) || (!GameStates.IsTravelling && (ths.mHomeWorld == GameUtils.GetCurrentWorld())))
+            //                {
+            //                    return target;
+            //                }
+            //                description.UpdateInWorldRelationships(ths);
+            //                */
+
+            //                if (ths.HealthManager != null)
+            //                {
+            //                    ths.HealthManager.Startup();
+            //                }
+
+            //                if (((ths.SkinToneKey.InstanceId == 15475186560318337848L) && !ths.OccultManager.HasOccultType(OccultTypes.Vampire)) && (!ths.OccultManager.HasOccultType(OccultTypes.Werewolf) && !ths.IsGhost))
+            //                {
+            //                    World.ObjectSetVisualOverride(ths.CreatedSim.ObjectId, eVisualOverrideTypes.Genie, null);
+            //                }
+
+            //                if (ths.Household.IsAlienHousehold)
+            //                {
+            //                    (Sims3.UI.Responder.Instance.HudModel as HudModel).OnSimCurrentWorldChanged(true, ths);
+            //                }
+
+            //                if (Household.RoommateManager.IsNPCRoommate(ths.SimDescriptionId))
+            //                {
+            //                    Household.RoommateManager.AddRoommateInteractions(target);
+            //                }
+            //            }
+
+            //            return target;
+            //        }
+            //        finally
+            //        {
+            //            LifeEventManager.sIsLifeEventManagerEnabled = isLifeEventManagerEnabled;
+
+            //            GameStates.sIsChangingWorlds = isChangingWorlds;
+
+            //            if ((changedHousehold != null) && (changedCallback != null))
+            //            {
+            //                changedHousehold.HouseholdSimsChanged = changedCallback;
+
+            //                if (changedHousehold.HouseholdSimsChanged != null)
+            //                {
+            //                    changedHousehold.HouseholdSimsChanged(Sims3.Gameplay.CAS.HouseholdEvent.kSimAdded, ths.CreatedSim, null);
+            //                }
+            //            }
+            //        }
+            //    }
+            //}  
+           public class ResetStuckSimTask:AlarmTask{
         const                  string                        _CLASS_NAME=".ResetStuckSimTask:AlarmTask.";
                       readonly string                        Suffix;
                       readonly Sim                           _Sim;
@@ -2993,7 +3216,7 @@ var line=frame.GetFileLineNumber();
                               ResetStuckSim(_Sim,Destination,Suffix);
                                base.OnPerform();
             }
-        }
+           }
         protected static void ResetStuckSim(Sim sim,Vector3 destination,string suffix){
                                              if(sim!=null&&
                                                !sim.HasBeenDestroyed&&

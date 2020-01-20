@@ -34,6 +34,7 @@ using Sims3.Gameplay.Services;
 using Sims3.Gameplay.Situations;
 using Sims3.Gameplay.Skills;
 using Sims3.Gameplay.Socializing;
+using Sims3.Gameplay.UI;
 using Sims3.Gameplay.Utilities;
 using Sims3.SimIFace;
 using Sims3.SimIFace.CAS;
@@ -781,6 +782,7 @@ var line=frame.GetFileLineNumber();
          positions.Add(        sim,
                                sim.Position);
                             if(sim.SimDescription!=null){
+                               sim.SimDescription.ClearOutfits(OutfitCategories.MartialArts,true);
                                         ResetClearSimTask.ResetPosture       (sim);
                                             ResetClearSimTask.CleanupBrokenSkills(sim.SimDescription);
                                                 ResetClearSimTask.ResetCareer        (sim.SimDescription);
@@ -794,6 +796,8 @@ var line=frame.GetFileLineNumber();
                                         SafeStore.FixCareer(sim.Occupation,true);
                             }
      }else{
+                      if(sim.HasBeenDestroyed||
+                        !sim.InWorld)continue;
                       if(sim.Position==position){//  Stuck!
                       if(sim.Household==null||
                         !sim.Household.InWorld||
@@ -809,6 +813,7 @@ var line=frame.GetFileLineNumber();
                       }else
                       if(sim.SimDescription!=null&&
                          sim.SimDescription.CreatedSim==sim){
+                         sim.SimDescription.ClearOutfits(OutfitCategories.MartialArts,true);
                          sim.mbSendHomeOnNextReset=true;
                          sim.     SetObjectToReset();
                                         ResetClearSimTask.ResetPosture       (sim);
@@ -842,6 +847,7 @@ var line=frame.GetFileLineNumber();
                       }
                       }else{//  Had an old position registered; but it just has changed!
                             if(sim.SimDescription!=null){
+                               sim.SimDescription.ClearOutfits(OutfitCategories.MartialArts,true);
                                         ResetClearSimTask.ResetPosture       (sim);
                                             ResetClearSimTask.CleanupBrokenSkills(sim.SimDescription);
                                                 ResetClearSimTask.ResetCareer        (sim.SimDescription);
@@ -1416,7 +1422,10 @@ var line=frame.GetFileLineNumber();
 List<Sim>
    toRemove=new List<Sim>();
     foreach(var simPosData in positions){
-             if(simPosData.Key.Position!=simPosData.Value){
+             if(simPosData.Key==null||
+                simPosData.Key.HasBeenDestroyed||
+               !simPosData.Key.InWorld||
+                simPosData.Key.Position!=simPosData.Value){
    toRemove.Add(simPosData.Key);
              }
     }
@@ -1754,8 +1763,6 @@ return null;
                                 ResetInventory(sim);
                                   //
                                                      if(fadeOut){
-                                               sim.mbSendHomeOnNextReset=true;
-                                               sim.     SetObjectToReset();
                                   ResetRouting(sim);
                                   //
                  bool active=(Sim.ActiveActor==sim);
@@ -1815,7 +1822,13 @@ Sleep();
                                             if(sim.Inventory==null){
                                                sim.AddComponent<InventoryComponent>(new object[0x0]);
                                             }                      
-                                                        AttemptToPutInSafeLocation(sim,false);
+                                                                                                   StuckSimData stuckSim;
+                                                         if(!StuckSims.TryGetValue(simDesc.SimDescriptionId,out stuckSim)){
+                                                                                                                stuckSim=new StuckSimData();
+                                                             StuckSims.Add(        simDesc.SimDescriptionId,    stuckSim);
+                                                         }
+                                                                                                                stuckSim.Detections++;
+                                                                     ResetStuckSim(sim,Vector3.Invalid,"Deep",true);
                                   ResetRouting(sim);
                                                sim.SetObjectToReset();  
                                                      }
@@ -1839,7 +1852,13 @@ return sim;
                                             }
                                             else 
                                             if(simDesc.Service is Butler){
-                                                        AttemptToPutInSafeLocation(sim,false);
+                                                                                                   StuckSimData stuckSim;
+                                                         if(!StuckSims.TryGetValue(simDesc.SimDescriptionId,out stuckSim)){
+                                                                                                                stuckSim=new StuckSimData();
+                                                             StuckSims.Add(        simDesc.SimDescriptionId,    stuckSim);
+                                                         }
+                                                                                                                stuckSim.Detections++;
+                                                                     ResetStuckSim(sim,Vector3.Invalid,"Deep",true);
                   sim.Motives?.RecreateMotives(sim);
                                                sim.SetObjectToReset();  
 return sim;
@@ -2711,7 +2730,7 @@ var line=frame.GetFileLineNumber();
                         try{
                 SimDescription sim=mDoll.GetLiveFormSimDescription();
                             if(sim!=null){
-          new FixInvisibleTask(sim).AddToSimulator();
+            new DeepFixSimTask(sim).AddToSimulator();
                             }
                         }catch(Exception exception_){
              //  Get stack trace for the exception. with source file information
@@ -3038,169 +3057,681 @@ var line=frame.GetFileLineNumber();
                             return null;
             }
            }
-            //private static Sim Perform(SimDescription ths, Vector3 position, ResourceKey outfitKey, bool forceAlwaysAnimate, OnReset reset)
-            //{
-            //    Household.HouseholdSimsChangedCallback changedCallback = null;
-            //    Household changedHousehold = null;
+            public static Vector3 FindSafeLocation(Lot lot,bool isHorse){
+                                                    if(lot==null)return Vector3.Invalid;
+                                                             if(isHorse){
+                                       Mailbox mailbox=lot.FindMailbox();
+                                            if(mailbox!=null){
+                                        return mailbox.Position;
+                                            }else{
+                                        Door frontDoor=lot.FindFrontDoor();
+                                          if(frontDoor!=null){
+                                  int roomId=frontDoor.GetRoomIdOfDoorSide(CommonDoor.tSide.Front);
+                                   if(roomId!=0){
+                                      roomId=frontDoor.GetRoomIdOfDoorSide(CommonDoor.tSide.Back );
+                                   }
+                                   if(roomId==0){
+                               List<GameObject>objects=lot.GetObjectsInRoom<GameObject>(roomId);
+                                            if(objects.Count>0){
+     return RandomUtil.GetRandomObjectFromList(objects).Position;
+                                            }
+                                   }
+                                          }
+                                            }
+                                                             }
+            return lot.EntryPoint();}
+            public static Vector3 FindSafeLocationInRandomLot(Lot lot){
+                                             List<Lot>lots=new List<Lot>(LotManager.sLots.Values);
+                                                      lots.Remove(lot);
+                                                   if(lots.Count==0){
+                                                      lots.Add(lot);
+                                                   }
+            return Service.GetPositionInRandomLot(RandomUtil.GetRandomObjectFromList(lots));}
+        public static Sim InstantiateAtHome(SimDescription ths,SimOutfit outfit){
+                                                        if(ths==null)return null;
+                                                   Lot lot=ths.LotHome;
+                                                    if(lot==null){
+                                                       lot=ths.VirtualLotHome;
+                                                    }   
+                                        Vector3 position=(Vector3.Invalid);
+                                                    if(lot!=null){
+                             position=FindSafeLocation(lot,ths.IsHorse);
+                                             if(position==Vector3.Invalid){
+                                              position=lot.EntryPoint();
+                                             }
+                                                    }else{
+                  position=FindSafeLocationInRandomLot(lot);
+                                                    }
+                                                                      Vector3 forward=ths.CreatedSim.ForwardVector;
+                                             if(ths.IsHorse){
+                                 FindGoodLocationBooleans fglBooleans=FindGoodLocationBooleans.Routable|
+                                                                      FindGoodLocationBooleans.PreferEmptyTiles|
+                                                                      FindGoodLocationBooleans.AllowOnSlopes|
+                                                                      //FindGoodLocationBooleans.AllowIntersectionWithPlatformWalls|
+                                                                      //FindGoodLocationBooleans.AllowInFrontOfDoors          |
+                                                                      //FindGoodLocationBooleans.AllowOnStairTopAndBottomTiles|
+                                                                      FindGoodLocationBooleans.AllowOffLot        |
+                                                                      FindGoodLocationBooleans.AllowOnStreets     |
+                                                                      FindGoodLocationBooleans.AllowOnBridges     |
+                                                                      FindGoodLocationBooleans.AllowOnSideWalks   ;
+if(!GlobalFunctions.FindGoodLocationNearbyOnLevel(ths.CreatedSim,ths.CreatedSim.Level,ref position,ref forward,fglBooleans)){
+    GlobalFunctions.FindGoodLocationNearbyOnLevel(ths.CreatedSim,ths.CreatedSim.Level,ref position,ref forward,FindGoodLocationBooleans.None);
+}
+World.FindGoodLocationParams fglParams=new World.FindGoodLocationParams(position);
+                             fglParams.BooleanConstraints=fglBooleans;
+if(!GlobalFunctions.FindGoodLocation(ths.CreatedSim,fglParams,out position,out forward)){
+                                                    fglParams.BooleanConstraints=FindGoodLocationBooleans.None;
+    GlobalFunctions.FindGoodLocation(ths.CreatedSim,fglParams,out position,out forward);
+}
+                                             }else{
+World.FindGoodLocationParams fglParams=new World.FindGoodLocationParams(position);
+                             fglParams.BooleanConstraints=FindGoodLocationBooleans.Routable|
+                                                          FindGoodLocationBooleans.PreferEmptyTiles|
+                                                          FindGoodLocationBooleans.AllowOnSlopes|
+                                                          FindGoodLocationBooleans.AllowIntersectionWithPlatformWalls|
+                                                          FindGoodLocationBooleans.AllowInFrontOfDoors          |
+                                                          FindGoodLocationBooleans.AllowOnStairTopAndBottomTiles|
+                                                          FindGoodLocationBooleans.AllowOffLot        |
+                                                          FindGoodLocationBooleans.AllowOnStreets     |
+                                                          FindGoodLocationBooleans.AllowOnBridges     |
+                                                          FindGoodLocationBooleans.AllowOnSideWalks   ;
+if(!GlobalFunctions.FindGoodLocation(ths.CreatedSim,fglParams,out position,out forward)){
+                                                    fglParams.BooleanConstraints=FindGoodLocationBooleans.None;
+    GlobalFunctions.FindGoodLocation(ths.CreatedSim,fglParams,out position,out forward);
+}
+                                             }
+                                                bool noSim=(false);
+                try{
+                                     ResourceKey outfitKey=ths.mDefaultOutfitKey;
+                                                                      if(outfit==null){
+                                                        if(ths.IsHorse){
+                                                                         outfit=ths.GetOutfit(OutfitCategories.Naked   ,0);
+                                                        }
+                                                                      if(outfit==null){
+                                                                         outfit=ths.GetOutfit(OutfitCategories.Everyday,0);
+                                                                      }
+                                                                     if((outfit==null)||
+                                                                       (!outfit.IsValid)){
+                                                     noSim=( true);
+                                                                     }
+                                                                      }
+                                                 if(!noSim){
+                                                                      if(outfit!=null){
+                                                 outfitKey=outfit.Key;
+                                                                      }
+                                    return DeepInstantiate(ths,position,outfitKey,outfit);
+                                                 }
+                }catch(Exception exception){
+     //  Get stack trace for the exception. with source file information
+           var st=new StackTrace(exception,true);
+     //  Get the top stack frame
+     var frame=st.GetFrame(0);
+     //  Get the line number from the stack frame
+var line=frame.GetFileLineNumber();
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source+"\n\n"+
+                                 line);
+                                                           ths.mSim=null;
+                                                           ths.mDefaultOutfitKey=ResourceKey.kInvalidResourceKey;
+                                                     noSim=( true);
+                }
+                                                  if(noSim){
+                                                DeepFixSim(ths);
+                                                  }
+                                    return DeepInstantiate(ths,position,ResourceKey.kInvalidResourceKey);
+        }
+            public static void DeepFixSim(SimDescription sim){
+                try{
+                    OutfitCategories[]categoriesArray=null;
+                                                  switch(sim.Species){
+                    case CASAgeGenderFlags.Human:
+                                      categoriesArray=new OutfitCategories[]{OutfitCategories.Everyday,OutfitCategories.Naked,OutfitCategories.Athletic,OutfitCategories.Formalwear,OutfitCategories.Sleepwear,OutfitCategories.Swimwear};
+                        break;
+                    case CASAgeGenderFlags.Horse:
+                                      categoriesArray=new OutfitCategories[]{OutfitCategories.Everyday,OutfitCategories.Naked,OutfitCategories.Racing  ,OutfitCategories.Bridle    ,OutfitCategories.Jumping};
+                        break;
+                    default:
+                                      categoriesArray=new OutfitCategories[]{OutfitCategories.Everyday,OutfitCategories.Naked};
+                        break;
+                                                  }
+                                          SimOutfit sourceOutfit=null;
+                    for(int i=0;i<2;i++){
+                                             OutfitCategoryMap map=null;
+                         if(i==0){
+                                                               map=sim.mOutfits;
+                         }else{
+                                                               map=sim.mMaternityOutfits;
+                         }
+                                                            if(map==null)continue;
+             foreach(OutfitCategories category in Enum.GetValues(typeof(OutfitCategories))){
+                                   if(category==OutfitCategories.Supernatural)continue;
+                                             ArrayList outfits=map[category]as ArrayList;
+                                                    if(outfits==null)continue;
+                        foreach(SimOutfit anyOutfit in outfits){
+                                      if((anyOutfit!=null)&&
+                                         (anyOutfit.IsValid)){
+                                                    sourceOutfit=anyOutfit;
+                                break;
+                                      }
+                        }
+             }
+                    }
+                SimBuilder builder=new SimBuilder();
+                           builder.UseCompression=true;
+                                             var simTone=sim.SkinToneKey;
+                             List<ResourceKey>choiceTones=new List<ResourceKey>();
+                                          KeySearch tones=new KeySearch(0x0354796a);
+                        foreach(ResourceKey tone in tones){
+                            choiceTones.Add(tone);
+                        }
+                                                    tones.Reset();
+                                             if((simTone.InstanceId==0)||(!choiceTones.Contains(simTone))){
+                                                 simTone=RandomUtil.GetRandomObjectFromList(choiceTones);
+                                             }
+                                     ResourceKey newTone=simTone;
+                           builder.Age          =sim.Age               ;
+                           builder.Gender       =sim.Gender            ;
+                           builder.Species      =sim.Species           ;
+                           builder.SkinTone     =newTone               ;
+                           builder.SkinToneIndex=sim.SkinToneIndex     ;
+                           builder.MorphFat     =sim.mCurrentShape.Fat ;
+                           builder.MorphFit     =sim.mCurrentShape.Fit ;
+                           builder.MorphThin    =sim.mCurrentShape.Thin;
+GeneticsPet.SpeciesSpecificData speciesData=OutfitUtils.GetSpeciesSpecificData(sim);
 
-            //    bool isChangingWorlds = GameStates.sIsChangingWorlds;
+                    try{
+                                                 if(sourceOutfit!=null){
+               foreach(SimOutfit.BlendInfo blend in sourceOutfit.Blends){
+                           builder.SetFacialBlend(blend.key,blend.amount);
+               }
+    CASParts.OutfitBuilder.CopyGeneticParts(builder,sourceOutfit);
+                                                 }else{
+                                                      if(sim.Genealogy!=null){
+                                     List<SimDescription>     parents=new List<SimDescription>();
+                                     List<SimDescription>grandParents=new List<SimDescription>();
+                                                   foreach(SimDescription parent in ResetClearSimTask.GetParents(sim)){
+                                                              parents.Add(parent);
+                                                   foreach(SimDescription grandParent in ResetClearSimTask.GetParents(parent)){
+                                                         grandParents.Add(grandParent);
+                                                   }
+                                                   }
+                                                           if(parents.Count>0){
+                                                      if(sim.IsHuman){
+                         Genetics.InheritFacialBlends(builder,parents.ToArray(),new Random());
+                                                      }else{
+                     GeneticsPet.InheritBodyShape    (builder,parents,grandParents,new Random());
+                     GeneticsPet.InheritBasePeltLayer(builder,parents,grandParents,new Random());
+                     GeneticsPet.InheritPeltLayers   (builder,parents,grandParents,new Random());
+                                                      }
+                                                           }
+                                                      }
+                                                 }
+                    }catch(Exception exception){
+         //  Get stack trace for the exception. with source file information
+               var st=new StackTrace(exception,true);
+         //  Get the top stack frame
+         var frame=st.GetFrame(0);
+         //  Get the line number from the stack frame
+    var line=frame.GetFileLineNumber();
+                      Alive.WriteLog(exception.Message+"\n\n"+
+                                     exception.StackTrace+"\n\n"+
+                                     exception.Source+"\n\n"+
+                                     line);
+return;
+                    }
+                                                      if(sim.IsRobot){
+                    OutfitUtils.AddMissingPartsBots(builder,(OutfitCategories)0x200002,true,sim);
+Sleep();
+                    OutfitUtils.AddMissingPartsBots(builder, OutfitCategories.Everyday,true,sim);
+Sleep();
+                                                      }else 
+                                                      if(sim.IsHuman){
+                    OutfitUtils.AddMissingParts    (builder,(OutfitCategories)0x200002,true,sim,sim.IsAlien);
+Sleep();
+                    OutfitUtils.AddMissingParts    (builder, OutfitCategories.Everyday,true,sim,sim.IsAlien);
+Sleep();
+                                                      }else{
+                    OutfitUtils.AddMissingPartsPet (builder, OutfitCategories.Everyday|(OutfitCategories)0x200000,true,sim,speciesData);
+Sleep();
+                    OutfitUtils.AddMissingPartsPet (builder, OutfitCategories.Everyday,true,sim,speciesData);
+Sleep();
+                                                      }
+                ResourceKey uniformKey=new ResourceKey();
+                                                      if(sim.IsHuman){
+if(LocaleConstraints.GetUniform(ref uniformKey,sim.HomeWorld,builder.Age,builder.Gender,OutfitCategories.Everyday)){
+                    OutfitUtils.SetOutfit          (builder,new SimOutfit(uniformKey),sim);
+}
+                                                      }
+                    OutfitUtils.SetAutomaticModifiers(builder);
+                                                         sim.ClearOutfits(OutfitCategories.Career     ,false);
+                                                         sim.ClearOutfits(OutfitCategories.MartialArts,false);
+                                                         sim.ClearOutfits(OutfitCategories.Special    ,false);
+ foreach(OutfitCategories category in categoriesArray){
+                                       ArrayList outfits=null;
+                                                 outfits=sim.Outfits[category]as ArrayList;
+                                              if(outfits!=null){
+                                       int index=0;
+                                     while(index<outfits.Count){
+                             SimOutfit anyOutfit=outfits[index]as SimOutfit;
+                                    if(anyOutfit==null){
+                                                 outfits.RemoveAt(index);
+                                    }else 
+                                   if(!anyOutfit.IsValid){
+                                                 outfits.RemoveAt(index);
+                                   }else{
+                                           index++;
+                                   }
+                                     }
+                                              }
+                                             if((outfits==null)||
+                                                (outfits.Count==0)){
+                    OutfitUtils.MakeCategoryAppropriate(builder,category,sim);
+                                                      if(sim.IsHuman){
+if(LocaleConstraints.GetUniform(ref uniformKey,sim.HomeWorld,builder.Age,builder.Gender,category)){
+                    OutfitUtils.SetOutfit(builder,new SimOutfit(uniformKey),sim);
+}
+                                                      }
+                                                         sim.RemoveOutfits(category,false);
+                                      CASParts.AddOutfit(sim,category,builder,true);
+                                             }
+                                                      if(sim.IsUsingMaternityOutfits){
+                                                         sim.BuildPregnantOutfit(category);
+                                                      }
+ }
+                                                      if(sim.IsMummy){
+                                     OccultMummy.OnMerge(sim);
+                                                      }else 
+                                                      if(sim.IsFrankenstein){
+                              OccultFrankenstein.OnMerge(sim,sim.OccultManager.mIsLifetimeReward);
+                                                      }else 
+                                                      if(sim.IsGenie){
+                              OccultGenie.OverlayUniform(sim,OccultGenie.CreateUniformName(sim.Age,sim.Gender),ProductVersion.EP6,OutfitCategories.Everyday,CASSkinTones.BlueSkinTone,0.68f);
+                                                      }else 
+                                                      if(sim.IsImaginaryFriend){
+                            OccultImaginaryFriend friend=sim.OccultManager.GetOccultType(Sims3.UI.Hud.OccultTypes.ImaginaryFriend) as OccultImaginaryFriend;
+                          OccultBaseClass.OverlayUniform(sim,OccultImaginaryFriend.CreateUniformName(sim.Age,friend.Pattern),ProductVersion.EP4,OutfitCategories.Special,CASSkinTones.NoSkinTone,0f);
+                                                      }
+                                                      if(sim.IsMermaid){
+                                OccultMermaid.AddOutfits(sim,null);
+                                                      }
+                                                      if(sim.IsWerewolf){
+                                                      if(sim.ChildOrAbove){
+                                                             SimOutfit newWerewolfOutfit=OccultWerewolf.GetNewWerewolfOutfit(sim.Age,sim.Gender);
+                                                                    if(newWerewolfOutfit!=null){
+                                                         sim.AddOutfit(newWerewolfOutfit,OutfitCategories.Supernatural,0x0);
+                                                                    }
+                                                      }
+                                                      }
+                                 SimOutfit currentOutfit=null;
+                                                      if(sim.CreatedSim!=null){
+//========================================================================================================================================================
+                try{
+                        SimDescription simDesc=sim.CreatedSim.SimDescription;
+                         if(Simulator.GetProxy(sim.CreatedSim.ObjectId)==null){
+                                    if(simDesc!=null){
+                                               sim.CreatedSim.Destroy();
+                                    }                  
+goto _Reset;
+                         }
+                                    if(simDesc==null){
+                                               sim.CreatedSim.mSimDescription=new SimDescription();
+                                               sim.CreatedSim.Destroy();                    
+goto _Reset;
+                                    }
+                                            if(sim.LotHome!=null){
+                                       simDesc.IsZombie=false;
+                                    if(simDesc.CreatedSim!=sim.CreatedSim){
+                                                           sim.CreatedSim.Destroy();
+                                       simDesc.CreatedSim=null;                        
+goto _Reset;
+                                    }else{                        
+                                        Bed     myBed    =null;
+                                        BedData myBedData=null;
+                                foreach(Bed bed in sim.LotHome.GetObjects<Bed>()){
+                                                myBedData=bed.GetPartOwnedBy(sim.CreatedSim);
+                                             if(myBedData!=null){
+                                                myBed=bed;
+                                                break;
+                                             }
+                                }
+                    ResetClearSimTask.ResetPosture(sim.CreatedSim);
+                                    if(simDesc.TraitManager==null){
+                                       simDesc.mTraitManager=new TraitManager();
+                                    }
+                    try{
+                                       simDesc.Fixup();
+ ResetClearSimTask.CleanupBrokenSkills(simDesc);
+         ResetClearSimTask.ResetCareer(simDesc);
+                                       simDesc.ClearSpecialFlags();
+                                    if(simDesc.Pregnancy==null){
+                        try{
+                                    if(simDesc.mMaternityOutfits==null){
+                                       simDesc.mMaternityOutfits=new OutfitCategoryMap();
+                                    }
+                                       simDesc.SetPregnancy(0,false);
+                                       simDesc.ClearMaternityOutfits();
+                        }catch(Exception exception){
+             //  Get stack trace for the exception. with source file information
+                   var st=new StackTrace(exception,true);
+             //  Get the top stack frame
+             var frame=st.GetFrame(0);
+             //  Get the line number from the stack frame
+        var line=frame.GetFileLineNumber();
+                          Alive.WriteLog(exception.Message+"\n\n"+
+                                         exception.StackTrace+"\n\n"+
+                                         exception.Source+"\n\n"+
+                                         line);
+                        }finally{
+                        }
+                                    }
+                                            if(sim.CreatedSim.CurrentCommodityInteractionMap==null){
+                        try{
+                   LotManager.PlaceObjectOnLot(sim.CreatedSim,sim.CreatedSim.ObjectId);
+                                            if(sim.CreatedSim.CurrentCommodityInteractionMap==null){
+                                               sim.CreatedSim.ChangeCommodityInteractionMap(sim.LotHome.Map);
+                                            }
+                        }catch(Exception exception){
+             //  Get stack trace for the exception. with source file information
+                   var st=new StackTrace(exception,true);
+             //  Get the top stack frame
+             var frame=st.GetFrame(0);
+             //  Get the line number from the stack frame
+        var line=frame.GetFileLineNumber();
+                          Alive.WriteLog(exception.Message+"\n\n"+
+                                         exception.StackTrace+"\n\n"+
+                                         exception.Source+"\n\n"+
+                                         line);
+                        }finally{
+                        }
+                            }
+                    }catch(Exception exception){
+         //  Get stack trace for the exception. with source file information
+               var st=new StackTrace(exception,true);
+         //  Get the top stack frame
+         var frame=st.GetFrame(0);
+         //  Get the line number from the stack frame
+    var line=frame.GetFileLineNumber();
+                      Alive.WriteLog(exception.Message+"\n\n"+
+                                     exception.StackTrace+"\n\n"+
+                                     exception.Source+"\n\n"+
+                                     line);
+                    }finally{
+                    }
+             ResetClearSimTask.ResetSituations(sim.CreatedSim);
+                                  //
+                ResetClearSimTask.CleanupSlots(sim.CreatedSim);
+              ResetClearSimTask.ResetInventory(sim.CreatedSim);
+                                  //    
+                                            if(sim.CreatedSim.Inventory==null){
+                                               sim.CreatedSim.AddComponent<InventoryComponent>(new object[0x0]);
+                                            }                      
+                                                                                                   StuckSimData stuckSim;
+                                                         if(!StuckSims.TryGetValue(simDesc.SimDescriptionId,out stuckSim)){
+                                                                                                                stuckSim=new StuckSimData();
+                                                             StuckSims.Add(        simDesc.SimDescriptionId,    stuckSim);
+                                                         }
+                                                                                                                stuckSim.Detections++;
+                                                                     ResetStuckSim(sim.CreatedSim,Vector3.Invalid,"Deep",true);
+                ResetClearSimTask.ResetRouting(sim.CreatedSim);
+                                               sim.CreatedSim.SetObjectToReset();  
+                                //  [Nraas:]This is necessary to clear certain types of interactions
+                                // (it is also called in SetObjectToReset(), though doesn't always work there)
+                                            if(sim.CreatedSim.InteractionQueue!=null){
+                                               sim.CreatedSim.InteractionQueue.OnReset();
+                                            }
+ ResetClearSimTask.ResetSkillModifiers(simDesc);
+                   ResetClearSimTask.ResetRole(sim.CreatedSim);
+                                    if(simDesc.IsEnrolledInBoardingSchool()){
+                                       simDesc.BoardingSchool.OnRemovedFromSchool();
+                                    }
+                        MiniSimDescription miniSim=MiniSimDescription.Find(simDesc.SimDescriptionId);
+                                        if(miniSim!=null){
+                                           miniSim.Instantiated=true;
+                                        }
+             ResetClearSimTask.UpdateInterface(sim.CreatedSim);
+goto _Reset;
+                                    }
+                                            }
+                                            else 
+                                            if(simDesc.Service is Butler){
+                                                                                                   StuckSimData stuckSim;
+                                                         if(!StuckSims.TryGetValue(simDesc.SimDescriptionId,out stuckSim)){
+                                                                                                                stuckSim=new StuckSimData();
+                                                             StuckSims.Add(        simDesc.SimDescriptionId,    stuckSim);
+                                                         }
+                                                                                                                stuckSim.Detections++;
+                                                                     ResetStuckSim(sim.CreatedSim,Vector3.Invalid,"Deep",true);
+       sim.CreatedSim.Motives?.RecreateMotives(sim.CreatedSim);
+                                               sim.CreatedSim.SetObjectToReset();  
+goto _Reset;
+                                            }else 
+                                            if(simDesc.IsImaginaryFriend){
+                                            OccultImaginaryFriend friend;
+  if(OccultImaginaryFriend.TryGetOccultFromSim(sim.CreatedSim,out friend)){
+                                            if(Simulator.GetProxy(friend.mDollId)!=null){
+                                                                  friend.TurnBackIntoDoll(OccultImaginaryFriend.Destination.Owner);
+goto _Reset;
+                                            }
+  }
+                                            }else 
+                                            if(simDesc.IsBonehilda){
+    foreach(BonehildaCoffin coffin in Sims3.Gameplay.Queries.GetObjects<BonehildaCoffin>()){
+                         if(coffin.mBonehilda==simDesc){
+                            coffin.mBonehildaSim=null;
+                            break;
+                         }
+    }
+goto _Reset;
+                                            }
+goto _Reset;
+                }catch(Exception exception){
+     //  Get stack trace for the exception. with source file information
+           var st=new StackTrace(exception,true);
+     //  Get the top stack frame
+     var frame=st.GetFrame(0);
+     //  Get the line number from the stack frame
+var line=frame.GetFileLineNumber();
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source+"\n\n"+
+                                 line);
+goto _Reset;
+                }finally{
+                }
+_Reset:{}                 
+//========================================================================================================================================================
+                    try{
+                                                         sim.CreatedSim.SwitchToOutfitWithoutSpin(Sim.ClothesChangeReason.GoingOutside,OutfitCategories.Everyday,true);
+                    }catch(Exception exception){
+         //  Get stack trace for the exception. with source file information
+               var st=new StackTrace(exception,true);
+         //  Get the top stack frame
+         var frame=st.GetFrame(0);
+         //  Get the line number from the stack frame
+    var line=frame.GetFileLineNumber();
+                      Alive.WriteLog(exception.Message+"\n\n"+
+                                     exception.StackTrace+"\n\n"+
+                                     exception.Source+"\n\n"+
+                                     line);
+                    }
+                                           currentOutfit=sim.CreatedSim.CurrentOutfit;
+                                                      }else{
+                                           currentOutfit=sim.GetOutfit(OutfitCategories.Everyday,0);
+                                                      }
+                                        if(currentOutfit!=null){
+ThumbnailManager.GenerateHouseholdSimThumbnail(currentOutfit.Key,currentOutfit.Key.InstanceId,0x0,ThumbnailSizeMask.Large|ThumbnailSizeMask.ExtraLarge|ThumbnailSizeMask.Medium|ThumbnailSizeMask.Small,ThumbnailTechnique.Default,true,false,sim.AgeGenderSpecies);
+                                        }
+                }catch(Exception exception){
+     //  Get stack trace for the exception. with source file information
+           var st=new StackTrace(exception,true);
+     //  Get the top stack frame
+     var frame=st.GetFrame(0);
+     //  Get the line number from the stack frame
+var line=frame.GetFileLineNumber();
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source+"\n\n"+
+                                 line);
+                }
+            }
+        //  [NRaas]From SimDescription.Instantiate
+            private static Sim DeepInstantiate(SimDescription ths,Vector3 position,ResourceKey outfitKey,SimOutfit outfit=null,bool forceAlwaysAnimate=true){
+                                                                                            if(outfitKey==ResourceKey.kInvalidResourceKey||
+                                                                                                                   outfit==null){
+                try{
+                                                                                               outfitKey=ths.mDefaultOutfitKey;
+                                                                                                                if(outfit==null){
+                                                           if(ths.IsHorse){
+                                                                                                                   outfit=ths.GetOutfit(OutfitCategories.Naked   ,0);
+                                                           }
+                                                                                                                if(outfit==null){
+                                                                                                                   outfit=ths.GetOutfit(OutfitCategories.Everyday,0);
+                                                                                                                }
+                                                                                                               if((outfit==null)||
+                                                                                                                 (!outfit.IsValid)){
+            return null;
+                                                                                                               }
+                                                                                                                }
+                                                                                                                if(outfit!=null){
+                                                                                               outfitKey=outfit.Key;
+                                                                                                                }
+                }catch(Exception exception){
+     //  Get stack trace for the exception. with source file information
+           var st=new StackTrace(exception,true);
+     //  Get the top stack frame
+     var frame=st.GetFrame(0);
+     //  Get the line number from the stack frame
+var line=frame.GetFileLineNumber();
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source+"\n\n"+
+                                 line);
+                                                           ths.mSim=null;
+                                                           ths.mDefaultOutfitKey=ResourceKey.kInvalidResourceKey;
+            return null;
+                }
+                                                                                            }
+                Household.HouseholdSimsChangedCallback changedCallback=null;
+                Household                              changedHousehold = null;
+                  bool isChangingWorlds=GameStates.sIsChangingWorlds;
+         bool isLifeEventManagerEnabled=LifeEventManager.sIsLifeEventManagerEnabled;
+                    ResetClearSimTask.RemoveFreeStuffAlarm(ths);
+using(SafeStore store=new SafeStore(ths,SafeStore.Flag.LoadFixup|SafeStore.Flag.Selectable|SafeStore.Flag.Unselectable)){
+                try{
+                                        //  Stops the memories system from interfering
+                                        LifeEventManager.sIsLifeEventManagerEnabled=false;
+                                        //  Stops UpdateInformationKnownAboutRelationships()
+                                        GameStates.sIsChangingWorlds=true;
+                                                        if(ths.Household!=null){
+                                                       changedCallback=ths.Household.HouseholdSimsChanged;
+                                                       changedHousehold=ths.Household;
+                                                           ths.Household.HouseholdSimsChanged=null;
+                                                        }
+                                                        if(ths.CreatedSim!=null){
+                                                                                               StuckSimData stuckSim;
+                                                         if(!StuckSims.TryGetValue(ths.SimDescriptionId,out stuckSim)){
+                                                                                                            stuckSim=new StuckSimData();
+                                                             StuckSims.Add(        ths.SimDescriptionId,    stuckSim);
+                                                         }
+                                                                                                            stuckSim.Detections++;
+                                                                     ResetStuckSim(ths.CreatedSim,Vector3.Invalid,"Deep",true);
+                                                           ths.CreatedSim.SetObjectToReset();
+                                                    return ths.CreatedSim;
+                                                        }
+                                                        if(ths.AgingState!=null){
+                                      bool flag=outfitKey==ths.mDefaultOutfitKey;
+                                                           ths.AgingState.SimBuilderTaskDeferred=false;
+                                                           ths.AgingState.PreInstantiateSim(ref outfitKey);
+                                        if(flag){
+                                                           ths.mDefaultOutfitKey=outfitKey;
+                                        }
+                                                        }
+                                                                                                                       int capacity=forceAlwaysAnimate?0x4:0x2;
+                                                                                         Hashtable overrides=new Hashtable(capacity);
+                                                                                                   overrides["simOutfitKey"]=outfitKey;
+                                                                                                   overrides["rigKey"]=CASUtils.GetRigKeyForAgeGenderSpecies((ths.Age|ths.Gender)|ths.Species);
+                                                                                                                                 if(forceAlwaysAnimate){
+                                                                                                   overrides["enableSimPoseProcessing"]=0x1;
+                                                                                                   overrides["animationRunsInRealtime"]=0x1;
+                                                                                                                                 }
+                                string instanceName="GameSim";
+ProductVersion version=ProductVersion.BaseGame;
+                                                        if(ths.Species!=CASAgeGenderFlags.Human){
+                                       instanceName="Game"+ths.Species;
+               version=ProductVersion.EP5;
+                                                        }
+          SimInitParameters initData=new SimInitParameters(ths);
+   Sim target=GlobalFunctions.CreateObjectWithOverrides(instanceName,version,position,0x0,Vector3.UnitZ,overrides,initData)as Sim;
+    if(target!=null){
+    if(target.SimRoutingComponent==null){//  [NRaas:]Performed to ensure that a useful error message is produced when the Sim construction fails
+       target.OnCreation();
+       target.OnStartup();
+    }
+       target.SimRoutingComponent.EnableDynamicFootprint();
+       target.SimRoutingComponent.ForceUpdateDynamicFootprint();
+                                                           ths.PushAgingEnabledToAgingManager();
+                        //  [NRaas:]
+                            /* This code is idiotic
+                            if ((ths.Teen) && (target.SkillManager != null))
+                            {
+                                Skill skill = target.SkillManager.AddElement(SkillNames.Homework);
+                                while (skill.SkillLevel < SimDescription.kTeenHomeworkSkillStartLevel)
+                                {
+                                    skill.ForceGainPointsForLevelUp();
+                                }
+                            }
+                            */
+                        //  [Me:]Why? What is happening exactly there? o.o
+                            //  [NRaas:]Custom [Me:]TO DO: REimplement this later
+                            //OccultTypeHelper.SetupForInstantiatedSim(ths.OccultManager);
+                                                        if(ths.IsAlien){
+World.ObjectSetVisualOverride(target.ObjectId,eVisualOverrideTypes.Alien,null);
+                                                        }
+                                                                                               StuckSimData stuckSim;
+                                                         if(!StuckSims.TryGetValue(ths.SimDescriptionId,out stuckSim)){
+                                                                                                            stuckSim=new StuckSimData();
+                                                             StuckSims.Add(        ths.SimDescriptionId,    stuckSim);
+                                                         }
+                                                                                                            stuckSim.Detections++;
+                                                                     ResetStuckSim(target,Vector3.Invalid,"Deep",true);
+                    EventTracker.SendEvent(EventTypeId.kSimInstantiated,null,target);
+                            /*
+                            MiniSimDescription description = MiniSimDescription.Find(ths.SimDescriptionId);
+                            if ((description == null) || (!GameStates.IsTravelling && (ths.mHomeWorld == GameUtils.GetCurrentWorld())))
+                            {
+                                return target;
+                            }
+                            description.UpdateInWorldRelationships(ths);
+                            */
+                                                        if(ths.HealthManager!=null){
+                                                           ths.HealthManager.Startup();
+                                                        }
+                                                      if(((ths.SkinToneKey.InstanceId==15475186560318337848L)&&!ths.OccultManager.HasOccultType(Sims3.UI.Hud.OccultTypes.Vampire))&&(!ths.OccultManager.HasOccultType(Sims3.UI.Hud.OccultTypes.Werewolf)&&!ths.IsGhost)){
+World.ObjectSetVisualOverride(ths.CreatedSim.ObjectId,eVisualOverrideTypes.Genie,null);
+                                                      }
+                                                        if(ths.Household.IsAlienHousehold){
+(Sims3.UI.Responder.Instance.HudModel as HudModel).OnSimCurrentWorldChanged(true,ths);
+                                                        }
+                if(Household.RoommateManager.IsNPCRoommate(ths.SimDescriptionId)){
+                   Household.RoommateManager.AddRoommateInteractions(target);
+                }
+    }
+return target;
+                }finally{
+                                        LifeEventManager.sIsLifeEventManagerEnabled=isLifeEventManagerEnabled;
+                                        GameStates.sIsChangingWorlds=isChangingWorlds;
 
-            //    bool isLifeEventManagerEnabled = LifeEventManager.sIsLifeEventManagerEnabled;
-
-            //    RemoveFreeStuffAlarm(ths);
-
-            //    using (SafeStore store = new SafeStore(ths, SafeStore.Flag.LoadFixup | SafeStore.Flag.Selectable | SafeStore.Flag.Unselectable))
-            //    {
-            //        try
-            //        {
-            //            // Stops the memories system from interfering
-            //            LifeEventManager.sIsLifeEventManagerEnabled = false;
-
-            //            // Stops UpdateInformationKnownAboutRelationships()
-            //            GameStates.sIsChangingWorlds = true;
-
-            //            if (ths.Household != null)
-            //            {
-            //                changedCallback = ths.Household.HouseholdSimsChanged;
-            //                changedHousehold = ths.Household;
-
-            //                ths.Household.HouseholdSimsChanged = null;
-            //            }
-
-            //            if (ths.CreatedSim != null)
-            //            {
-            //                AttemptToPutInSafeLocation(ths.CreatedSim, false);
-
-            //                if (reset != null)
-            //                {
-            //                    ths.CreatedSim.SetObjectToReset();
-
-            //                    reset(ths.CreatedSim, false);
-            //                }
-
-            //                return ths.CreatedSim;
-            //            }
-
-            //            if (ths.AgingState != null)
-            //            {
-            //                bool flag = outfitKey == ths.mDefaultOutfitKey;
-
-            //                ths.AgingState.SimBuilderTaskDeferred = false;
-
-            //                ths.AgingState.PreInstantiateSim(ref outfitKey);
-            //                if (flag)
-            //                {
-            //                    ths.mDefaultOutfitKey = outfitKey;
-            //                }
-            //            }
-
-            //            int capacity = forceAlwaysAnimate ? 0x4 : 0x2;
-            //            Hashtable overrides = new Hashtable(capacity);
-            //            overrides["simOutfitKey"] = outfitKey;
-            //            overrides["rigKey"] = CASUtils.GetRigKeyForAgeGenderSpecies((ths.Age | ths.Gender) | ths.Species);
-            //            if (forceAlwaysAnimate)
-            //            {
-            //                overrides["enableSimPoseProcessing"] = 0x1;
-            //                overrides["animationRunsInRealtime"] = 0x1;
-            //            }
-
-            //            string instanceName = "GameSim";
-            //            ProductVersion version = ProductVersion.BaseGame;
-            //            if (ths.Species != CASAgeGenderFlags.Human)
-            //            {
-            //                instanceName = "Game" + ths.Species;
-            //                version = ProductVersion.EP5;
-            //            }
-
-            //            SimInitParameters initData = new SimInitParameters(ths);
-            //            Sim target = GlobalFunctions.CreateObjectWithOverrides(instanceName, version, position, 0x0, Vector3.UnitZ, overrides, initData) as Sim;
-            //            if (target != null)
-            //            {
-            //                if (target.SimRoutingComponent == null)
-            //                {
-            //                    // Performed to ensure that a useful error message is produced when the Sim construction fails
-            //                    target.OnCreation();
-            //                    target.OnStartup();
-            //                }
-
-            //                target.SimRoutingComponent.EnableDynamicFootprint();
-            //                target.SimRoutingComponent.ForceUpdateDynamicFootprint();
-
-            //                ths.PushAgingEnabledToAgingManager();
-
-            //                /* This code is idiotic
-            //                if ((ths.Teen) && (target.SkillManager != null))
-            //                {
-            //                    Skill skill = target.SkillManager.AddElement(SkillNames.Homework);
-            //                    while (skill.SkillLevel < SimDescription.kTeenHomeworkSkillStartLevel)
-            //                    {
-            //                        skill.ForceGainPointsForLevelUp();
-            //                    }
-            //                }
-            //                */
-
-            //                // Custom
-            //                OccultTypeHelper.SetupForInstantiatedSim(ths.OccultManager);
-
-            //                if (ths.IsAlien)
-            //                {
-            //                    World.ObjectSetVisualOverride(target.ObjectId, eVisualOverrideTypes.Alien, null);
-            //                }
-
-            //                AttemptToPutInSafeLocation(target, false);
-
-            //                EventTracker.SendEvent(EventTypeId.kSimInstantiated, null, target);
-
-            //                /*
-            //                MiniSimDescription description = MiniSimDescription.Find(ths.SimDescriptionId);
-            //                if ((description == null) || (!GameStates.IsTravelling && (ths.mHomeWorld == GameUtils.GetCurrentWorld())))
-            //                {
-            //                    return target;
-            //                }
-            //                description.UpdateInWorldRelationships(ths);
-            //                */
-
-            //                if (ths.HealthManager != null)
-            //                {
-            //                    ths.HealthManager.Startup();
-            //                }
-
-            //                if (((ths.SkinToneKey.InstanceId == 15475186560318337848L) && !ths.OccultManager.HasOccultType(OccultTypes.Vampire)) && (!ths.OccultManager.HasOccultType(OccultTypes.Werewolf) && !ths.IsGhost))
-            //                {
-            //                    World.ObjectSetVisualOverride(ths.CreatedSim.ObjectId, eVisualOverrideTypes.Genie, null);
-            //                }
-
-            //                if (ths.Household.IsAlienHousehold)
-            //                {
-            //                    (Sims3.UI.Responder.Instance.HudModel as HudModel).OnSimCurrentWorldChanged(true, ths);
-            //                }
-
-            //                if (Household.RoommateManager.IsNPCRoommate(ths.SimDescriptionId))
-            //                {
-            //                    Household.RoommateManager.AddRoommateInteractions(target);
-            //                }
-            //            }
-
-            //            return target;
-            //        }
-            //        finally
-            //        {
-            //            LifeEventManager.sIsLifeEventManagerEnabled = isLifeEventManagerEnabled;
-
-            //            GameStates.sIsChangingWorlds = isChangingWorlds;
-
-            //            if ((changedHousehold != null) && (changedCallback != null))
-            //            {
-            //                changedHousehold.HouseholdSimsChanged = changedCallback;
-
-            //                if (changedHousehold.HouseholdSimsChanged != null)
-            //                {
-            //                    changedHousehold.HouseholdSimsChanged(Sims3.Gameplay.CAS.HouseholdEvent.kSimAdded, ths.CreatedSim, null);
-            //                }
-            //            }
-            //        }
-            //    }
-            //}  
+                                                   if((changedHousehold!=null)&&
+                                                      (changedCallback!=null)){
+                                                       changedHousehold.HouseholdSimsChanged=changedCallback;
+                                                    if(changedHousehold.HouseholdSimsChanged!=null){
+                                                       changedHousehold.HouseholdSimsChanged(Sims3.Gameplay.CAS.HouseholdEvent.kSimAdded,ths.CreatedSim,null);
+                                                    }
+                                                   }
+                }
+}
+            }  
            public class ResetStuckSimTask:AlarmTask{
         const                  string                        _CLASS_NAME=".ResetStuckSimTask:AlarmTask.";
                       readonly string                        Suffix;
@@ -3217,7 +3748,7 @@ var line=frame.GetFileLineNumber();
                                base.OnPerform();
             }
            }
-        protected static void ResetStuckSim(Sim sim,Vector3 destination,string suffix){
+        protected static void ResetStuckSim(Sim sim,Vector3 destination,string suffix,bool deep=false){
                                              if(sim!=null&&
                                                !sim.HasBeenDestroyed&&
                                                 sim.SimDescription!=null){
@@ -3397,6 +3928,7 @@ if(!GlobalFunctions.FindGoodLocation(sim,fglParams,out resetValidatedDest,out fo
     GlobalFunctions.FindGoodLocation(sim,fglParams,out resetValidatedDest,out forward);
 }
                                              }
+                                                                 if(!deep){
                       if(sim.InteractionQueue!=null&&sim.InteractionQueue.mInteractionList!=null){
 InteractionInstance 
       currentInteraction;
@@ -3405,10 +3937,12 @@ InteractionInstance
                          sim.InteractionQueue.CancelInteraction(currentInteraction.Id,ExitReason.CanceledByScript);
   }
                       }
+                                                                 }
                                        sim.SetPosition(resetValidatedDest);
                                                                sim.SetForward(forward);
                                                 sim.RemoveFromWorld();
-                                                      if(addToWorld){
+                                                      if(addToWorld||deep){
+                                                                 if(!deep){
                 try{
                                                 sim.Posture?.CancelPosture(sim);
                 }catch(Exception exception){
@@ -3416,6 +3950,7 @@ InteractionInstance
                                  exception.StackTrace+"\n\n"+
                                  exception.Source);
                 }
+                                                                 }
                                                 sim.     AddToWorld();
                                                     sim.SetHiddenFlags(HiddenFlags.Nothing);
                                                         sim.SetOpacity(1f,0f);
@@ -4073,6 +4608,15 @@ public static
          }
 }
     }
+        public class DeepFixSimTask:ModTask{
+              public DeepFixSimTask(SimDescription sim){
+               mSim=sim;
+              }
+SimDescription mSim=null;
+            protected override void OnPerform(){
+               Alive.DeepFixSim(mSim);
+            }
+        }
     public class ModTask:Task{
        protected ModTask(){
                                      ModTaskFunction=OnPerform;

@@ -3102,8 +3102,11 @@ var line=frame.GetFileLineNumber();
                                                     }else{
                   position=FindSafeLocationInRandomLot(lot);
                                                     }
-                                                                      Vector3 forward=ths.CreatedSim.ForwardVector;
-                                             if(ths.IsHorse){
+                          Vector3 foundPosition=position;
+                try{
+                                                        if(ths.CreatedSim!=null){
+                                           Vector3 forward=ths.CreatedSim.ForwardVector;
+                                                        if(ths.IsHorse){
                                  FindGoodLocationBooleans fglBooleans=FindGoodLocationBooleans.Routable|
                                                                       FindGoodLocationBooleans.PreferEmptyTiles|
                                                                       FindGoodLocationBooleans.AllowOnSlopes|
@@ -3123,7 +3126,7 @@ if(!GlobalFunctions.FindGoodLocation(ths.CreatedSim,fglParams,out position,out f
                                                     fglParams.BooleanConstraints=FindGoodLocationBooleans.None;
     GlobalFunctions.FindGoodLocation(ths.CreatedSim,fglParams,out position,out forward);
 }
-                                             }else{
+                                                        }else{
 World.FindGoodLocationParams fglParams=new World.FindGoodLocationParams(position);
                              fglParams.BooleanConstraints=FindGoodLocationBooleans.Routable|
                                                           FindGoodLocationBooleans.PreferEmptyTiles|
@@ -3139,7 +3142,21 @@ if(!GlobalFunctions.FindGoodLocation(ths.CreatedSim,fglParams,out position,out f
                                                     fglParams.BooleanConstraints=FindGoodLocationBooleans.None;
     GlobalFunctions.FindGoodLocation(ths.CreatedSim,fglParams,out position,out forward);
 }
-                                             }
+                                                        }
+                                                        }
+                }catch(Exception exception){
+     //  Get stack trace for the exception. with source file information
+           var st=new StackTrace(exception,true);
+     //  Get the top stack frame
+     var frame=st.GetFrame(0);
+     //  Get the line number from the stack frame
+var line=frame.GetFileLineNumber();
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source+"\n\n"+
+                                 line);
+                                                position=foundPosition; 
+                }
                                                 bool noSim=(false);
                 try{
                                      ResourceKey outfitKey=ths.mDefaultOutfitKey;

@@ -202,12 +202,516 @@ var line=frame.GetFileLineNumber();
                     try{
                      if(tuning.FullInteractionName=="Sims3.Gameplay.Objects.Gardening.Plant+Graaiins+Definition"){
                         tuning.AddFlags(InteractionTuning.FlagField.DisallowAutonomous);
+                     string debug="Alive_debugInfo_LOG:NOT_ERROR\n";
+                        if(tuning.mChecks!=null){
+                            foreach(var check in tuning.mChecks){
+                            debug+=check.mType+":"+check.mThreshold+"\n";
+                            }
+                        }
+                            debug+="\n\n";
+                        //tuning.mChecks=new List<CheckWhat>();
+                        if(tuning.PosturePreconditions!=null&&
+                           tuning.PosturePreconditions.mOptions!=null){
+                            foreach(var pp in tuning.PosturePreconditions.mOptions){
+                            debug+=pp.Commodity+":";
+                                foreach(var ppc in pp.Conditions){
+                            debug+=ppc+";";
+                                }
+                            debug+="\n";
+                            }
+                        }
+                        //tuning.PosturePreconditions=new PosturePreconditionOptionsData();
+             Alive.WriteLog(debug);
                      }else
                      if(tuning.FullInteractionName=="Sims3.Gameplay.Core.SwipeSomethingAutonomous+Definition"){
                         tuning.AddFlags(InteractionTuning.FlagField.DisallowAutonomous);
+                     string debug="Alive_debugInfo_LOG:NOT_ERROR\n";
+                        if(tuning.mChecks!=null){
+                            foreach(var check in tuning.mChecks){
+                            debug+=check.mType+":"+check.mThreshold+"\n";
+                            }
+                        }
+                            debug+="\n\n";
+                        //tuning.mChecks=new List<CheckWhat>();
+                        if(tuning.PosturePreconditions!=null&&
+                           tuning.PosturePreconditions.mOptions!=null){
+                            foreach(var pp in tuning.PosturePreconditions.mOptions){
+                            debug+=pp.Commodity+":";
+                                foreach(var ppc in pp.Conditions){
+                            debug+=ppc+";";
+                                }
+                            debug+="\n";
+                            }
+                        }
+                        //tuning.PosturePreconditions=new PosturePreconditionOptionsData();
+             Alive.WriteLog(debug);
                      }else
                      if(tuning.FullInteractionName=="Sims3.Gameplay.ActorSystems.TraitFunctions+SwipeSomething+Definition"){
                         tuning.AddFlags(InteractionTuning.FlagField.DisallowAutonomous);
+                     string debug="Alive_debugInfo_LOG:NOT_ERROR\n";
+                        if(tuning.mChecks!=null){
+                            foreach(var check in tuning.mChecks){
+                            debug+=check.mType+":"+check.mThreshold+"\n";
+                            }
+                        }
+                            debug+="\n\n";
+                        //tuning.mChecks=new List<CheckWhat>();
+                        if(tuning.PosturePreconditions!=null&&
+                           tuning.PosturePreconditions.mOptions!=null){
+                            foreach(var pp in tuning.PosturePreconditions.mOptions){
+                            debug+=pp.Commodity+":";
+                                foreach(var ppc in pp.Conditions){
+                            debug+=ppc+";";
+                                }
+                            debug+="\n";
+                            }
+                        }
+                        //tuning.PosturePreconditions=new PosturePreconditionOptionsData();
+             Alive.WriteLog(debug);
+                     }else
+                     if(tuning.FullInteractionName=="Sims3.Gameplay.Objects.Miscellaneous.ClothingPileDry+CleanUp+Definition"){
+                        tuning.RemoveFlags(InteractionTuning.FlagField.DisallowAutonomous);
+              for(int i=tuning.mTradeoff.mOutputs.Count-1;i>=0;i--){
+                     if(tuning.mTradeoff.mOutputs[i].Commodity==CommodityKind.BeBonehilda){
+                        tuning.mTradeoff.mOutputs.RemoveAt(i);
+                     }
+              }
+                        tuning.mTradeoff.mOutputs.Add(new CommodityChange(CommodityKind.BeBonehilda,200,true,200,OutputUpdateType.ContinuousFlow,false,false,UpdateAboveAndBelowZeroType.Either));
+                        tuning.Availability.OccultRestrictions=Sims3.UI.Hud.OccultTypes.None;
+                            tuning.Availability.AddFlags(Availability.FlagField.AllowGreetedSims);
+                                tuning.Availability.AddFlags(Availability.FlagField.AllowEvenIfNotAllowedInRoomAutonomous);
+                                    tuning.Availability.AddFlags(Availability.FlagField.AllowNonGreetedSimsIfObjectOutsideAutonomous);
+                                        tuning.Availability.AddFlags(Availability.FlagField.AllowNonGreetedSimsIfObjectOutsideUserDirected);
+                                            tuning.Availability.AddFlags(Availability.FlagField.AllowOnCommunityLots);
+                                                tuning.Availability.AddFlags(Availability.FlagField.AllowOnAllLots);
+                     string debug="Alive_debugInfo_LOG:NOT_ERROR\n";
+                        if(tuning.mChecks!=null){
+                            foreach(var check in tuning.mChecks){
+                            debug+=check.mType+":"+check.mThreshold+"\n";
+                            }
+                        }
+                            debug+="\n\n";
+                        //tuning.mChecks=new List<CheckWhat>();
+                        if(tuning.PosturePreconditions!=null&&
+                           tuning.PosturePreconditions.mOptions!=null){
+                            foreach(var pp in tuning.PosturePreconditions.mOptions){
+                            debug+=pp.Commodity+":";
+                                foreach(var ppc in pp.Conditions){
+                            debug+=ppc+";";
+                                }
+                            debug+="\n";
+                            }
+                        }
+                        //tuning.PosturePreconditions=new PosturePreconditionOptionsData();
+             Alive.WriteLog(debug);
+                        tuning.RemoveFlags(InteractionTuning.FlagField.ConsiderCodeVersion);
+                     }else
+                     if(tuning.FullInteractionName=="Sims3.Gameplay.Objects.Miscellaneous.ClothingPileWet+DryClothesInDryer+Definition"){
+                        tuning.RemoveFlags(InteractionTuning.FlagField.DisallowAutonomous);
+              for(int i=tuning.mTradeoff.mOutputs.Count-1;i>=0;i--){
+                     if(tuning.mTradeoff.mOutputs[i].Commodity==CommodityKind.BeBonehilda){
+                        tuning.mTradeoff.mOutputs.RemoveAt(i);
+                     }
+              }
+                        tuning.mTradeoff.mOutputs.Add(new CommodityChange(CommodityKind.BeBonehilda,200,true,200,OutputUpdateType.ContinuousFlow,false,false,UpdateAboveAndBelowZeroType.Either));
+                        tuning.Availability.OccultRestrictions=Sims3.UI.Hud.OccultTypes.None;
+                            tuning.Availability.AddFlags(Availability.FlagField.AllowGreetedSims);
+                                tuning.Availability.AddFlags(Availability.FlagField.AllowEvenIfNotAllowedInRoomAutonomous);
+                                    tuning.Availability.AddFlags(Availability.FlagField.AllowNonGreetedSimsIfObjectOutsideAutonomous);
+                                        tuning.Availability.AddFlags(Availability.FlagField.AllowNonGreetedSimsIfObjectOutsideUserDirected);
+                                            tuning.Availability.AddFlags(Availability.FlagField.AllowOnCommunityLots);
+                                                tuning.Availability.AddFlags(Availability.FlagField.AllowOnAllLots);
+                     string debug="Alive_debugInfo_LOG:NOT_ERROR\n";
+                        if(tuning.mChecks!=null){
+                            foreach(var check in tuning.mChecks){
+                            debug+=check.mType+":"+check.mThreshold+"\n";
+                            }
+                        }
+                            debug+="\n\n";
+                        //tuning.mChecks=new List<CheckWhat>();
+                        if(tuning.PosturePreconditions!=null&&
+                           tuning.PosturePreconditions.mOptions!=null){
+                            foreach(var pp in tuning.PosturePreconditions.mOptions){
+                            debug+=pp.Commodity+":";
+                                foreach(var ppc in pp.Conditions){
+                            debug+=ppc+";";
+                                }
+                            debug+="\n";
+                            }
+                        }
+                        //tuning.PosturePreconditions=new PosturePreconditionOptionsData();
+             Alive.WriteLog(debug);
+                        tuning.RemoveFlags(InteractionTuning.FlagField.ConsiderCodeVersion);
+                     }else
+                     if(tuning.FullInteractionName=="Sims3.Gameplay.Objects.Miscellaneous.ClothingPileDry+PutDown+Definition"){
+                        tuning.RemoveFlags(InteractionTuning.FlagField.DisallowAutonomous);
+              for(int i=tuning.mTradeoff.mOutputs.Count-1;i>=0;i--){
+                     if(tuning.mTradeoff.mOutputs[i].Commodity==CommodityKind.BeBonehilda){
+                        tuning.mTradeoff.mOutputs.RemoveAt(i);
+                     }
+              }
+                        //tuning.mTradeoff.mOutputs.Add(new CommodityChange(CommodityKind.BeBonehilda,200,true,200,OutputUpdateType.ContinuousFlow,false,false,UpdateAboveAndBelowZeroType.Either));
+                        tuning.Availability.OccultRestrictions=Sims3.UI.Hud.OccultTypes.None;
+                            tuning.Availability.AddFlags(Availability.FlagField.AllowGreetedSims);
+                                tuning.Availability.AddFlags(Availability.FlagField.AllowEvenIfNotAllowedInRoomAutonomous);
+                                    tuning.Availability.AddFlags(Availability.FlagField.AllowNonGreetedSimsIfObjectOutsideAutonomous);
+                                        tuning.Availability.AddFlags(Availability.FlagField.AllowNonGreetedSimsIfObjectOutsideUserDirected);
+                                            tuning.Availability.AddFlags(Availability.FlagField.AllowOnCommunityLots);
+                                                tuning.Availability.AddFlags(Availability.FlagField.AllowOnAllLots);
+                     string debug="Alive_debugInfo_LOG:NOT_ERROR\n";
+                        if(tuning.mChecks!=null){
+                            foreach(var check in tuning.mChecks){
+                            debug+=check.mType+":"+check.mThreshold+"\n";
+                            }
+                        }
+                            debug+="\n\n";
+                        //tuning.mChecks=new List<CheckWhat>();
+                        if(tuning.PosturePreconditions!=null&&
+                           tuning.PosturePreconditions.mOptions!=null){
+                            foreach(var pp in tuning.PosturePreconditions.mOptions){
+                            debug+=pp.Commodity+":";
+                                foreach(var ppc in pp.Conditions){
+                            debug+=ppc+";";
+                                }
+                            debug+="\n";
+                            }
+                        }
+                        //tuning.PosturePreconditions=new PosturePreconditionOptionsData();
+             Alive.WriteLog(debug);
+                        tuning.RemoveFlags(InteractionTuning.FlagField.ConsiderCodeVersion);
+                     }else
+                     if(tuning.FullInteractionName=="Sims3.Gameplay.Objects.Miscellaneous.ClothingPileWet+PutDown+Definition"){
+                        tuning.RemoveFlags(InteractionTuning.FlagField.DisallowAutonomous);
+              for(int i=tuning.mTradeoff.mOutputs.Count-1;i>=0;i--){
+                     if(tuning.mTradeoff.mOutputs[i].Commodity==CommodityKind.BeBonehilda){
+                        tuning.mTradeoff.mOutputs.RemoveAt(i);
+                     }
+              }
+                        //tuning.mTradeoff.mOutputs.Add(new CommodityChange(CommodityKind.BeBonehilda,200,true,200,OutputUpdateType.ContinuousFlow,false,false,UpdateAboveAndBelowZeroType.Either));
+                        tuning.Availability.OccultRestrictions=Sims3.UI.Hud.OccultTypes.None;
+                            tuning.Availability.AddFlags(Availability.FlagField.AllowGreetedSims);
+                                tuning.Availability.AddFlags(Availability.FlagField.AllowEvenIfNotAllowedInRoomAutonomous);
+                                    tuning.Availability.AddFlags(Availability.FlagField.AllowNonGreetedSimsIfObjectOutsideAutonomous);
+                                        tuning.Availability.AddFlags(Availability.FlagField.AllowNonGreetedSimsIfObjectOutsideUserDirected);
+                                            tuning.Availability.AddFlags(Availability.FlagField.AllowOnCommunityLots);
+                                                tuning.Availability.AddFlags(Availability.FlagField.AllowOnAllLots);
+                     string debug="Alive_debugInfo_LOG:NOT_ERROR\n";
+                        if(tuning.mChecks!=null){
+                            foreach(var check in tuning.mChecks){
+                            debug+=check.mType+":"+check.mThreshold+"\n";
+                            }
+                        }
+                            debug+="\n\n";
+                        //tuning.mChecks=new List<CheckWhat>();
+                        if(tuning.PosturePreconditions!=null&&
+                           tuning.PosturePreconditions.mOptions!=null){
+                            foreach(var pp in tuning.PosturePreconditions.mOptions){
+                            debug+=pp.Commodity+":";
+                                foreach(var ppc in pp.Conditions){
+                            debug+=ppc+";";
+                                }
+                            debug+="\n";
+                            }
+                        }
+                        //tuning.PosturePreconditions=new PosturePreconditionOptionsData();
+             Alive.WriteLog(debug);
+                        tuning.RemoveFlags(InteractionTuning.FlagField.ConsiderCodeVersion);
+                     }else
+                     if(tuning.FullInteractionName=="Sims3.Gameplay.Objects.Miscellaneous.Hamper+DoLaundry+Definition"){
+                        tuning.RemoveFlags(InteractionTuning.FlagField.DisallowAutonomous);
+              for(int i=tuning.mTradeoff.mOutputs.Count-1;i>=0;i--){
+                     if(tuning.mTradeoff.mOutputs[i].Commodity==CommodityKind.BeBonehilda){
+                        tuning.mTradeoff.mOutputs.RemoveAt(i);
+                     }
+              }
+                        tuning.mTradeoff.mOutputs.Add(new CommodityChange(CommodityKind.BeBonehilda,200,true,200,OutputUpdateType.ContinuousFlow,false,false,UpdateAboveAndBelowZeroType.Either));
+                        tuning.Availability.OccultRestrictions=Sims3.UI.Hud.OccultTypes.None;
+                            tuning.Availability.AddFlags(Availability.FlagField.AllowGreetedSims);
+                                tuning.Availability.AddFlags(Availability.FlagField.AllowEvenIfNotAllowedInRoomAutonomous);
+                                    tuning.Availability.AddFlags(Availability.FlagField.AllowNonGreetedSimsIfObjectOutsideAutonomous);
+                                        tuning.Availability.AddFlags(Availability.FlagField.AllowNonGreetedSimsIfObjectOutsideUserDirected);
+                                            tuning.Availability.AddFlags(Availability.FlagField.AllowOnCommunityLots);
+                                                tuning.Availability.AddFlags(Availability.FlagField.AllowOnAllLots);
+                     string debug="Alive_debugInfo_LOG:NOT_ERROR\n";
+                        if(tuning.mChecks!=null){
+                            foreach(var check in tuning.mChecks){
+                            debug+=check.mType+":"+check.mThreshold+"\n";
+                            }
+                        }
+                            debug+="\n\n";
+                        //tuning.mChecks=new List<CheckWhat>();
+                        if(tuning.PosturePreconditions!=null&&
+                           tuning.PosturePreconditions.mOptions!=null){
+                            foreach(var pp in tuning.PosturePreconditions.mOptions){
+                            debug+=pp.Commodity+":";
+                                foreach(var ppc in pp.Conditions){
+                            debug+=ppc+";";
+                                }
+                            debug+="\n";
+                            }
+                        }
+                        //tuning.PosturePreconditions=new PosturePreconditionOptionsData();
+             Alive.WriteLog(debug);
+                        tuning.RemoveFlags(InteractionTuning.FlagField.ConsiderCodeVersion);
+                     }else
+                     if(tuning.FullInteractionName=="Sims3.Gameplay.Objects.Miscellaneous.Hamper+PickUp+Definition"){
+                        tuning.RemoveFlags(InteractionTuning.FlagField.DisallowAutonomous);
+              for(int i=tuning.mTradeoff.mOutputs.Count-1;i>=0;i--){
+                     if(tuning.mTradeoff.mOutputs[i].Commodity==CommodityKind.BeBonehilda){
+                        tuning.mTradeoff.mOutputs.RemoveAt(i);
+                     }
+              }
+                        //tuning.mTradeoff.mOutputs.Add(new CommodityChange(CommodityKind.BeBonehilda,200,true,200,OutputUpdateType.ContinuousFlow,false,false,UpdateAboveAndBelowZeroType.Either));
+                        tuning.Availability.OccultRestrictions=Sims3.UI.Hud.OccultTypes.None;
+                            tuning.Availability.AddFlags(Availability.FlagField.AllowGreetedSims);
+                                tuning.Availability.AddFlags(Availability.FlagField.AllowEvenIfNotAllowedInRoomAutonomous);
+                                    tuning.Availability.AddFlags(Availability.FlagField.AllowNonGreetedSimsIfObjectOutsideAutonomous);
+                                        tuning.Availability.AddFlags(Availability.FlagField.AllowNonGreetedSimsIfObjectOutsideUserDirected);
+                                            tuning.Availability.AddFlags(Availability.FlagField.AllowOnCommunityLots);
+                                                tuning.Availability.AddFlags(Availability.FlagField.AllowOnAllLots);
+                     string debug="Alive_debugInfo_LOG:NOT_ERROR\n";
+                        if(tuning.mChecks!=null){
+                            foreach(var check in tuning.mChecks){
+                            debug+=check.mType+":"+check.mThreshold+"\n";
+                            }
+                        }
+                            debug+="\n\n";
+                        //tuning.mChecks=new List<CheckWhat>();
+                        if(tuning.PosturePreconditions!=null&&
+                           tuning.PosturePreconditions.mOptions!=null){
+                            foreach(var pp in tuning.PosturePreconditions.mOptions){
+                            debug+=pp.Commodity+":";
+                                foreach(var ppc in pp.Conditions){
+                            debug+=ppc+";";
+                                }
+                            debug+="\n";
+                            }
+                        }
+                        //tuning.PosturePreconditions=new PosturePreconditionOptionsData();
+             Alive.WriteLog(debug);
+                        tuning.RemoveFlags(InteractionTuning.FlagField.ConsiderCodeVersion);
+                     }else
+                     if(tuning.FullInteractionName=="Sims3.Gameplay.Objects.Miscellaneous.Hamper+DropClothes+Definition"){
+                        tuning.RemoveFlags(InteractionTuning.FlagField.DisallowAutonomous);
+              for(int i=tuning.mTradeoff.mOutputs.Count-1;i>=0;i--){
+                     if(tuning.mTradeoff.mOutputs[i].Commodity==CommodityKind.BeBonehilda){
+                        tuning.mTradeoff.mOutputs.RemoveAt(i);
+                     }
+              }
+                        //tuning.mTradeoff.mOutputs.Add(new CommodityChange(CommodityKind.BeBonehilda,200,true,200,OutputUpdateType.ContinuousFlow,false,false,UpdateAboveAndBelowZeroType.Either));
+                        tuning.Availability.OccultRestrictions=Sims3.UI.Hud.OccultTypes.None;
+                            tuning.Availability.AddFlags(Availability.FlagField.AllowGreetedSims);
+                                tuning.Availability.AddFlags(Availability.FlagField.AllowEvenIfNotAllowedInRoomAutonomous);
+                                    tuning.Availability.AddFlags(Availability.FlagField.AllowNonGreetedSimsIfObjectOutsideAutonomous);
+                                        tuning.Availability.AddFlags(Availability.FlagField.AllowNonGreetedSimsIfObjectOutsideUserDirected);
+                                            tuning.Availability.AddFlags(Availability.FlagField.AllowOnCommunityLots);
+                                                tuning.Availability.AddFlags(Availability.FlagField.AllowOnAllLots);
+                     string debug="Alive_debugInfo_LOG:NOT_ERROR\n";
+                        if(tuning.mChecks!=null){
+                            foreach(var check in tuning.mChecks){
+                            debug+=check.mType+":"+check.mThreshold+"\n";
+                            }
+                        }
+                            debug+="\n\n";
+                        //tuning.mChecks=new List<CheckWhat>();
+                        if(tuning.PosturePreconditions!=null&&
+                           tuning.PosturePreconditions.mOptions!=null){
+                            foreach(var pp in tuning.PosturePreconditions.mOptions){
+                            debug+=pp.Commodity+":";
+                                foreach(var ppc in pp.Conditions){
+                            debug+=ppc+";";
+                                }
+                            debug+="\n";
+                            }
+                        }
+                        //tuning.PosturePreconditions=new PosturePreconditionOptionsData();
+             Alive.WriteLog(debug);
+                        tuning.RemoveFlags(InteractionTuning.FlagField.ConsiderCodeVersion);
+                     }else
+                     if(tuning.FullInteractionName=="Sims3.Gameplay.Objects.Appliances.WashingMachine+DoLaundry+Definition"){
+                        tuning.RemoveFlags(InteractionTuning.FlagField.DisallowAutonomous);
+              for(int i=tuning.mTradeoff.mOutputs.Count-1;i>=0;i--){
+                     if(tuning.mTradeoff.mOutputs[i].Commodity==CommodityKind.BeBonehilda){
+                        tuning.mTradeoff.mOutputs.RemoveAt(i);
+                     }
+              }
+                        tuning.mTradeoff.mOutputs.Add(new CommodityChange(CommodityKind.BeBonehilda,200,true,200,OutputUpdateType.ContinuousFlow,false,false,UpdateAboveAndBelowZeroType.Either));
+                        tuning.Availability.OccultRestrictions=Sims3.UI.Hud.OccultTypes.None;
+                            tuning.Availability.AddFlags(Availability.FlagField.AllowGreetedSims);
+                                tuning.Availability.AddFlags(Availability.FlagField.AllowEvenIfNotAllowedInRoomAutonomous);
+                                    tuning.Availability.AddFlags(Availability.FlagField.AllowNonGreetedSimsIfObjectOutsideAutonomous);
+                                        tuning.Availability.AddFlags(Availability.FlagField.AllowNonGreetedSimsIfObjectOutsideUserDirected);
+                                            tuning.Availability.AddFlags(Availability.FlagField.AllowOnCommunityLots);
+                                                tuning.Availability.AddFlags(Availability.FlagField.AllowOnAllLots);
+                     string debug="Alive_debugInfo_LOG:NOT_ERROR\n";
+                        if(tuning.mChecks!=null){
+                            foreach(var check in tuning.mChecks){
+                            debug+=check.mType+":"+check.mThreshold+"\n";
+                            }
+                        }
+                            debug+="\n\n";
+                        //tuning.mChecks=new List<CheckWhat>();
+                        if(tuning.PosturePreconditions!=null&&
+                           tuning.PosturePreconditions.mOptions!=null){
+                            foreach(var pp in tuning.PosturePreconditions.mOptions){
+                            debug+=pp.Commodity+":";
+                                foreach(var ppc in pp.Conditions){
+                            debug+=ppc+";";
+                                }
+                            debug+="\n";
+                            }
+                        }
+                        //tuning.PosturePreconditions=new PosturePreconditionOptionsData();
+             Alive.WriteLog(debug);
+                        tuning.RemoveFlags(InteractionTuning.FlagField.ConsiderCodeVersion);
+                     }else
+                     if(tuning.FullInteractionName=="Sims3.Gameplay.Objects.Appliances.Clothesline+DryClothing+Definition"){
+                        tuning.RemoveFlags(InteractionTuning.FlagField.DisallowAutonomous);
+              for(int i=tuning.mTradeoff.mOutputs.Count-1;i>=0;i--){
+                     if(tuning.mTradeoff.mOutputs[i].Commodity==CommodityKind.BeBonehilda){
+                        tuning.mTradeoff.mOutputs.RemoveAt(i);
+                     }
+              }
+                        tuning.mTradeoff.mOutputs.Add(new CommodityChange(CommodityKind.BeBonehilda,200,true,200,OutputUpdateType.ContinuousFlow,false,false,UpdateAboveAndBelowZeroType.Either));
+                        tuning.Availability.OccultRestrictions=Sims3.UI.Hud.OccultTypes.None;
+                            tuning.Availability.AddFlags(Availability.FlagField.AllowGreetedSims);
+                                tuning.Availability.AddFlags(Availability.FlagField.AllowEvenIfNotAllowedInRoomAutonomous);
+                                    tuning.Availability.AddFlags(Availability.FlagField.AllowNonGreetedSimsIfObjectOutsideAutonomous);
+                                        tuning.Availability.AddFlags(Availability.FlagField.AllowNonGreetedSimsIfObjectOutsideUserDirected);
+                                            tuning.Availability.AddFlags(Availability.FlagField.AllowOnCommunityLots);
+                                                tuning.Availability.AddFlags(Availability.FlagField.AllowOnAllLots);
+                     string debug="Alive_debugInfo_LOG:NOT_ERROR\n";
+                        if(tuning.mChecks!=null){
+                            foreach(var check in tuning.mChecks){
+                            debug+=check.mType+":"+check.mThreshold+"\n";
+                            }
+                        }
+                            debug+="\n\n";
+                        //tuning.mChecks=new List<CheckWhat>();
+                        if(tuning.PosturePreconditions!=null&&
+                           tuning.PosturePreconditions.mOptions!=null){
+                            foreach(var pp in tuning.PosturePreconditions.mOptions){
+                            debug+=pp.Commodity+":";
+                                foreach(var ppc in pp.Conditions){
+                            debug+=ppc+";";
+                                }
+                            debug+="\n";
+                            }
+                        }
+                        //tuning.PosturePreconditions=new PosturePreconditionOptionsData();
+             Alive.WriteLog(debug);
+                        tuning.RemoveFlags(InteractionTuning.FlagField.ConsiderCodeVersion);
+                     }else
+                     if(tuning.FullInteractionName=="Sims3.Gameplay.Objects.Appliances.Clothesline+GetCleanLaundry+Definition"){
+                        tuning.RemoveFlags(InteractionTuning.FlagField.DisallowAutonomous);
+              for(int i=tuning.mTradeoff.mOutputs.Count-1;i>=0;i--){
+                     if(tuning.mTradeoff.mOutputs[i].Commodity==CommodityKind.BeBonehilda){
+                        tuning.mTradeoff.mOutputs.RemoveAt(i);
+                     }
+              }
+                        tuning.mTradeoff.mOutputs.Add(new CommodityChange(CommodityKind.BeBonehilda,200,true,200,OutputUpdateType.ContinuousFlow,false,false,UpdateAboveAndBelowZeroType.Either));
+                        tuning.Availability.OccultRestrictions=Sims3.UI.Hud.OccultTypes.None;
+                            tuning.Availability.AddFlags(Availability.FlagField.AllowGreetedSims);
+                                tuning.Availability.AddFlags(Availability.FlagField.AllowEvenIfNotAllowedInRoomAutonomous);
+                                    tuning.Availability.AddFlags(Availability.FlagField.AllowNonGreetedSimsIfObjectOutsideAutonomous);
+                                        tuning.Availability.AddFlags(Availability.FlagField.AllowNonGreetedSimsIfObjectOutsideUserDirected);
+                                            tuning.Availability.AddFlags(Availability.FlagField.AllowOnCommunityLots);
+                                                tuning.Availability.AddFlags(Availability.FlagField.AllowOnAllLots);
+                     string debug="Alive_debugInfo_LOG:NOT_ERROR\n";
+                        if(tuning.mChecks!=null){
+                            foreach(var check in tuning.mChecks){
+                            debug+=check.mType+":"+check.mThreshold+"\n";
+                            }
+                        }
+                            debug+="\n\n";
+                        //tuning.mChecks=new List<CheckWhat>();
+                        if(tuning.PosturePreconditions!=null&&
+                           tuning.PosturePreconditions.mOptions!=null){
+                            foreach(var pp in tuning.PosturePreconditions.mOptions){
+                            debug+=pp.Commodity+":";
+                                foreach(var ppc in pp.Conditions){
+                            debug+=ppc+";";
+                                }
+                            debug+="\n";
+                            }
+                        }
+                        //tuning.PosturePreconditions=new PosturePreconditionOptionsData();
+             Alive.WriteLog(debug);
+                        tuning.RemoveFlags(InteractionTuning.FlagField.ConsiderCodeVersion);
+                     }else
+                     if(tuning.FullInteractionName=="Sims3.Gameplay.Objects.Appliances.Dryer+DryClothing+Definition"){
+                        tuning.RemoveFlags(InteractionTuning.FlagField.DisallowAutonomous);
+              for(int i=tuning.mTradeoff.mOutputs.Count-1;i>=0;i--){
+                     if(tuning.mTradeoff.mOutputs[i].Commodity==CommodityKind.BeBonehilda){
+                        tuning.mTradeoff.mOutputs.RemoveAt(i);
+                     }
+              }
+                        tuning.mTradeoff.mOutputs.Add(new CommodityChange(CommodityKind.BeBonehilda,200,true,200,OutputUpdateType.ContinuousFlow,false,false,UpdateAboveAndBelowZeroType.Either));
+                        tuning.Availability.OccultRestrictions=Sims3.UI.Hud.OccultTypes.None;
+                            tuning.Availability.AddFlags(Availability.FlagField.AllowGreetedSims);
+                                tuning.Availability.AddFlags(Availability.FlagField.AllowEvenIfNotAllowedInRoomAutonomous);
+                                    tuning.Availability.AddFlags(Availability.FlagField.AllowNonGreetedSimsIfObjectOutsideAutonomous);
+                                        tuning.Availability.AddFlags(Availability.FlagField.AllowNonGreetedSimsIfObjectOutsideUserDirected);
+                                            tuning.Availability.AddFlags(Availability.FlagField.AllowOnCommunityLots);
+                                                tuning.Availability.AddFlags(Availability.FlagField.AllowOnAllLots);
+                     string debug="Alive_debugInfo_LOG:NOT_ERROR\n";
+                        if(tuning.mChecks!=null){
+                            foreach(var check in tuning.mChecks){
+                            debug+=check.mType+":"+check.mThreshold+"\n";
+                            }
+                        }
+                            debug+="\n\n";
+                        //tuning.mChecks=new List<CheckWhat>();
+                        if(tuning.PosturePreconditions!=null&&
+                           tuning.PosturePreconditions.mOptions!=null){
+                            foreach(var pp in tuning.PosturePreconditions.mOptions){
+                            debug+=pp.Commodity+":";
+                                foreach(var ppc in pp.Conditions){
+                            debug+=ppc+";";
+                                }
+                            debug+="\n";
+                            }
+                        }
+                        //tuning.PosturePreconditions=new PosturePreconditionOptionsData();
+             Alive.WriteLog(debug);
+                        tuning.RemoveFlags(InteractionTuning.FlagField.ConsiderCodeVersion);
+                     }else
+                     if(tuning.FullInteractionName=="Sims3.Gameplay.Objects.Appliances.Dryer+GetCleanLaundry+Definition"){
+                        tuning.RemoveFlags(InteractionTuning.FlagField.DisallowAutonomous);
+              for(int i=tuning.mTradeoff.mOutputs.Count-1;i>=0;i--){
+                     if(tuning.mTradeoff.mOutputs[i].Commodity==CommodityKind.BeBonehilda){
+                        tuning.mTradeoff.mOutputs.RemoveAt(i);
+                     }
+              }
+                        tuning.mTradeoff.mOutputs.Add(new CommodityChange(CommodityKind.BeBonehilda,200,true,200,OutputUpdateType.ContinuousFlow,false,false,UpdateAboveAndBelowZeroType.Either));
+                        tuning.Availability.OccultRestrictions=Sims3.UI.Hud.OccultTypes.None;
+                            tuning.Availability.AddFlags(Availability.FlagField.AllowGreetedSims);
+                                tuning.Availability.AddFlags(Availability.FlagField.AllowEvenIfNotAllowedInRoomAutonomous);
+                                    tuning.Availability.AddFlags(Availability.FlagField.AllowNonGreetedSimsIfObjectOutsideAutonomous);
+                                        tuning.Availability.AddFlags(Availability.FlagField.AllowNonGreetedSimsIfObjectOutsideUserDirected);
+                                            tuning.Availability.AddFlags(Availability.FlagField.AllowOnCommunityLots);
+                                                tuning.Availability.AddFlags(Availability.FlagField.AllowOnAllLots);
+                     string debug="Alive_debugInfo_LOG:NOT_ERROR\n";
+                        if(tuning.mChecks!=null){
+                            foreach(var check in tuning.mChecks){
+                            debug+=check.mType+":"+check.mThreshold+"\n";
+                            }
+                        }
+                            debug+="\n\n";
+                        //tuning.mChecks=new List<CheckWhat>();
+                        if(tuning.PosturePreconditions!=null&&
+                           tuning.PosturePreconditions.mOptions!=null){
+                            foreach(var pp in tuning.PosturePreconditions.mOptions){
+                            debug+=pp.Commodity+":";
+                                foreach(var ppc in pp.Conditions){
+                            debug+=ppc+";";
+                                }
+                            debug+="\n";
+                            }
+                        }
+                        //tuning.PosturePreconditions=new PosturePreconditionOptionsData();
+             Alive.WriteLog(debug);
+                        tuning.RemoveFlags(InteractionTuning.FlagField.ConsiderCodeVersion);
                      }
                     }catch(Exception exception){
          //  Get stack trace for the exception. with source file information
@@ -264,6 +768,8 @@ var line=frame.GetFileLineNumber();
                 }finally{
                 }
                 try{
+             new AlarmTask( 2,TimeUnit.Hours,DoHourlyTasks,1,TimeUnit.Hours);
+             //---------------------------------------------------------------
              new AlarmTask(07,DaysOfTheWeek.All,FeedSims);//  Breakfast...
              new AlarmTask(13,DaysOfTheWeek.All,FeedSims);//  ...Lunch...
              new AlarmTask(19,DaysOfTheWeek.All,FeedSims);//  Dinner...
@@ -329,7 +835,7 @@ var line=frame.GetFileLineNumber();
                                       debugInfo+=cookingApplianceGameObject.ActorsUsingMe?.Count+"_l3\n";
                                       debugInfo+=cookingApplianceGameObject.SimLine?.SimsInQueue?.Count+"_l4\n";
                                       debugInfo+=cookingApplianceGameObject.SimLine?.FirstSim?.Name+"_l5\n";
-                       Alive.WriteLog(debugInfo);
+                       //Alive.WriteLog(debugInfo);
                                               }
                                               }
                     }catch(Exception exception){
@@ -345,6 +851,79 @@ var line=frame.GetFileLineNumber();
                                      line);
                     }
                        }
+                }catch(Exception exception){
+     //  Get stack trace for the exception. with source file information
+           var st=new StackTrace(exception,true);
+     //  Get the top stack frame
+     var frame=st.GetFrame(0);
+     //  Get the line number from the stack frame
+var line=frame.GetFileLineNumber();
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source+"\n\n"+
+                                 line);
+                }
+                try{
+                        foreach(var miniFridge in Sims3.Gameplay.Queries.GetObjects<MiniFridge>()){
+                         var parent=miniFridge.Parent;
+                                bool slotted=(false);
+                        Slot parentSlot=Slot.None;
+                          if(parent!=null){
+                   var slots=parent.GetContainmentSlots();
+   foreach(var slot in slots){
+                          if(parent.GetContainedObject(slot)==miniFridge){
+                             parentSlot=slot;
+                                     slotted=( true);
+                            break;
+                          }
+   }
+                          }
+                                    miniFridge.SimLine?.DoReset();
+                                    miniFridge.Line=new SimQueue(SimQueue.WaitLocation.HangAroundNearObject,2);
+                                    miniFridge.SetObjectToReset();
+                                    miniFridge.ResetParentingHierarchy(true);
+                                    miniFridge.RemoveFromWorld();
+                                    miniFridge.     AddToWorld();
+                                    miniFridge.SetHiddenFlags(HiddenFlags.Nothing);
+                                    miniFridge.SetOpacity(1f,0.0f);
+                                    miniFridge.AddToLot();
+                          if(parent!=null&&
+                                     slotted){
+                                    miniFridge.ParentToSlot(parent,parentSlot);
+                          }
+                        }
+                }catch(Exception exception){
+     //  Get stack trace for the exception. with source file information
+           var st=new StackTrace(exception,true);
+     //  Get the top stack frame
+     var frame=st.GetFrame(0);
+     //  Get the line number from the stack frame
+var line=frame.GetFileLineNumber();
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source+"\n\n"+
+                                 line);
+                }
+                try{
+                        foreach(var washingMachine in Sims3.Gameplay.Queries.GetObjects<WashingMachine>()){
+                                    washingMachine.SetObjectToReset();
+                        }
+                }catch(Exception exception){
+     //  Get stack trace for the exception. with source file information
+           var st=new StackTrace(exception,true);
+     //  Get the top stack frame
+     var frame=st.GetFrame(0);
+     //  Get the line number from the stack frame
+var line=frame.GetFileLineNumber();
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source+"\n\n"+
+                                 line);
+                }
+                try{
+                        foreach(var fridge in Sims3.Gameplay.Queries.GetObjects<Fridge>()){
+                                    fridge.SetObjectToReset();
+                        }
                 }catch(Exception exception){
      //  Get stack trace for the exception. with source file information
            var st=new StackTrace(exception,true);
@@ -734,7 +1313,7 @@ var line=frame.GetFileLineNumber();
             }
         }
         //==================================================================================================================
-static Dictionary<Sim,Vector3>positions=new Dictionary<Sim,Vector3>();
+static Dictionary<Sim,Vector3>stuckPositions=new Dictionary<Sim,Vector3>();
         static void AutoPause(){
                 try{
       Sims3.Gameplay.Gameflow.SetGameSpeed(Sims3.Gameplay.Gameflow.GameSpeed.Pause,Sims3.Gameplay.Gameflow.SetGameSpeedContext.GameStates);
@@ -751,16 +1330,72 @@ var line=frame.GetFileLineNumber();
                                  line);
                 }
                 try{
+                    for(int i=Situation.sAllSituations.Count-1;i>=0;i--){
+          Situation situation=Situation.sAllSituations[i];
+                    try{
+                    bool tested=(false),
+                         remove=(false);
+                 if(situation is FieldTripSituation){
+                         tested=( true);
+                         remove=( true);
+                 }
+                        try{
+                    situation.Exit();
+                        }catch(Exception exception){
+             //  Get stack trace for the exception. with source file information
+                   var st=new StackTrace(exception,true);
+             //  Get the top stack frame
+             var frame=st.GetFrame(0);
+             //  Get the line number from the stack frame
+        var line=frame.GetFileLineNumber();
+                          Alive.WriteLog(exception.Message+"\n\n"+
+                                         exception.StackTrace+"\n\n"+
+                                         exception.Source+"\n\n"+
+                                         line);
+                        }
+foreach(Sim sim in LotManager.Actors){
+     sim.RemoveRole(situation);
+}
+                          if((Situation.sAllSituations.Count>i)&&
+                             (Situation.sAllSituations[i]==situation)){
+                              Situation.sAllSituations.RemoveAt(i);
+                          }
+                    }catch(Exception exception){
+         //  Get stack trace for the exception. with source file information
+               var st=new StackTrace(exception,true);
+         //  Get the top stack frame
+         var frame=st.GetFrame(0);
+         //  Get the line number from the stack frame
+    var line=frame.GetFileLineNumber();
+                      Alive.WriteLog(exception.Message+"\n\n"+
+                                     exception.StackTrace+"\n\n"+
+                                     exception.Source+"\n\n"+
+                                     line);
+                    }
+                    }
+                }catch(Exception exception){
+     //  Get stack trace for the exception. with source file information
+           var st=new StackTrace(exception,true);
+     //  Get the top stack frame
+     var frame=st.GetFrame(0);
+     //  Get the line number from the stack frame
+var line=frame.GetFileLineNumber();
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source+"\n\n"+
+                                 line);
+                }
+                try{
 List<Sim>
    toRemove=new List<Sim>();
-    foreach(var simPosData in positions){
+    foreach(var simPosData in stuckPositions){
              if(simPosData.Key==null||
                 simPosData.Key.HasBeenDestroyed){
    toRemove.Add(simPosData.Key);
              }
     }
                                  for(int i=0;i<toRemove.Count;i++){
-                              positions.Remove(toRemove[i]);
+                              stuckPositions.Remove(toRemove[i]);
                                  }
    toRemove.Clear();
                 }catch(Exception exception){
@@ -778,91 +1413,87 @@ var line=frame.GetFileLineNumber();
                 try{
                     foreach(Sim sim in Sims3.Gameplay.Queries.GetObjects<Sim>()){
                     try{
-     if(!positions.TryGetValue(sim,out Vector3 position)){
-         positions.Add(        sim,
-                               sim.Position);
-                            if(sim.SimDescription!=null){
-                               sim.SimDescription.ClearOutfits(OutfitCategories.MartialArts,true);
-                                        ResetClearSimTask.ResetPosture       (sim);
-                                            ResetClearSimTask.CleanupBrokenSkills(sim.SimDescription);
-                                                ResetClearSimTask.ResetCareer        (sim.SimDescription);
-                                                  //ResetClearSimTask.ResetSituations    (sim);
-                                                        ResetClearSimTask.CleanupSlots       (sim);
-                                                            ResetClearSimTask.ResetInventory     (sim);
-                                                                ResetClearSimTask.ResetRouting       (sim);
-                                                                    ResetClearSimTask.ResetSkillModifiers(sim.SimDescription);
-                                                                        ResetClearSimTask.ResetRole          (sim);
-                                                                            ResetClearSimTask.CleanupOpportunities(sim.SimDescription,false);
-                                        SafeStore.FixCareer(sim.Occupation,true);
-                            }
-     }else{
-                      if(sim.HasBeenDestroyed||
-                        !sim.InWorld)continue;
-                      if(sim.Position==position){//  Stuck!
-                      if(sim.Household==null||
-                        !sim.Household.InWorld||
-                         sim.Household.IsSpecialHousehold){
-                                    new ResetClearSimTask(sim);
-                      }else
-                      if(sim.Service!=null){
-                                    new ResetClearSimTask(sim);
-                      }else
-                      if(sim.InteractionQueue==null||
-                         sim.InteractionQueue.Count==0){
-                                    new ResetClearSimTask(sim);
-                      }else
-                      if(sim.SimDescription!=null&&
-                         sim.SimDescription.CreatedSim==sim){
-                         sim.SimDescription.ClearOutfits(OutfitCategories.MartialArts,true);
-                         sim.mbSendHomeOnNextReset=true;
-                         sim.     SetObjectToReset();
-                                        ResetClearSimTask.ResetPosture       (sim);
-                                            ResetClearSimTask.CleanupBrokenSkills(sim.SimDescription);
-                                                ResetClearSimTask.ResetCareer        (sim.SimDescription);
-                                                    ResetClearSimTask.ResetSituations    (sim);
-                                                        ResetClearSimTask.CleanupSlots       (sim);
-                                                            ResetClearSimTask.ResetInventory     (sim);
-                                                                ResetClearSimTask.ResetRouting       (sim);
-                                                                    ResetClearSimTask.ResetSkillModifiers(sim.SimDescription);
-                                                                        ResetClearSimTask.ResetRole          (sim);
-                                                                            ResetClearSimTask.CleanupOpportunities(sim.SimDescription,true);
-                                        SafeStore.FixCareer(sim.Occupation,true);
-                                                                                                              StuckSimData stuckSim;
-                                                         if(!StuckSims.TryGetValue(sim.SimDescription.SimDescriptionId,out stuckSim)){
-                                                                                                                           stuckSim=new StuckSimData();
-                                                             StuckSims.Add(        sim.SimDescription.SimDescriptionId,    stuckSim);
-                                                         }
-                                                                                                                       if(!stuckSim.Resetting){
-                                                                                                                           stuckSim.Detections++;
-                                                                         Vector3 destination=Vector3.Invalid;
-                                                               if(sim.RoutingComponent!=null){
-                                                                  sim.RoutingComponent.GetDestination(out destination);
-                                                               }
-                    if(  stuckSim.resetTask==null)
-                         stuckSim.resetTask=new ResetStuckSimTask(sim,destination,"Dummy");
-                    else stuckSim.resetTask.Renew();
-                                                                                                                       }
-                      }else{
-                                    new ResetClearSimTask(sim);
-                      }
-                      }else{//  Had an old position registered; but it just has changed!
-                            if(sim.SimDescription!=null){
-                               sim.SimDescription.ClearOutfits(OutfitCategories.MartialArts,true);
-                                        ResetClearSimTask.ResetPosture       (sim);
-                                            ResetClearSimTask.CleanupBrokenSkills(sim.SimDescription);
-                                                ResetClearSimTask.ResetCareer        (sim.SimDescription);
-                                                  //ResetClearSimTask.ResetSituations    (sim);
-                                                        ResetClearSimTask.CleanupSlots       (sim);
-                                                            ResetClearSimTask.ResetInventory     (sim);
-                                                                ResetClearSimTask.ResetRouting       (sim);
-                                                                    ResetClearSimTask.ResetSkillModifiers(sim.SimDescription);
-                                                                        ResetClearSimTask.ResetRole          (sim);
-                                                                            ResetClearSimTask.CleanupOpportunities(sim.SimDescription,false);
-                                        SafeStore.FixCareer(sim.Occupation,true);
-                            }
-                      }
-         positions[sim]=(sim.Position);
+      if(!stuckPositions.TryGetValue(sim,out Vector3 position)){
+          stuckPositions.Add(        sim,
+                                     sim.Position);
+      }else{
+          stuckPositions[sim]=(sim.Position);
+                                     new ResetClearSimTask(sim);
+goto _DidReset;
+      }
+                          InteractionInstance 
+                                currentInteraction=sim.InteractionQueue?.GetCurrentInteraction();
+                             if(currentInteraction!=null&&
+                               (currentInteraction is BedSleep||
+                                currentInteraction is WorkInRabbitHole)){
+goto _Skipped;
+                             }else
+                             if(sim.Service!=null&&
+                               (sim.Service.ServiceType==ServiceType.GrimReaper||
+                                sim.Service.ServiceType==ServiceType.Burglar   ||
+                                sim.Service.ServiceType==ServiceType.Repoman   ||
+                                sim.Service.ServiceType==ServiceType.Police    ||
+                                sim.Service.ServiceType==ServiceType.Firefighter||
+                                sim.Service.ServiceType==ServiceType.SocialWorkerChildProtection)){
+goto _Skipped;
+                             }else 
+            if(!Objects.IsValid(sim.ObjectId)||
+             Simulator.GetProxy(sim.ObjectId)==null||
+                                sim.SimDescription==null||
+                                sim.SimDescription.CreatedSim!=sim){
+                                     new ResetClearSimTask(sim);
+goto _DidReset;
+            }else
+                             if(sim.SimDescription.IsGhost||
+(LunarCycleManager.sFullMoonZombies!=null&&  
+ LunarCycleManager.sFullMoonZombies.Contains(sim.SimDescription))){
+goto _SoftReset;
+                             }else
+                             if(sim.Household==null||
+                               !sim.Household.InWorld||
+                                sim.Household.IsSpecialHousehold){
+                                     new ResetClearSimTask(sim);
+goto _DidReset;
+                             }else
+                             if(sim.LotHome==null&&
+                                sim.VirtualLotHome==null){
+                                     new ResetClearSimTask(sim);
+goto _DidReset; 
+                             }else
+                            if(Household.ActiveHouseholdLot!=null&&
+                                sim.LotCurrent==Household.ActiveHouseholdLot&&
+                               !sim.IsGreetedOnLot(Household.ActiveHouseholdLot)&&
+                              !Household.RoommateManager.IsNPCRoommate(sim)){
+                                     new ResetClearSimTask(sim);
+goto _DidReset; 
+                            }else 
+                             if(!sim.LotCurrent.IsCommunityLot&&
+                                sim.LotCurrent!=null&&
+                                sim.LotCurrent!=sim.LotHome&&
+                                sim.LotCurrent!=sim.VirtualLotHome&&
+                                Household.ActiveHousehold!=null&&
+                                Household.ActiveHousehold.Sims!=null&&
+                               !Household.ActiveHousehold.Sims.Contains(sim)){
+                                     new ResetClearSimTask(sim);
+goto _DidReset;
+                             }else{
+goto _SoftReset;
+                             }
+     _SoftReset:{
+                                sim.SimDescription.ClearOutfits(OutfitCategories.MartialArts,true);
+                                         ResetClearSimTask.CleanupBrokenSkills(sim.SimDescription);
+                                             ResetClearSimTask.ResetCareer        (sim.SimDescription);
+                                                 ResetClearSimTask.ResetSituations    (sim);
+                                                     ResetClearSimTask.CleanupSlots       (sim);
+                                                         ResetClearSimTask.ResetInventory     (sim);
+                                                             ResetClearSimTask.ResetRouting       (sim);
+                                                                 ResetClearSimTask.ResetSkillModifiers(sim.SimDescription);
+                                                                     ResetClearSimTask.ResetRole          (sim);
+                                                                         ResetClearSimTask.CleanupOpportunities(sim.SimDescription,false);
+                                         SafeStore.FixCareer(sim.Occupation,true);
      }
+     _DidReset:{}
+     _Skipped:{}
                     }catch(Exception exception){
          //  Get stack trace for the exception. with source file information
                var st=new StackTrace(exception,true);
@@ -880,15 +1511,39 @@ var line=frame.GetFileLineNumber();
                for(int i=sim.InteractionQueue.mInteractionList.Count-1;i>=1;i--){
                       if(sim.InteractionQueue.mInteractionList[i]is BedSleep        )continue;
                       if(sim.InteractionQueue.mInteractionList[i]is WorkInRabbitHole)continue;
+                         //
+                      if(sim.InteractionQueue.mInteractionList[i].Target!=null){
+        var targetObject=sim.InteractionQueue.mInteractionList[i].Target as GameObject;
+         if(targetObject!=null){
+            targetObject.SimLine?.DoReset();
+         }
+                      }
+                         sim.InteractionQueue.mInteractionList[i].Target?.SetObjectToReset();
                          sim.InteractionQueue.RemoveInteraction(i,false);
+                         //
+                         //sim.SetObjectToReset();
                }
 InteractionInstance 
       currentInteraction;
   if((currentInteraction=sim.InteractionQueue.GetCurrentInteraction())!=null){
+//InteractionInstance clone=null;
  if(!(currentInteraction is BedSleep        ||
       currentInteraction is WorkInRabbitHole)){
+                    //clone=currentInteraction.Clone();
                          sim.InteractionQueue.CancelInteraction(currentInteraction.Id,ExitReason.CanceledByScript);
+   if(currentInteraction.Target!=null){
+var targetObject=currentInteraction.Target as GameObject;
+ if(targetObject!=null){
+    targetObject.SimLine?.DoReset();
+ }
+   }
+      currentInteraction.Target?.SetObjectToReset();
                          sim.InteractionQueue.OnReset();
+                         //
+                         //sim.SetObjectToReset();
+                 //if(clone!=null){
+                 //        sim.InteractionQueue.Add(clone);
+                 //}
  }
   }
                       }
@@ -976,6 +1631,79 @@ var line=frame.GetFileLineNumber();
                                  exception.Source+"\n\n"+
                                  line);
                 }finally{
+                }
+                try{
+                        foreach(var miniFridge in Sims3.Gameplay.Queries.GetObjects<MiniFridge>()){
+                         var parent=miniFridge.Parent;
+                                bool slotted=(false);
+                        Slot parentSlot=Slot.None;
+                          if(parent!=null){
+                   var slots=parent.GetContainmentSlots();
+   foreach(var slot in slots){
+                          if(parent.GetContainedObject(slot)==miniFridge){
+                             parentSlot=slot;
+                                     slotted=( true);
+                            break;
+                          }
+   }
+                          }
+                                    miniFridge.SimLine?.DoReset();
+                                    miniFridge.Line=new SimQueue(SimQueue.WaitLocation.HangAroundNearObject,2);
+                                    miniFridge.SetObjectToReset();
+                                    miniFridge.ResetParentingHierarchy(true);
+                                    miniFridge.RemoveFromWorld();
+                                    miniFridge.     AddToWorld();
+                                    miniFridge.SetHiddenFlags(HiddenFlags.Nothing);
+                                    miniFridge.SetOpacity(1f,0.0f);
+                                    miniFridge.AddToLot();
+                          if(parent!=null&&
+                                     slotted){
+                                    miniFridge.ParentToSlot(parent,parentSlot);
+                          }
+                        }
+                }catch(Exception exception){
+     //  Get stack trace for the exception. with source file information
+           var st=new StackTrace(exception,true);
+     //  Get the top stack frame
+     var frame=st.GetFrame(0);
+     //  Get the line number from the stack frame
+var line=frame.GetFileLineNumber();
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source+"\n\n"+
+                                 line);
+                }
+                try{
+                        foreach(var washingMachine in Sims3.Gameplay.Queries.GetObjects<WashingMachine>()){
+                                    washingMachine.SetObjectToReset();
+                        }
+                }catch(Exception exception){
+     //  Get stack trace for the exception. with source file information
+           var st=new StackTrace(exception,true);
+     //  Get the top stack frame
+     var frame=st.GetFrame(0);
+     //  Get the line number from the stack frame
+var line=frame.GetFileLineNumber();
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source+"\n\n"+
+                                 line);
+                }
+                try{
+                        foreach(var fridge in Sims3.Gameplay.Queries.GetObjects<Fridge>()){
+                                    fridge.SetObjectToReset();
+                        }
+                }catch(Exception exception){
+     //  Get stack trace for the exception. with source file information
+           var st=new StackTrace(exception,true);
+     //  Get the top stack frame
+     var frame=st.GetFrame(0);
+     //  Get the line number from the stack frame
+var line=frame.GetFileLineNumber();
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source+"\n\n"+
+                                 line);
                 }
                 try{
                        foreach(ShowVenue showVenue in Sims3.Gameplay.Queries.GetObjects<ShowVenue>()){
@@ -1112,6 +1840,65 @@ var line=frame.GetFileLineNumber();
                 }
         }
         //==================================================================================================================
+        static void DoHourlyTasks(){
+                try{
+            foreach(var coffin in Sims3.Gameplay.Queries.GetObjects<BonehildaCoffin>()){
+          Sim bonehilda;
+          if((bonehilda=coffin.BonehildaSim)!=null){
+                     if(coffin.LotCurrent!=null&&
+                        coffin.LotCurrent==bonehilda.LotCurrent){
+              bonehilda.GreetSimOnLot(coffin.LotCurrent);
+              bonehilda.PlayRouteFailFrequency=Sim.RouteFailFrequency.PlayRouteFailNextTimeOnly;
+              //bonehilda.InteractionQueue.CancelAllInteractions();
+ClothingPileDry[]clothingPilesDry;
+             if((clothingPilesDry=coffin.LotCurrent.GetObjects<ClothingPileDry>()).Length>0)
+       foreach(var clothingPileDry in coffin.LotCurrent.GetObjects<ClothingPileDry>()){
+              bonehilda.CurrentCommodityInteractionMap.RemoveObject(                                     clothingPileDry);
+              bonehilda.CurrentCommodityInteractionMap.AddInteraction(ClothingPileDry.CleanUp .Singleton,clothingPileDry);
+       }{
+                                                    var interaction_0=ClothingPileDry.CleanUp .Singleton.CreateInstanceWithCallbacks((IGameObject)clothingPilesDry[ModRandom.Next(0,clothingPilesDry.Length)],(IActor)bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true,OnDoLaundryStarted,OnDoLaundryCompleted,OnDoLaundryFailed) as ClothingPileDry.CleanUp ;
+              bonehilda.InteractionQueue.AddInteraction(interaction_0,false);
+                  Alive.WriteLog("bonehilda: clean up clothes");
+WashingMachine[]washingMachines=coffin.LotCurrent.GetObjects<WashingMachine>();
+             if(washingMachines!=null&&
+                washingMachines.Length>0){
+        foreach(var washingMachine in coffin.LotCurrent.GetObjects<WashingMachine>()){
+              bonehilda.CurrentCommodityInteractionMap.RemoveObject(                                     washingMachine );
+              bonehilda.CurrentCommodityInteractionMap.AddInteraction(WashingMachine.DoLaundry.Singleton,washingMachine );
+        }
+                                                    var interaction_1=WashingMachine.DoLaundry.Singleton.CreateInstanceWithCallbacks((IGameObject)washingMachines [ModRandom.Next(0,washingMachines .Length)],(IActor)bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true,OnDoLaundryStarted,OnDoLaundryCompleted,OnDoLaundryFailed) as WashingMachine.DoLaundry;
+              bonehilda.InteractionQueue.AddInteraction(interaction_1,false);
+                  Alive.WriteLog("bonehilda: do laundry");
+             }
+Hamper[]hampers=coffin.LotCurrent.GetObjects<Hamper>();
+             if(hampers!=null&&
+                hampers.Length>0){
+                foreach(var hamper in coffin.LotCurrent.GetObjects<Hamper>()){
+              bonehilda.CurrentCommodityInteractionMap.RemoveObject(                                     hamper         );
+              bonehilda.CurrentCommodityInteractionMap.AddInteraction(Hamper.DoLaundry        .Singleton,hamper         );
+                }
+                                                    var interaction_2=Hamper.DoLaundry        .Singleton.CreateInstanceWithCallbacks((IGameObject)hampers         [ModRandom.Next(0,hampers         .Length)],(IActor)bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true,OnDoLaundryStarted,OnDoLaundryCompleted,OnDoLaundryFailed) as Hamper.DoLaundry        ;
+              bonehilda.InteractionQueue.AddInteraction(interaction_2,false);
+                  Alive.WriteLog("bonehilda: hamper");
+             }
+             }
+                     }
+          }
+            }
+                }catch(Exception exception){
+     //  Get stack trace for the exception. with source file information
+           var st=new StackTrace(exception,true);
+     //  Get the top stack frame
+     var frame=st.GetFrame(0);
+     //  Get the line number from the stack frame
+var line=frame.GetFileLineNumber();
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source+"\n\n"+
+                                 line);
+                }finally{
+                }
+        }
         static void FeedSims(){
                 try{
             foreach(var coffin in Sims3.Gameplay.Queries.GetObjects<BonehildaCoffin>()){
@@ -1184,7 +1971,10 @@ if(LunarCycleManager.sFullMoonZombies!=null&&
 }
                                             if(sim.SimDescription.IsBonehilda||
                                               (sim.Service!=null&&
-                                               sim.Service.ServiceType==ServiceType.GrimReaper)){
+                                              (sim.Service.ServiceType==ServiceType.GrimReaper||
+                                               sim.Service.ServiceType==ServiceType.Burglar   ||
+                                               sim.Service.ServiceType==ServiceType.Repoman   ||
+                                               sim.Service.ServiceType==ServiceType.SocialWorkerChildProtection))){
                                 continue;
                                             }
                                         Lot lot=LotManager.ActiveLot;
@@ -1267,6 +2057,13 @@ var line=frame.GetFileLineNumber();
         private static void OnFridge_HaveStarted(Sim s,float x){
         }
         private static void OnFridge_HaveCompleted(Sim s,float x){
+        }
+        private static void OnDoLaundryFailed(Sim s,float x){
+            Alive.WriteLog("Bonehilda: DoLaundry failed: "+x+": "+s?.ExitReason);
+        }
+        private static void OnDoLaundryStarted(Sim s,float x){
+        }
+        private static void OnDoLaundryCompleted(Sim s,float x){
         }
         //==================================================================================================================
        static readonly Dictionary<ShowVenue,ShowDetectedData>ShowDetected=new Dictionary<ShowVenue,ShowDetectedData>();
@@ -1366,11 +2163,25 @@ var line=frame.GetFileLineNumber();
         //==================================================================================================================
         static void ResetPortalsAndRouting(){
                 try{
+                Sim.kAutonomyThoughtBalloonPercentageChance=100f;
+                Sim.kDistanceForSocials=15f;
+                Sim.kMaxDistanceForSocials=75f;
+                Sim.kBabyToddlerLikingThresholdToAllowInteractionsWithStrangers=-101;
+            //------------------------------------------------------
+                ElevatorInterior.kElevatorToElevatorPortalCost=20f;
+                Ladder.kPortalCost=22f;
+                Door.kMinimumTimeBeforeClosingDoor=30f;
+                Door.kDefaultPortalCost=2f;
+            //------------------------------------------------------
                                 SimRoutingComponent.kNPCSubwayUseChance=0.5f;
             //------------------------------------------------------
             GameObject.kKleptoRespawnTimeDays=1;
             //------------------------------------------------------
-            GameObject.kAutonomyMultiplierForObjectSelectionWhenSomeSimIsRouting=0.1f;
+            GameObject.kAutonomyMultiplierForObjectSelectionWhenSomeSimIsRouting=0.05f;
+                                //------------------------------------------------------
+                                Autonomy.kEnergyThresholdBelowWhichTheyWantToSleepWhenSleepyDuringTheirBedTime=0;
+                                //------------------------------------------------------
+                                Autonomy.kHoursAfterWhichBubbledUpScoreIsMax=.25f;
                                 //------------------------------------------------------
                                 Autonomy.kAllowEvenIfNotAllowedInRoomAutonomousMultiplier=0f;
                                 Autonomy.kAutonomyDelayNormal           =0;
@@ -1405,6 +2216,10 @@ var line=frame.GetFileLineNumber();
                                 SimQueue.kMaximumRadialDistanceFromObject=12.0f;
                                 SimQueue.kCheckPeriodInMinutes=0.5f;
                                 //------------------------------------------------------
+                                InteractionInstance.kNumMinToWaitOnPreSync=60;
+                                InteractionInstance.kNumMinToWaitOnSyncStart=90;
+                                InteractionInstance.kNumMinToWaitOnSync=10;
+                                //------------------------------------------------------
                 }catch(Exception exception){
      //  Get stack trace for the exception. with source file information
            var st=new StackTrace(exception,true);
@@ -1421,7 +2236,7 @@ var line=frame.GetFileLineNumber();
                 try{
 List<Sim>
    toRemove=new List<Sim>();
-    foreach(var simPosData in positions){
+    foreach(var simPosData in stuckPositions){
              if(simPosData.Key==null||
                 simPosData.Key.HasBeenDestroyed||
                !simPosData.Key.InWorld||
@@ -1430,7 +2245,7 @@ List<Sim>
              }
     }
                                  for(int i=0;i<toRemove.Count;i++){
-                              positions.Remove(toRemove[i]);
+                              stuckPositions.Remove(toRemove[i]);
                                  }
    toRemove.Clear();
                    foreach(Sim sim in Sims3.Gameplay.Queries.GetObjects<Sim>()){
@@ -2406,7 +3221,7 @@ var line=frame.GetFileLineNumber();
                 }finally{
                 }
             }
-            public static void ResetRouting(Sim sim){
+            public static void ResetRouting(Sim sim,bool deep=true){
                 try{
                                              if(sim==null)return;
                   SimRoutingComponent component=sim.SimRoutingComponent;

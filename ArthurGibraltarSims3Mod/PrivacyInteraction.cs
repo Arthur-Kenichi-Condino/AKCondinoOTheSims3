@@ -17,26 +17,6 @@ using System.Text;
 using static ArthurGibraltarSims3Mod.Alive;
 using static ArthurGibraltarSims3Mod.Interaction;
 namespace ArthurGibraltarSims3Mod{
-    public class PrivacyInteraction:AlikeModdedInteraction<IPrimaryOption<Sims3.Gameplay.Abstracts.GameObject>,Sims3.Gameplay.Abstracts.GameObject>{
-        public static Sims3.Gameplay.Interactions.InteractionDefinition Singleton=new AlikeModdedDefinition<PrivacyInteraction>(true,true);
-        public override void AddInteraction(InteractionInjectorList interactions){
-                                                                    //interactions.AddRoot(Singleton);
-                                                                    //interactions.Add<Sims3.Gameplay.Interfaces.IToiletOrUrinal>(Singleton);
-                                                                    //interactions.Add<Sims3.Gameplay.Objects.Plumbing.IShowerable>(Singleton);
-                                                                    //interactions.Add<Sims3.Gameplay.Objects.Plumbing.Bathtub>(Singleton);
-                                                                    //interactions.Add<Sims3.Gameplay.Objects.Plumbing.Sink>(Singleton);
-        }
-        protected override OptionResult Perform(Sims3.Gameplay.Interfaces.IActor actor,Sims3.Gameplay.Abstracts.GameObject target,Sims3.SimIFace.GameObjectHit hit){
-            try{
-                throw new NotImplementedException();
-            }catch(Exception exception){
-              Alive.WriteLog(exception.Message+"\n\n"+
-                             exception.StackTrace+"\n\n"+
-                             exception.Source);
-                    return OptionResult.Failure;
-            }
-        }
-    }
     public class TakeShowerEx:Shower.TakeShower,IPreLoad,IAddInteraction{
         static InteractionDefinition sOldSingleton;
                                               public void AddInteraction(InteractionInjectorList interactions){
@@ -56,7 +36,7 @@ namespace ArthurGibraltarSims3Mod{
             Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.BathtubShowerTILocal   ,Shower.TakeShower.Definition,Definition>(false);
             Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.ShowerCheap                   ,Shower.TakeShower.Definition,Definition>(false);
             Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.ShowerExpensive               ,Shower.TakeShower.Definition,Definition>(false);
-            Tunings.Inject<IShowerable, Shower.TakeShower.Definition, Definition>(false);
+            Tunings.Inject<IShowerable,Shower.TakeShower.Definition,Definition>(false);
                                      sOldSingleton=Singleton;
                                                    Singleton=new Definition();
                                    }
@@ -266,7 +246,7 @@ Target.SimInShower=null;
                                          return na;
             }
             public override string GetInteractionName(Sim actor,IShowerable target,InteractionObjectPair iop){
-                       return base.GetInteractionName(actor, target, new InteractionObjectPair(sOldSingleton, target));
+                       return base.GetInteractionName(actor,target,new InteractionObjectPair(sOldSingleton,target));
             }
             public override bool Test(Sim a,IShowerable target,bool isAutonomous,ref GreyedOutTooltipCallback greyedOutTooltipCallback){
                                                      if(target.Repairable==null)return false;

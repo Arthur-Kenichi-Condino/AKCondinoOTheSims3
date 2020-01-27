@@ -225,7 +225,7 @@ var line=frame.GetFileLineNumber();
                         tuning.mTradeoff.mOutputs.RemoveAt(i);
                      }
               }
-                        tuning.mTradeoff.mOutputs.Add(new CommodityChange(CommodityKind.BeBonehilda,200,true,200,OutputUpdateType.ContinuousFlow,false,false,UpdateAboveAndBelowZeroType.Either));
+                        tuning.mTradeoff.mOutputs.Add(new CommodityChange(CommodityKind.BeBonehilda,300,true,300,OutputUpdateType.ContinuousFlow,false,false,UpdateAboveAndBelowZeroType.Either));
                         tuning.Availability.OccultRestrictions=Sims3.UI.Hud.OccultTypes.None;
 tuning.Availability.AddFlags(Availability.FlagField.AllowGreetedSims);
 tuning.Availability.AddFlags(Availability.FlagField.AllowEvenIfNotAllowedInRoomAutonomous);
@@ -244,7 +244,7 @@ tuning.Availability.AddFlags(Availability.FlagField.AllowOnAllLots);
                         tuning.mTradeoff.mOutputs.RemoveAt(i);
                      }
               }
-                        tuning.mTradeoff.mOutputs.Add(new CommodityChange(CommodityKind.BeBonehilda,200,true,200,OutputUpdateType.ContinuousFlow,false,false,UpdateAboveAndBelowZeroType.Either));
+                        tuning.mTradeoff.mOutputs.Add(new CommodityChange(CommodityKind.BeBonehilda,300,true,300,OutputUpdateType.ContinuousFlow,false,false,UpdateAboveAndBelowZeroType.Either));
                         tuning.Availability.OccultRestrictions=Sims3.UI.Hud.OccultTypes.None;
 tuning.Availability.AddFlags(Availability.FlagField.AllowGreetedSims);
 tuning.Availability.AddFlags(Availability.FlagField.AllowEvenIfNotAllowedInRoomAutonomous);
@@ -320,7 +320,7 @@ tuning.Availability.AddFlags(Availability.FlagField.AllowOnAllLots);
                         tuning.mTradeoff.mOutputs.RemoveAt(i);
                      }
               }
-                        tuning.mTradeoff.mOutputs.Add(new CommodityChange(CommodityKind.BeBonehilda,200,true,200,OutputUpdateType.ContinuousFlow,false,false,UpdateAboveAndBelowZeroType.Either));
+                        tuning.mTradeoff.mOutputs.Add(new CommodityChange(CommodityKind.BeBonehilda,500,true,500,OutputUpdateType.ContinuousFlow,false,false,UpdateAboveAndBelowZeroType.Either));
                         tuning.Availability.OccultRestrictions=Sims3.UI.Hud.OccultTypes.None;
 tuning.Availability.AddFlags(Availability.FlagField.AllowGreetedSims);
 tuning.Availability.AddFlags(Availability.FlagField.AllowEvenIfNotAllowedInRoomAutonomous);
@@ -377,7 +377,7 @@ tuning.Availability.AddFlags(Availability.FlagField.AllowOnAllLots);
                         tuning.mTradeoff.mOutputs.RemoveAt(i);
                      }
               }
-                        tuning.mTradeoff.mOutputs.Add(new CommodityChange(CommodityKind.BeBonehilda,200,true,200,OutputUpdateType.ContinuousFlow,false,false,UpdateAboveAndBelowZeroType.Either));
+                        tuning.mTradeoff.mOutputs.Add(new CommodityChange(CommodityKind.BeBonehilda,600,true,600,OutputUpdateType.ContinuousFlow,false,false,UpdateAboveAndBelowZeroType.Either));
                         tuning.Availability.OccultRestrictions=Sims3.UI.Hud.OccultTypes.None;
 tuning.Availability.AddFlags(Availability.FlagField.AllowGreetedSims);
 tuning.Availability.AddFlags(Availability.FlagField.AllowEvenIfNotAllowedInRoomAutonomous);
@@ -396,7 +396,7 @@ tuning.Availability.AddFlags(Availability.FlagField.AllowOnAllLots);
                         tuning.mTradeoff.mOutputs.RemoveAt(i);
                      }
               }
-                        tuning.mTradeoff.mOutputs.Add(new CommodityChange(CommodityKind.BeBonehilda,200,true,200,OutputUpdateType.ContinuousFlow,false,false,UpdateAboveAndBelowZeroType.Either));
+                        tuning.mTradeoff.mOutputs.Add(new CommodityChange(CommodityKind.BeBonehilda,700,true,700,OutputUpdateType.ContinuousFlow,false,false,UpdateAboveAndBelowZeroType.Either));
                         tuning.Availability.OccultRestrictions=Sims3.UI.Hud.OccultTypes.None;
 tuning.Availability.AddFlags(Availability.FlagField.AllowGreetedSims);
 tuning.Availability.AddFlags(Availability.FlagField.AllowEvenIfNotAllowedInRoomAutonomous);
@@ -415,7 +415,7 @@ tuning.Availability.AddFlags(Availability.FlagField.AllowOnAllLots);
                         tuning.mTradeoff.mOutputs.RemoveAt(i);
                      }
               }
-                        tuning.mTradeoff.mOutputs.Add(new CommodityChange(CommodityKind.BeBonehilda,200,true,200,OutputUpdateType.ContinuousFlow,false,false,UpdateAboveAndBelowZeroType.Either));
+                        tuning.mTradeoff.mOutputs.Add(new CommodityChange(CommodityKind.BeBonehilda,800,true,800,OutputUpdateType.ContinuousFlow,false,false,UpdateAboveAndBelowZeroType.Either));
                         tuning.Availability.OccultRestrictions=Sims3.UI.Hud.OccultTypes.None;
 tuning.Availability.AddFlags(Availability.FlagField.AllowGreetedSims);
 tuning.Availability.AddFlags(Availability.FlagField.AllowEvenIfNotAllowedInRoomAutonomous);
@@ -434,7 +434,7 @@ tuning.Availability.AddFlags(Availability.FlagField.AllowOnAllLots);
                         tuning.mTradeoff.mOutputs.RemoveAt(i);
                      }
               }
-                        tuning.mTradeoff.mOutputs.Add(new CommodityChange(CommodityKind.BeBonehilda,200,true,200,OutputUpdateType.ContinuousFlow,false,false,UpdateAboveAndBelowZeroType.Either));
+                        tuning.mTradeoff.mOutputs.Add(new CommodityChange(CommodityKind.BeBonehilda,800,true,800,OutputUpdateType.ContinuousFlow,false,false,UpdateAboveAndBelowZeroType.Either));
                         tuning.Availability.OccultRestrictions=Sims3.UI.Hud.OccultTypes.None;
 tuning.Availability.AddFlags(Availability.FlagField.AllowGreetedSims);
 tuning.Availability.AddFlags(Availability.FlagField.AllowEvenIfNotAllowedInRoomAutonomous);
@@ -453,7 +453,7 @@ tuning.Availability.AddFlags(Availability.FlagField.AllowOnAllLots);
                         tuning.mTradeoff.mOutputs.RemoveAt(i);
                      }
               }
-                        tuning.mTradeoff.mOutputs.Add(new CommodityChange(CommodityKind.BeBonehilda,200,true,200,OutputUpdateType.ContinuousFlow,false,false,UpdateAboveAndBelowZeroType.Either));
+                        tuning.mTradeoff.mOutputs.Add(new CommodityChange(CommodityKind.BeBonehilda,900,true,900,OutputUpdateType.ContinuousFlow,false,false,UpdateAboveAndBelowZeroType.Either));
                         tuning.Availability.OccultRestrictions=Sims3.UI.Hud.OccultTypes.None;
 tuning.Availability.AddFlags(Availability.FlagField.AllowGreetedSims);
 tuning.Availability.AddFlags(Availability.FlagField.AllowEvenIfNotAllowedInRoomAutonomous);
@@ -472,7 +472,7 @@ tuning.Availability.AddFlags(Availability.FlagField.AllowOnAllLots);
                         tuning.mTradeoff.mOutputs.RemoveAt(i);
                      }
               }
-                        //tuning.mTradeoff.mOutputs.Add(new CommodityChange(CommodityKind.BeBonehilda,200,true,200,OutputUpdateType.ContinuousFlow,false,false,UpdateAboveAndBelowZeroType.Either));
+                        tuning.mTradeoff.mOutputs.Add(new CommodityChange(CommodityKind.BeBonehilda,800,true,800,OutputUpdateType.ContinuousFlow,false,false,UpdateAboveAndBelowZeroType.Either));
                         tuning.Availability.OccultRestrictions=Sims3.UI.Hud.OccultTypes.None;
 tuning.Availability.AddFlags(Availability.FlagField.AllowGreetedSims);
 tuning.Availability.AddFlags(Availability.FlagField.AllowEvenIfNotAllowedInRoomAutonomous);
@@ -491,7 +491,7 @@ tuning.Availability.AddFlags(Availability.FlagField.AllowOnAllLots);
                         tuning.mTradeoff.mOutputs.RemoveAt(i);
                      }
               }
-                        //tuning.mTradeoff.mOutputs.Add(new CommodityChange(CommodityKind.BeBonehilda,200,true,200,OutputUpdateType.ContinuousFlow,false,false,UpdateAboveAndBelowZeroType.Either));
+                        tuning.mTradeoff.mOutputs.Add(new CommodityChange(CommodityKind.BeBonehilda,700,true,700,OutputUpdateType.ContinuousFlow,false,false,UpdateAboveAndBelowZeroType.Either));
                         tuning.Availability.OccultRestrictions=Sims3.UI.Hud.OccultTypes.None;
 tuning.Availability.AddFlags(Availability.FlagField.AllowGreetedSims);
 tuning.Availability.AddFlags(Availability.FlagField.AllowEvenIfNotAllowedInRoomAutonomous);

@@ -26,7 +26,8 @@ namespace ArthurGibraltarSims3Mod{
                                                    Singleton=new Definition();
                                    }
             public override bool Run(){
-                if(this.Target.Parent!=this.Actor&&!(CarrySystem.PickUpWithoutRouting(this.Actor,(ICustomCarryable)this.Target,new SacsEventHandler(this.Target.OnPickUp),0U))){
+                if(this.Target.Parent!=this.Actor&&!(CarrySystem.PickUp(this.Actor,(ICustomCarryable)this.Target,new SacsEventHandler(this.Target.OnPickUp),0U))){
+            Alive.WriteLog("Alive_debugInfo_LOG:NOT_ERROR\nCannot_Do_Laundry:cannot_pickUp_clothingPile");
             return(false);
                 }
                 this.Actor.PlayRouteFailFrequency=Sim.RouteFailFrequency.NeverPlayRouteFail;
@@ -37,9 +38,9 @@ this.BeginCommodityUpdates();
                                     currentPile=(this.ActiveStage as RoomVsLotStage<ClothingPileDry>).GetNext();
                                  if(currentPile!=null){
                                     if(this.Actor.RouteToObjectRadiusAndCheckInUse((IGameObject)currentPile,currentPile.CarryRouteToObjectRadius)&&currentPile.Parent==null){
-                                       this.Actor.CarryStateMachine.AddOneShotScriptEventHandler(113U, (SacsEventHandler) ((A_1, A_2) => currentPile.FadeOut(false)));
-                                       this.Actor.CarryStateMachine.RequestState("x", "PickUpAnother");
-                                       this.Actor.CarryStateMachine.RequestState("x", "Carry");
+                                       this.Actor.CarryStateMachine.AddOneShotScriptEventHandler(113U,(SacsEventHandler)((A_1, A_2)=>currentPile.FadeOut(false)));
+                                       this.Actor.CarryStateMachine.RequestState("x","PickUpAnother");
+                                       this.Actor.CarryStateMachine.RequestState("x","Carry");
                                        this.Target.AddClothingPile(currentPile);
                                     currentPile.Destroy();
                                     }
@@ -75,6 +76,7 @@ WashingMachine closestObject4=GlobalFunctions.GetClosestObject<WashingMachine>((
             this.Actor.InteractionQueue.PushAsContinuation(WashingMachine.DoLaundry.SingletonNoStages,(IGameObject)closestObject4,false);
             return( true);
             }
+            Alive.WriteLog("Alive_debugInfo_LOG:NOT_ERROR\nCannot_Do_Laundry:this.Actor.HasExitReason():"+this.Actor.ExitReason);
 this.EndCommodityUpdates(false);
             return(false);
             }

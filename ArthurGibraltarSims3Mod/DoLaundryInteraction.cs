@@ -27,67 +27,56 @@ namespace ArthurGibraltarSims3Mod{
                                    }
             public override bool Run(){
                 if(this.Target.Parent!=this.Actor&&!(CarrySystem.PickUpWithoutRouting(this.Actor,(ICustomCarryable)this.Target,new SacsEventHandler(this.Target.OnPickUp),0U))){
-                Alive.WriteLog("WTF?");
             return(false);
                 }
                 this.Actor.PlayRouteFailFrequency=Sim.RouteFailFrequency.NeverPlayRouteFail;
 this.BeginCommodityUpdates();
-            if (this.ActiveStage != null)
-            {
-              ClothingPileDry currentPile;
-              do
-              {
-                currentPile = (this.ActiveStage as RoomVsLotStage<ClothingPileDry>).GetNext();
-                if (currentPile != null)
-                {
-                  if (this.Actor.RouteToObjectRadiusAndCheckInUse((IGameObject) currentPile, currentPile.CarryRouteToObjectRadius) && currentPile.Parent == null)
-                  {
-                    this.Actor.CarryStateMachine.AddOneShotScriptEventHandler(113U, (SacsEventHandler) ((A_1, A_2) => currentPile.FadeOut(false)));
-                    this.Actor.CarryStateMachine.RequestState("x", "PickUpAnother");
-                    this.Actor.CarryStateMachine.RequestState("x", "Carry");
-                    this.Target.AddClothingPile(currentPile);
-                    currentPile.Destroy();
-                  }
-                  this.Actor.RemoveExitReason(ExitReason.RouteFailed | ExitReason.ObjectInUse);
+                if(this.ActiveStage!=null){
+                    ClothingPileDry currentPile;
+                    do{
+                                    currentPile=(this.ActiveStage as RoomVsLotStage<ClothingPileDry>).GetNext();
+                                 if(currentPile!=null){
+                                    if(this.Actor.RouteToObjectRadiusAndCheckInUse((IGameObject)currentPile,currentPile.CarryRouteToObjectRadius)&&currentPile.Parent==null){
+                                       this.Actor.CarryStateMachine.AddOneShotScriptEventHandler(113U, (SacsEventHandler) ((A_1, A_2) => currentPile.FadeOut(false)));
+                                       this.Actor.CarryStateMachine.RequestState("x", "PickUpAnother");
+                                       this.Actor.CarryStateMachine.RequestState("x", "Carry");
+                                       this.Target.AddClothingPile(currentPile);
+                                    currentPile.Destroy();
+                                    }
+                                    this.Actor.RemoveExitReason(ExitReason.RouteFailed|ExitReason.ObjectInUse);
+                                 }
+                    }while(currentPile!=null&&!this.Actor.HasExitReason());
                 }
-              }
-              while (currentPile != null && !this.Actor.HasExitReason());
-            }
-            this.Actor.PlayRouteFailFrequency = Sim.RouteFailFrequency.AlwaysPlayRouteFail;
-            this.Stages = (List<Sims3.Gameplay.Interactions.Stage>) null;
+            this.Actor.PlayRouteFailFrequency=Sim.RouteFailFrequency.AlwaysPlayRouteFail;
+            this.Stages=(List<Sims3.Gameplay.Interactions.Stage>)null;
             this.Actor.InteractionQueue.FireQueueChanged();
-            if (!this.Actor.HasExitReason())
-            {
-              this.EndCommodityUpdates(true);
-              Hamper closestObject1 = GlobalFunctions.GetClosestObject<Hamper>((IEnumerable<Hamper>) Sims3.Gameplay.Queries.GetObjects<Hamper>(this.Actor.Position, ClothingPileDry.kRadiusToConsiderHampers), (IGameObject) this.Actor, new Predicate<Hamper>(ClothingPileDry.CleanUp.DoesHamperHaveSpaceLeft));
-              if (closestObject1 != null)
-              {
-                this.Actor.InteractionQueue.PushAsContinuation(Hamper.DropClothes.Singleton, (IGameObject) closestObject1, true);
-                return true;
-              }
-              if (!this.Autonomous || !this.Target.LotCurrent.LaundryManager.GivesFreshClothingBuff)
-              {
-                WashingMachine closestObject2 = GlobalFunctions.GetClosestObject<WashingMachine>((IEnumerable<WashingMachine>) Sims3.Gameplay.Queries.GetObjects<WashingMachine>(this.Actor.LotCurrent), (IGameObject) this.Actor, new Predicate<WashingMachine>(ClothingPileDry.CleanUp.IsWashingMachineUsable));
-                if (closestObject2 != null)
-                {
-                  this.Actor.InteractionQueue.PushAsContinuation(WashingMachine.DoLaundry.SingletonNoStages, (IGameObject) closestObject2, true);
-                  return true;
-                }
-              }
-              Hamper closestObject3 = GlobalFunctions.GetClosestObject<Hamper>((IEnumerable<Hamper>) Sims3.Gameplay.Queries.GetObjects<Hamper>(this.Actor.LotCurrent), (IGameObject) this.Actor);
-              if (closestObject3 != null)
-              {
-                this.Actor.InteractionQueue.PushAsContinuation(Hamper.DropClothes.Singleton, (IGameObject) closestObject3, true);
-                return true;
-              }
-              WashingMachine closestObject4 = GlobalFunctions.GetClosestObject<WashingMachine>((IEnumerable<WashingMachine>) Sims3.Gameplay.Queries.GetObjects<WashingMachine>(this.Actor.LotCurrent), (IGameObject) this.Actor);
-              if (closestObject4 == null)
-                return this.Target.PutInInventory(this.Actor);
-              this.Actor.InteractionQueue.PushAsContinuation(WashingMachine.DoLaundry.SingletonNoStages, (IGameObject) closestObject4, false);
-              return true;
+            if(!this.Actor.HasExitReason()){
+this.EndCommodityUpdates(true);
+Hamper closestObject1=GlobalFunctions.GetClosestObject<Hamper>((IEnumerable<Hamper>)Sims3.Gameplay.Queries.GetObjects<Hamper>(this.Actor.Position,ClothingPileDry.kRadiusToConsiderHampers),(IGameObject)this.Actor,new Predicate<Hamper>(ClothingPileDry.CleanUp.DoesHamperHaveSpaceLeft));
+    if(closestObject1!=null){
+            this.Actor.InteractionQueue.PushAsContinuation(Hamper.DropClothes.Singleton, (IGameObject) closestObject1, true);
+            return( true);
+    }
+    if(!this.Autonomous||!this.Target.LotCurrent.LaundryManager.GivesFreshClothingBuff){
+WashingMachine closestObject2=GlobalFunctions.GetClosestObject<WashingMachine>((IEnumerable<WashingMachine>)Sims3.Gameplay.Queries.GetObjects<WashingMachine>(this.Actor.LotCurrent),(IGameObject)this.Actor,new Predicate<WashingMachine>(ClothingPileDry.CleanUp.IsWashingMachineUsable));
+            if(closestObject2!=null){
+            this.Actor.InteractionQueue.PushAsContinuation(WashingMachine.DoLaundry.SingletonNoStages,(IGameObject)closestObject2,true);
+            return( true);
             }
-            this.EndCommodityUpdates(false);
-            return false;
+    }
+Hamper closestObject3=GlobalFunctions.GetClosestObject<Hamper>((IEnumerable<Hamper>)Sims3.Gameplay.Queries.GetObjects<Hamper>(this.Actor.LotCurrent),(IGameObject)this.Actor);
+    if(closestObject3!=null){
+            this.Actor.InteractionQueue.PushAsContinuation(Hamper.DropClothes.Singleton,(IGameObject)closestObject3,true);
+            return( true);
+    }
+WashingMachine closestObject4=GlobalFunctions.GetClosestObject<WashingMachine>((IEnumerable<WashingMachine>)Sims3.Gameplay.Queries.GetObjects<WashingMachine>(this.Actor.LotCurrent),(IGameObject)this.Actor);
+            if(closestObject4==null)
+            return this.Target.PutInInventory(this.Actor);
+            this.Actor.InteractionQueue.PushAsContinuation(WashingMachine.DoLaundry.SingletonNoStages,(IGameObject)closestObject4,false);
+            return( true);
+            }
+this.EndCommodityUpdates(false);
+            return(false);
             }
         public new class Definition:ClothingPileDry.CleanUp.Definition{
             public override InteractionInstance CreateInstance(ref InteractionInstanceParameters parameters){

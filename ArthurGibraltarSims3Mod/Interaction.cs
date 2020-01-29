@@ -1,6 +1,13 @@
-﻿using System;
+﻿using Sims3.Gameplay.Actors;
+using Sims3.Gameplay.ActorSystems;
+using Sims3.Gameplay.Interactions;
+using Sims3.Gameplay.Objects.Electronics;
+using Sims3.SimIFace;
+using System;
 using System.Collections.Generic;
 using System.Text;
+using static ArthurGibraltarSims3Mod.Alive;
+using static ArthurGibraltarSims3Mod.Interaction;
 namespace ArthurGibraltarSims3Mod{
     public class Interaction{
     //====================================================================================================================================================
@@ -1029,6 +1036,33 @@ Sims3.Gameplay.Autonomy.Tradeoff result=new Sims3.Gameplay.Autonomy.Tradeoff();
                                  result.mVariableRestrictions   =old.mVariableRestrictions;
                                  result.TimeEstimate            =old.TimeEstimate;
                           return result;
+        }
+    }
+    //-----------------------------------------------------------------------------------------------------------
+    public class TVRepairTVFix:TV.RepairTV,IPreLoad,IAddInteraction{
+        static InteractionDefinition sOldSingleton;
+                                              public void AddInteraction(InteractionInjectorList interactions){
+                                                                                                 interactions.Replace<TV,TV.RepairTV.Definition>(Singleton);
+                                              }
+                                   public void OnPreLoad(){
+            Tunings.Inject<Sims3.Gameplay.Objects.Electronics.TVCheap             ,TV.RepairTV.Definition,Definition>(false);
+            Tunings.Inject<Sims3.Gameplay.Objects.Electronics.TVModerate          ,TV.RepairTV.Definition,Definition>(false);
+            Tunings.Inject<Sims3.Gameplay.Objects.Electronics.TVModerateFlatscreen,TV.RepairTV.Definition,Definition>(false);
+            Tunings.Inject<Sims3.Gameplay.Objects.Electronics.TVExpensive         ,TV.RepairTV.Definition,Definition>(false);
+            Tunings.Inject<Sims3.Gameplay.Objects.Electronics.TVWall              ,TV.RepairTV.Definition,Definition>(false);
+            Tunings.Inject<Sims3.Gameplay.Objects.Electronics.TV,TV.RepairTV.Definition,Definition>(false);
+                                     sOldSingleton=Singleton;
+                                                   Singleton=new Definition();
+                                   }
+        public new class Definition:TV.RepairTV.Definition{
+            public override InteractionInstance CreateInstance(ref InteractionInstanceParameters parameters){
+                            InteractionInstance na=new TVRepairTVFix();
+                                                na.Init(ref parameters);
+                                         return na;
+            }
+            public override bool Test(Sim a,TV target,bool isAutonomous,ref GreyedOutTooltipCallback greyedOutTooltipCallback){
+            return(target.Repairable!=null&&(target.Repairable.Broken&&target.CanPerformRepairsOrUpgrades))&&target.CanSimRepairThisTV(a,ref greyedOutTooltipCallback);
+            }
         }
     }
 }

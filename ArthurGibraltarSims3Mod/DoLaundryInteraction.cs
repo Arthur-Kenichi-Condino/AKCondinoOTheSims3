@@ -3,6 +3,7 @@ using Sims3.Gameplay.Abstracts;
 using Sims3.Gameplay.Actors;
 using Sims3.Gameplay.ActorSystems;
 using Sims3.Gameplay.Autonomy;
+using Sims3.Gameplay.ChildAndTeenUpdates;
 using Sims3.Gameplay.Controllers;
 using Sims3.Gameplay.Interactions;
 using Sims3.Gameplay.Interfaces;
@@ -226,6 +227,9 @@ if(Sims3.Gameplay.Queries.CountObjects<WashingMachine>(target.LotCurrent)==0U||t
                                      sOldSingleton=Singleton;
                                                    Singleton=new Definition();
                                    }
+        public static bool IsWashingDone(WashingMachine washingMachine){
+            return(washingMachine.mWashState==WashingMachine.WashState.HasCleanLaundry)&&!washingMachine.Repairable.Broken;
+        }
         public new class Definition:WashingMachine.DoLaundry.Definition{
             public override InteractionInstance CreateInstance(ref InteractionInstanceParameters parameters){
                             InteractionInstance na=new WashingMachineDoLaundryEx();
@@ -334,6 +338,41 @@ if(Sims3.Gameplay.Queries.CountObjects<WashingMachine>(target.LotCurrent)==0U||t
                                      sOldSingleton=Singleton;
                                                    Singleton=new Definition();
                                    }
+        public override bool Run(){
+            this.mClothingPile=this.Actor.GetObjectInRightHand()as ClothingPileWet;
+              if(mClothingPile==null){
+ClothingPileWet closestObject1=GlobalFunctions.GetClosestObject<ClothingPileWet>((IEnumerable<ClothingPileWet>)this.Target.LotCurrent.GetObjects<ClothingPileWet>(),(IGameObject)this.Target);
+             if(closestObject1!=null){
+            this.Actor.InteractionQueue.PushAsContinuation(ClothingPileWet.DryClothesOnClothesline.Singleton,(IGameObject)closestObject1,true);
+        return( true);
+             }
+WashingMachine closestObject2=GlobalFunctions.GetClosestObject<WashingMachine>((IEnumerable<WashingMachine>)this.Target.LotCurrent.GetObjects<WashingMachine>(),(IGameObject)this.Target,new Predicate<WashingMachine>(WashingMachineDoLaundryEx.IsWashingDone));
+            if(closestObject2!=null){
+            this.Actor.InteractionQueue.PushAsContinuation(WashingMachine.DryClothesOnClothesline.Singleton,(IGameObject)closestObject2,true);
+        return( true);
+            }
+        return(false);
+              }
+            int slotIndex;
+            if(!this.Target.RouteToClotheslineAndCheckInUse((InteractionInstance)this,out slotIndex)||this.Target.CurClothesState!=Dryer.DryerState.Empty){
+                CarrySystem.PutDownOnFloor(this.Actor,new SacsEventHandler(this.OnPutDownAnimationEvent),102U);
+        return(false);
+            }
+this.StandardEntry();
+            this.EnterStateMachine("ClothesLine","Enter","x","clothesLine");
+            this.SetActor("clothesbag",(IHasScriptProxy)this.mClothingPile);
+            this.SetParameter("isMirrored",slotIndex==0);
+            this.AddOneShotScriptEventHandler(101U,new SacsEventHandler(this.OnAnimationEvent));
+            this.AddOneShotScriptEventHandler(102U,new SacsEventHandler(this.OnAnimationEvent));
+this.BeginCommodityUpdates();
+            CarrySystem.ExitAndKeepHolding(this.Actor);
+            this.Actor.BuffManager.AddElement(BuffNames.SavingEnergy,Origin.FromClothesline,ProductVersion.EP2,TraitNames.EnvironmentallyConscious);
+            this.AnimateSim("Exit Hang Clothes");
+this.EndCommodityUpdates(true);
+this.StandardExit();
+            Punishment.ApplyAbsolvingActionToSim(this.Actor,Punishment.AbsolvingActionType.DoingLaundry);
+        return( true);
+        }
         public new class Definition:Clothesline.DryClothing.Definition{
             public override InteractionInstance CreateInstance(ref InteractionInstanceParameters parameters){
                             InteractionInstance na=new ClotheslineDryClothingEx();
@@ -341,6 +380,7 @@ if(Sims3.Gameplay.Queries.CountObjects<WashingMachine>(target.LotCurrent)==0U||t
                                          return na;
             }
             public override bool Test(Sim a,Clothesline target,bool isAutonomous,ref GreyedOutTooltipCallback greyedOutTooltipCallback){
+                if(target.LotCurrent.GetObjects<ClothingPileWet>().Length==0&&(a.GetObjectInRightHand()as ClothingPileWet)==null&&GlobalFunctions.GetClosestObject<WashingMachine>((IEnumerable<WashingMachine>)target.LotCurrent.GetObjects<WashingMachine>(),(IGameObject)target,new Predicate<WashingMachine>(WashingMachineDoLaundryEx.IsWashingDone))==null)return(false);
             return(target.CurClothesState==Dryer.DryerState.Empty);
             }
         }
@@ -357,6 +397,45 @@ if(Sims3.Gameplay.Queries.CountObjects<WashingMachine>(target.LotCurrent)==0U||t
                                      sOldSingleton=Singleton;
                                                    Singleton=new Definition();
                                    }
+        public override bool Run(){
+            this.mClothingPile=this.Actor.GetObjectInRightHand()as ClothingPileWet;
+              if(mClothingPile==null){
+ClothingPileWet closestObject1=GlobalFunctions.GetClosestObject<ClothingPileWet>((IEnumerable<ClothingPileWet>)this.Target.LotCurrent.GetObjects<ClothingPileWet>(),(IGameObject)this.Target);
+             if(closestObject1!=null){
+            this.Actor.InteractionQueue.PushAsContinuation(ClothingPileWet.DryClothesInDryer.Singleton,(IGameObject)closestObject1,true);
+        return( true);
+             }
+WashingMachine closestObject2=GlobalFunctions.GetClosestObject<WashingMachine>((IEnumerable<WashingMachine>)this.Target.LotCurrent.GetObjects<WashingMachine>(),(IGameObject)this.Target,new Predicate<WashingMachine>(WashingMachineDoLaundryEx.IsWashingDone));
+            if(closestObject2!=null){
+            this.Actor.InteractionQueue.PushAsContinuation(WashingMachine.DryClothesInDryer.Singleton,(IGameObject)closestObject2,true);
+        return( true);
+            }
+        return(false);
+              }
+            if(!this.Target.RouteToDryerAndCheckInUse((InteractionInstance)this)||this.Target.CurDryerState!=Dryer.DryerState.Empty){
+                CarrySystem.PutDownOnFloor(this.Actor,new SacsEventHandler(this.OnPutdownAnimationEvent),102U);
+        return(false);
+            }
+this.StandardEntry();
+            this.Target.mDryerStateMachine=StateMachineClient.Acquire((IHasScriptProxy)this.Target,"dryer");
+            StateMachineClient dryerStateMachine=this.Target.mDryerStateMachine;
+            dryerStateMachine.SetActor("x",(IHasScriptProxy)this.Actor);
+            dryerStateMachine.SetActor("clothesBag",(IHasScriptProxy)this.mClothingPile);
+            dryerStateMachine.SetActor("dryer",(IHasScriptProxy)this.Target);
+            dryerStateMachine.EnterState("x","Enter");
+            dryerStateMachine.EnterState("dryer","Enter");
+            dryerStateMachine.AddPersistentScriptEventHandler(0U,new SacsEventHandler(this.OnAnimationEvent));
+this.BeginCommodityUpdates();
+            CarrySystem.ExitAndKeepHolding(this.Actor);
+            dryerStateMachine.RequestState(false,"dryer","Start Dryer");
+            dryerStateMachine.RequestState(true,"x","Start Dryer");
+this.EndCommodityUpdates(true);
+            dryerStateMachine.RequestState(false,"dryer","Loop Operate");
+            dryerStateMachine.RequestState(true,"x","Exit Add Clothes");
+            Punishment.ApplyAbsolvingActionToSim(this.Actor,Punishment.AbsolvingActionType.DoingLaundry);
+this.StandardExit();
+        return( true);
+        }
         public new class Definition:Dryer.DryClothing.Definition{
             public override InteractionInstance CreateInstance(ref InteractionInstanceParameters parameters){
                             InteractionInstance na=new DryerDryClothingEx();
@@ -364,6 +443,7 @@ if(Sims3.Gameplay.Queries.CountObjects<WashingMachine>(target.LotCurrent)==0U||t
                                          return na;
             }
             public override bool Test(Sim a,Dryer target,bool isAutonomous,ref GreyedOutTooltipCallback greyedOutTooltipCallback){
+                if(target.LotCurrent.GetObjects<ClothingPileWet>().Length==0&&(a.GetObjectInRightHand()as ClothingPileWet)==null&&GlobalFunctions.GetClosestObject<WashingMachine>((IEnumerable<WashingMachine>)target.LotCurrent.GetObjects<WashingMachine>(),(IGameObject)target,new Predicate<WashingMachine>(WashingMachineDoLaundryEx.IsWashingDone))==null)return(false);
             return(target.CurDryerState==Dryer.DryerState.Empty);
             }
         }

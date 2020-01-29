@@ -17,6 +17,69 @@ using System.Text;
 using static ArthurGibraltarSims3Mod.Alive;
 using static ArthurGibraltarSims3Mod.Interaction;
 namespace ArthurGibraltarSims3Mod{
+    public class ToiletRepairFix:Toilet.Repair,IPreLoad,IAddInteraction{
+        static InteractionDefinition sOldSingleton;
+                                              public void AddInteraction(InteractionInjectorList interactions){
+                                                                                                 interactions.ReplaceNoTest<Toilet,Toilet.Repair.Definition>(Singleton);
+                                              }
+                                   public void OnPreLoad(){
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ToiletCheap            ,Toilet.Repair.Definition,Definition>(true);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ToiletModerate         ,Toilet.Repair.Definition,Definition>(true);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ToiletExpensive        ,Toilet.Repair.Definition,Definition>(true);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ToiletDarkLux          ,Toilet.Repair.Definition,Definition>(true);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ToiletDive             ,Toilet.Repair.Definition,Definition>(true);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ToiletEgyptAncient     ,Toilet.Repair.Definition,Definition>(true);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ToiletFuture           ,Toilet.Repair.Definition,Definition>(true);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ToiletModern           ,Toilet.Repair.Definition,Definition>(true);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ToiletRanch            ,Toilet.Repair.Definition,Definition>(true);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ToiletRomantic         ,Toilet.Repair.Definition,Definition>(true);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ToiletStall            ,Toilet.Repair.Definition,Definition>(true);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Toilet,Toilet.Repair.Definition,Definition>(true);
+                                     sOldSingleton=Singleton;
+                                                   Singleton=new Definition();
+                                   }
+        public new class Definition:Toilet.Repair.Definition{
+            public override InteractionInstance CreateInstance(ref InteractionInstanceParameters parameters){
+                            InteractionInstance na=new ToiletRepairFix();
+                                                na.Init(ref parameters);
+                                         return na;
+            }
+            public override bool Test(Sim a,Toilet target,bool isAutonomous,ref GreyedOutTooltipCallback greyedOutTooltipCallback){
+                                                if(target.Repairable==null)return false;
+            return(target.Repairable.Broken);
+            }
+        }
+    }
+    public class HotTubBaseRepairHotTubFix:HotTubBase.RepairHotTub,IPreLoad,IAddInteraction{
+        static InteractionDefinition sOldSingleton;
+                                              public void AddInteraction(InteractionInjectorList interactions){
+                                                                                                 interactions.ReplaceNoTest<HotTubBase,HotTubBase.RepairHotTub.Definition>(Singleton);
+                                              }
+                                   public void OnPreLoad(){
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.HotTubGrottoLightRim       ,HotTubBase.RepairHotTub.Definition,Definition>(true);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.HotTubGrottoPatioModern    ,HotTubBase.RepairHotTub.Definition,Definition>(true);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.HotTubGrottoPatioRockGarden,HotTubBase.RepairHotTub.Definition,Definition>(true);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.HotTubGrottoSeasonElegant  ,HotTubBase.RepairHotTub.Definition,Definition>(true);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.HotTubGrottoSpanCol        ,HotTubBase.RepairHotTub.Definition,Definition>(true);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.HotTubGrottoTIGranite      ,HotTubBase.RepairHotTub.Definition,Definition>(true);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.HotTubPatioElite           ,HotTubBase.RepairHotTub.Definition,Definition>(true);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.HotTubSleekSopSimple       ,HotTubBase.RepairHotTub.Definition,Definition>(true);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.HotTubGrottoCeleb                 ,HotTubBase.RepairHotTub.Definition,Definition>(true);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.HotTubBase,HotTubBase.RepairHotTub.Definition,Definition>(true);
+                                     sOldSingleton=Singleton;
+                                                   Singleton=new Definition();
+                                   }
+        public new class Definition:HotTubBase.RepairHotTub.Definition{
+            public override InteractionInstance CreateInstance(ref InteractionInstanceParameters parameters){
+                            InteractionInstance na=new HotTubBaseRepairHotTubFix();
+                                                na.Init(ref parameters);
+                                         return na;
+            }
+            public override bool Test(Sim a,HotTubBase target,bool isAutonomous,ref GreyedOutTooltipCallback greyedOutTooltipCallback){
+            return(target.Repairable.Broken);
+            }
+        }
+    }
     public class TakeShowerEx:Shower.TakeShower,IPreLoad,IAddInteraction{
         static InteractionDefinition sOldSingleton;
                                               public void AddInteraction(InteractionInjectorList interactions){

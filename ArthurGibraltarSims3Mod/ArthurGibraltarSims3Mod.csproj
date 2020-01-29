@@ -16,6 +16,8 @@
     <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <NoStdLib>true</NoStdLib>
+    <DisableHandlePackageFileConflicts>true</DisableHandlePackageFileConflicts>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -26,10 +28,12 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
+    <NoStdLib>true</NoStdLib>
+    <DisableHandlePackageFileConflicts>true</DisableHandlePackageFileConflicts>
+    <DebugType>none</DebugType>
+    <Optimize>false</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
@@ -44,45 +48,45 @@
     <Compile Include="SafeStore.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="mscorlib">
+      <HintPath>C:\Users\Arthur\AKCondinoOTheSims3\mscorlib.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="ScriptCore">
       <HintPath>..\ScriptCore.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="SimIFace">
       <HintPath>..\SimIFace.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Sims3GameplayObjects">
       <HintPath>..\Sims3GameplayObjects.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Sims3GameplaySystems">
       <HintPath>..\Sims3GameplaySystems.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Sims3Metadata">
       <HintPath>..\Sims3Metadata.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Sims3StoreObjects">
       <HintPath>..\Sims3StoreObjects.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System">
       <HintPath>C:\Users\Arthur\AKCondinoOTheSims3\System.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Xml">
       <HintPath>C:\Users\Arthur\AKCondinoOTheSims3\System.Xml.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="mscorlib">
-      <HintPath>C:\Users\Arthur\AKCondinoOTheSims3\mscorlib.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="UI">
       <HintPath>..\UI.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

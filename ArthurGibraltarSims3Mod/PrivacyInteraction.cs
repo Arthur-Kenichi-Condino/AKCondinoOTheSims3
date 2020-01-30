@@ -50,6 +50,27 @@ namespace ArthurGibraltarSims3Mod{
             }
         }
     }
+    public class AllInOneBathroomRepairAllInOneBathroomFix:AllInOneBathroom.RepairAllInOneBathroom,IPreLoad,IAddInteraction{
+        static InteractionDefinition sOldSingleton;
+                                              public void AddInteraction(InteractionInjectorList interactions){
+                                                                                                 interactions.ReplaceNoTest<AllInOneBathroom,AllInOneBathroom.RepairAllInOneBathroom.Definition>(Singleton);
+                                              }
+                                   public void OnPreLoad(){
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.AllInOneBathroom,AllInOneBathroom.RepairAllInOneBathroom.Definition,Definition>(false);
+                                     sOldSingleton=Singleton;
+                                                   Singleton=new Definition();
+                                   }
+        public new class Definition:AllInOneBathroom.RepairAllInOneBathroom.Definition{
+            public override InteractionInstance CreateInstance(ref InteractionInstanceParameters parameters){
+                            InteractionInstance na=new AllInOneBathroomRepairAllInOneBathroomFix();
+                                                na.Init(ref parameters);
+                                         return na;
+            }
+            public override bool Test(Sim a,AllInOneBathroom target,bool isAutonomous,ref GreyedOutTooltipCallback greyedOutTooltipCallback){
+            return(target.Repairable.Broken);
+            }
+        }
+    }
     public class HotTubBaseRepairHotTubFix:HotTubBase.RepairHotTub,IPreLoad,IAddInteraction{
         static InteractionDefinition sOldSingleton;
                                               public void AddInteraction(InteractionInjectorList interactions){

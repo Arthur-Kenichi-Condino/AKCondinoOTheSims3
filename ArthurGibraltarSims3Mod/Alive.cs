@@ -121,6 +121,7 @@ var line=frame.GetFileLineNumber();
                    void OnPreLoad();
         }
         private static void OnWorldLoadFinished(object sender,EventArgs e){
+             //---------------------------------------------------------------
                 try{
                     using(TestSpan span=new TestSpan()){
                     try{
@@ -210,8 +211,24 @@ var line=frame.GetFileLineNumber();
                                  line);
                 }finally{
                 }
+             //---------------------------------------------------------------
                 try{
-             new AlarmTask( 2,TimeUnit.Hours,DoHourlyTasks,1,TimeUnit.Hours);
+                new DelayedEventListener(Sims3.Gameplay.EventSystem.EventTypeId.kBoughtObject,OnNewObject);
+                new DelayedEventListener(Sims3.Gameplay.EventSystem.EventTypeId.kSimInstantiated,OnNewSim);
+                }catch(Exception exception){
+     //  Get stack trace for the exception. with source file information
+           var st=new StackTrace(exception,true);
+     //  Get the top stack frame
+     var frame=st.GetFrame(0);
+     //  Get the line number from the stack frame
+var line=frame.GetFileLineNumber();
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source+"\n\n"+
+                                 line);
+                }
+                try{
+             new AlarmTask( 1,TimeUnit.Hours,DoHourlyTasks,1,TimeUnit.Hours);
              //---------------------------------------------------------------
              new AlarmTask(07,DaysOfTheWeek.All,FeedSims);//  Breakfast...
              new AlarmTask(13,DaysOfTheWeek.All,FeedSims);//  ...Lunch...
@@ -274,25 +291,10 @@ var line=frame.GetFileLineNumber();
                 }
         }
         static void StartUp(){
-                try{
-                new DelayedEventListener(Sims3.Gameplay.EventSystem.EventTypeId.kBoughtObject,OnNewObject);
-                new DelayedEventListener(Sims3.Gameplay.EventSystem.EventTypeId.kSimInstantiated,OnNewSim);
-                }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
-                  Alive.WriteLog(exception.Message+"\n\n"+
-                                 exception.StackTrace+"\n\n"+
-                                 exception.Source+"\n\n"+
-                                 line);
-                }
              //---------------------------------------------------------------
                 try{
                   int tunnedCount=0;
-                bool[]tunned=new bool[21];
+                bool[]tunned=new bool[22];
             foreach(var tuning in InteractionTuning.sAllTunings.Values){
                     try{
                      if(!tunned[0]&&
@@ -651,6 +653,42 @@ tuning.Availability.AddFlags(Availability.FlagField.AllowNonGreetedSimsIfObjectO
 tuning.Availability.AddFlags(Availability.FlagField.AllowOnCommunityLots);
 tuning.Availability.AddFlags(Availability.FlagField.AllowOnAllLots);
                         tuning.RemoveFlags(InteractionTuning.FlagField.ConsiderCodeVersion);
+                     }else
+                     if(!tunned[21]&&
+                        tuning.FullInteractionName=="Sims3.Gameplay.Objects.Plumbing.AllInOneBathroom+RepairAllInOneBathroom+Definition"){
+                         tunned[21]=true;tunnedCount++;
+                        tuning.RemoveFlags(InteractionTuning.FlagField.DisallowAutonomous);
+              for(int i=tuning.mTradeoff.mOutputs.Count-1;i>=0;i--){
+                     if(tuning.mTradeoff.mOutputs[i].Commodity==CommodityKind.BeBonehilda){
+                        tuning.mTradeoff.mOutputs.RemoveAt(i);
+                     }
+              }
+                        tuning.mTradeoff.mOutputs.Add(new CommodityChange(CommodityKind.BeBonehilda,500,true,500,OutputUpdateType.ContinuousFlow,false,false,UpdateAboveAndBelowZeroType.Either));
+                        tuning.Availability.OccultRestrictions=Sims3.UI.Hud.OccultTypes.None;
+tuning.Availability.AddFlags(Availability.FlagField.AllowGreetedSims);
+tuning.Availability.AddFlags(Availability.FlagField.AllowEvenIfNotAllowedInRoomAutonomous);
+tuning.Availability.AddFlags(Availability.FlagField.AllowNonGreetedSimsIfObjectOutsideAutonomous);
+tuning.Availability.AddFlags(Availability.FlagField.AllowNonGreetedSimsIfObjectOutsideUserDirected);
+tuning.Availability.AddFlags(Availability.FlagField.AllowOnCommunityLots);
+tuning.Availability.AddFlags(Availability.FlagField.AllowOnAllLots);
+                        tuning.RemoveFlags(InteractionTuning.FlagField.ConsiderCodeVersion);
+                            string debug="Alive_debugInfo_Sims3.Gameplay.Objects.Plumbing.AllInOneBathroom+RepairAllInOneBathroom+Definition_LOG:NOT_ERROR\n\n";
+                            if(tuning.mChecks!=null){
+                                foreach(var check in tuning.mChecks){
+                                   debug+=check.mType+":"+check.mThreshold+"\n";
+                                }
+                                   debug+="\n\n";
+                            }
+                            if(tuning.PosturePreconditions?.mOptions!=null){
+                                foreach(var posture in tuning.PosturePreconditions.mOptions){
+                                   debug+=posture.Commodity+":"+posture.mValue+":";
+                                    foreach(var condition in posture.Conditions){
+                                   debug+=condition+",";
+                                    }
+                                   debug+="\n";
+                                }
+                                   debug+="\n\n";
+                            }
                      }
                     }catch(Exception exception){
          //  Get stack trace for the exception. with source file information
@@ -1333,6 +1371,16 @@ goto _SoftReset;
                              }
      _SoftReset:{
                                 sim.SimDescription.ClearOutfits(OutfitCategories.MartialArts,true);
+                             if(sim.SimDescription.IsBonehilda){
+try{
+      Sim.SwitchOutfitHelper switchOutfitHelper=new Sim.SwitchOutfitHelper(sim,OutfitCategories.Everyday,0);
+      switchOutfitHelper.Start();
+      switchOutfitHelper.Wait(false);
+      switchOutfitHelper.ChangeOutfit();
+      switchOutfitHelper.Dispose();
+}catch{
+}
+                             }
                                          ResetClearSimTask.CleanupBrokenSkills(sim.SimDescription);
                                              ResetClearSimTask.ResetCareer        (sim.SimDescription);
                                                  ResetClearSimTask.ResetSituations    (sim);
@@ -1695,43 +1743,6 @@ var line=frame.GetFileLineNumber();
         static void DoHourlyTasks(){
                 try{
             foreach(var coffin in Sims3.Gameplay.Queries.GetObjects<BonehildaCoffin>()){
-          Sim bonehilda;
-          if((bonehilda=coffin.BonehildaSim)!=null){
-                     if(coffin.LotCurrent!=null&&
-                        coffin.LotCurrent==bonehilda.LotCurrent&&
-                                           bonehilda.InteractionQueue!=null){
-                            foreach(var toilet in coffin.LotCurrent.GetObjects<Toilet>()){
-                                     if(toilet.Repairable!=null&&toilet.Repairable.Broken){
-                                                                      var repair=Toilet.Repair.Singleton.CreateInstance(toilet,bonehilda,new InteractionPriority(InteractionPriorityLevel.High),false,true);
-                                           bonehilda.InteractionQueue.Add(repair);
-                                     }
-                            }
-                            foreach(var hotTub in coffin.LotCurrent.GetObjects<HotTubBase>()){
-                                     if(hotTub.Repairable!=null&&hotTub.Repairable.Broken){
-                                                                      var repair=HotTubBase.RepairHotTub.Singleton.CreateInstance(hotTub,bonehilda,new InteractionPriority(InteractionPriorityLevel.High),false,true);
-                                           bonehilda.InteractionQueue.Add(repair);
-                                     }
-                            }
-                     }
-          }
-            }
-                }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
-                  Alive.WriteLog(exception.Message+"\n\n"+
-                                 exception.StackTrace+"\n\n"+
-                                 exception.Source+"\n\n"+
-                                 line);
-                }finally{
-                }
-        }
-        static void FeedSims(){
-                try{
-            foreach(var coffin in Sims3.Gameplay.Queries.GetObjects<BonehildaCoffin>()){
                     try{
           Sim bonehilda;
           if((bonehilda=coffin.BonehildaSim)!=null){
@@ -1781,6 +1792,57 @@ var line=frame.GetFileLineNumber();
                                  line);
                 }finally{
                 }
+                try{
+            foreach(var coffin in Sims3.Gameplay.Queries.GetObjects<BonehildaCoffin>()){
+          Sim bonehilda;
+          if((bonehilda=coffin.BonehildaSim)!=null){
+                     if(coffin.LotCurrent!=null&&
+                        coffin.LotCurrent==bonehilda.LotCurrent&&
+                                           bonehilda.InteractionQueue!=null){
+                            foreach(var toilet in coffin.LotCurrent.GetObjects<Toilet>()){
+                                     if(toilet.Repairable!=null&&toilet.Repairable.Broken){
+                                                                      var repair=Toilet.Repair.Singleton.CreateInstance(toilet,bonehilda,new InteractionPriority(InteractionPriorityLevel.High),false,true);
+                                           bonehilda.InteractionQueue.Add(repair);
+                                     }
+                            }
+                            foreach(var hotTub in coffin.LotCurrent.GetObjects<HotTubBase>()){
+                                     if(hotTub.Repairable!=null&&hotTub.Repairable.Broken){
+                                                                      var repair=HotTubBase.RepairHotTub.Singleton.CreateInstance(hotTub,bonehilda,new InteractionPriority(InteractionPriorityLevel.High),false,true);
+                                           bonehilda.InteractionQueue.Add(repair);
+                                     }
+                            }
+                            foreach(var allInOneBathroom in coffin.LotCurrent.GetObjects<AllInOneBathroom>()){
+                                     if(allInOneBathroom.Repairable!=null&&allInOneBathroom.Repairable.Broken){
+                                                                      var repair=AllInOneBathroom.RepairAllInOneBathroom.Singleton.CreateInstanceWithCallbacks(allInOneBathroom,bonehilda,new InteractionPriority(InteractionPriorityLevel.High),false,true,RepairAllInOneBathroomOnStarted,RepairAllInOneBathroomOnCompleted,RepairAllInOneBathroomOnFailed);
+ //Alive.WriteLog("Can Bonehilda AllInOneBathroom.RepairAllInOneBathroom? "+repair.Test());
+                                           bonehilda.InteractionQueue.Add(repair);
+                                     }
+                            }
+                     }
+          }
+            }
+                }catch(Exception exception){
+     //  Get stack trace for the exception. with source file information
+           var st=new StackTrace(exception,true);
+     //  Get the top stack frame
+     var frame=st.GetFrame(0);
+     //  Get the line number from the stack frame
+var line=frame.GetFileLineNumber();
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source+"\n\n"+
+                                 line);
+                }finally{
+                }
+        }
+        private static void RepairAllInOneBathroomOnStarted(Sim s,float x){
+        }
+        private static void RepairAllInOneBathroomOnCompleted(Sim s,float x){
+        }
+        private static void RepairAllInOneBathroomOnFailed(Sim s,float x){
+            //Alive.WriteLog("Failed to RepairAllInOneBathroom:"+s.ExitReason);
+        }
+        static void FeedSims(){
                 try{
             foreach(var sim in Sims3.Gameplay.Queries.GetObjects<Sim>()){
                     try{
@@ -2517,6 +2579,10 @@ return null;
   }
                                             }else 
                                             if(simDesc.IsBonehilda){
+                        try{
+           BonehildaCoffin.FindBonehildaCoffin(sim)?.SetUpBonehildaOutfit();
+                        }catch{
+                        }
 return sim;
                                             }
                                                      if(fadeOut){
@@ -4477,7 +4543,7 @@ return target;
                                          }
                                                           }
                                                           //-------------------------
-                                                          if(stuckSim.Detections<=5){
+                                                          if(stuckSim.Detections<=5||sim.SimDescription.IsBonehilda){
                                          if(lot==null){
                                             lot=RandomUtil.GetRandomObjectFromList(Sims3.Gameplay.Queries.GetObjects<Lot>());
                                          }

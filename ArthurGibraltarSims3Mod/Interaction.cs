@@ -1,7 +1,10 @@
 ﻿using Sims3.Gameplay.Actors;
 using Sims3.Gameplay.ActorSystems;
+using Sims3.Gameplay.ActorSystems.Children;
 using Sims3.Gameplay.Interactions;
 using Sims3.Gameplay.Objects.Electronics;
+using Sims3.Gameplay.Services;
+using Sims3.Gameplay.Skills;
 using Sims3.SimIFace;
 using System;
 using System.Collections.Generic;
@@ -1065,4 +1068,32 @@ Sims3.Gameplay.Autonomy.Tradeoff result=new Sims3.Gameplay.Autonomy.Tradeoff();
             }
         }
     }
+    //-----------------------------------------------------------------------------------------------------------
+    public class ComputerRepairComputerFix:Computer.RepairComputer,IPreLoad,IAddInteraction{
+        static InteractionDefinition sOldSingleton;
+                                              public void AddInteraction(InteractionInjectorList interactions){
+                                                                                                 interactions.Replace<Computer,Computer.RepairComputer.Definition>(Singleton);
+                                              }
+                                   public void OnPreLoad(){
+            Tunings.Inject<Sims3.Gameplay.Objects.Electronics.ComputerCheap       ,Computer.RepairComputer.Definition,Definition>(false);
+            Tunings.Inject<Sims3.Gameplay.Objects.Electronics.ComputerExpensive   ,Computer.RepairComputer.Definition,Definition>(false);
+            Tunings.Inject<Sims3.Gameplay.Objects.Electronics.ComputerLaptopModern,Computer.RepairComputer.Definition,Definition>(false);
+            Tunings.Inject<Sims3.Gameplay.Objects.Electronics.ComputerLaptopVenue ,Computer.RepairComputer.Definition,Definition>(false);
+            Tunings.Inject<Sims3.Gameplay.Objects.Electronics.HoloComputer        ,Computer.RepairComputer.Definition,Definition>(false);
+            Tunings.Inject<Sims3.Gameplay.Objects.Electronics.Computer,Computer.RepairComputer.Definition,Definition>(false);
+                                     sOldSingleton=Singleton;
+                                                   Singleton=new Definition();
+                                   }
+        public new class Definition:Computer.RepairComputer.Definition{
+            public override InteractionInstance CreateInstance(ref InteractionInstanceParameters parameters){
+                            InteractionInstance na=new ComputerRepairComputerFix();
+                                                na.Init(ref parameters);
+                                         return na;
+            }
+            public override bool Test(Sim a,Computer target,bool isAutonomous,ref GreyedOutTooltipCallback greyedOutTooltipCallback){
+            return(target.Repairable!=null&&target.Repairable.Broken&&(a.IsPerformingAnyServiceOfType(ServiceType.Repairman)||a.SimDescription.IsBonehilda||!(target is HoloComputer)||a.SkillManager.GetSkillLevel(SkillNames.Future)>=HoloComputer.kFutureSkillRequiredForRepair)&&target.IsComputerUsable(a,false,false,isAutonomous));
+            }
+        }
+    }
+    //-----------------------------------------------------------------------------------------------------------
 }

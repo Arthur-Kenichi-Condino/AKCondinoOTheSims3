@@ -101,6 +101,36 @@ namespace ArthurGibraltarSims3Mod{
             }
         }
     }
+    public class ShowerRepairShowerFix:Shower.RepairShower,IPreLoad,IAddInteraction{
+        static InteractionDefinition sOldSingleton;
+                                              public void AddInteraction(InteractionInjectorList interactions){
+                                                                                                 interactions.Replace<Shower,Shower.RepairShower.Definition>(Singleton);
+                                              }
+                                   public void OnPreLoad(){
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ShowerBasic            ,Shower.RepairShower.Definition,Definition>(false);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ShowerGen              ,Shower.RepairShower.Definition,Definition>(false);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ShowerHETech           ,Shower.RepairShower.Definition,Definition>(false);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ShowerLoft             ,Shower.RepairShower.Definition,Definition>(false);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ShowerModern           ,Shower.RepairShower.Definition,Definition>(false);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ShowerFuture           ,Shower.RepairShower.Definition,Definition>(false);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ShowerRanch            ,Shower.RepairShower.Definition,Definition>(false);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ShowerRomantic         ,Shower.RepairShower.Definition,Definition>(false);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.ShowerCheap                   ,Shower.RepairShower.Definition,Definition>(false);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.ShowerExpensive               ,Shower.RepairShower.Definition,Definition>(false);
+                                     sOldSingleton=Singleton;
+                                                   Singleton=new Definition();
+                                   }
+        public new class Definition:Shower.RepairShower.Definition{
+            public override InteractionInstance CreateInstance(ref InteractionInstanceParameters parameters){
+                            InteractionInstance na=new ShowerRepairShowerFix();
+                                                na.Init(ref parameters);
+                                         return na;
+            }
+            public override bool Test(Sim a,Shower target,bool isAutonomous,ref GreyedOutTooltipCallback greyedOutTooltipCallback){
+            return(target.Repairable.Broken);
+            }
+        }
+    }
     public class TakeShowerEx:Shower.TakeShower,IPreLoad,IAddInteraction{
         static InteractionDefinition sOldSingleton;
                                               public void AddInteraction(InteractionInjectorList interactions){

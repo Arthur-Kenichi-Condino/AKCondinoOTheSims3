@@ -494,4 +494,28 @@ this.StandardExit();
             }
         }
     }
+    //-----------------------------------------------------------------------------------------------------------
+    public class WashingMachineRepairFix:WashingMachine.Repair,IPreLoad,IAddInteraction{
+        static InteractionDefinition sOldSingleton;
+                                              public void AddInteraction(InteractionInjectorList interactions){
+                                                                                                 interactions.ReplaceNoTest<WashingMachine,WashingMachine.Repair.Definition>(Singleton);
+                                              }
+                                   public void OnPreLoad(){
+            Tunings.Inject<Sims3.Gameplay.Objects.Appliances.WashingMachineCheap    ,WashingMachine.Repair.Definition,Definition>(false);
+            Tunings.Inject<Sims3.Gameplay.Objects.Appliances.WashingMachineExpensive,WashingMachine.Repair.Definition,Definition>(false);
+            Tunings.Inject<Sims3.Gameplay.Objects.Appliances.WashingMachine,WashingMachine.Repair.Definition,Definition>(false);
+                                     sOldSingleton=Singleton;
+                                                   Singleton=new Definition();
+                                   }
+        public new class Definition:WashingMachine.Repair.Definition{
+            public override InteractionInstance CreateInstance(ref InteractionInstanceParameters parameters){
+                            InteractionInstance na=new WashingMachineRepairFix();
+                                                na.Init(ref parameters);
+                                         return na;
+            }
+            public override bool Test(Sim a,WashingMachine target,bool isAutonomous,ref GreyedOutTooltipCallback greyedOutTooltipCallback){
+            return(target.mWashState!=WashingMachine.WashState.Running&&target.mWashState!=WashingMachine.WashState.RunningViolently&&target.Repairable.Broken);
+            }
+        }
+    }
 }

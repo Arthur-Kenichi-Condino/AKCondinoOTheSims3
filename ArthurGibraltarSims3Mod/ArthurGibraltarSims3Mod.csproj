@@ -41,11 +41,16 @@
   <ItemGroup>
     <Compile Include="Alive.cs" />
     <Compile Include="CASParts.cs" />
+    <Compile Include="DeepFixSim.cs" />
     <Compile Include="DoLaundryInteraction.cs" />
     <Compile Include="Interaction.cs" />
     <Compile Include="PrivacyInteraction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReimplementNightlyFixes.cs" />
     <Compile Include="SafeStore.cs" />
+    <Compile Include="SocialInteraction.cs" />
+    <Compile Include="StuckFix.cs" />
+    <Compile Include="Task.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib">

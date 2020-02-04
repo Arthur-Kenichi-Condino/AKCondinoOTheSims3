@@ -236,9 +236,9 @@ this.EndCommodityUpdates(true);
     }
     public class AutonomyFix:Autonomy{
         public new InteractionTestResult CheckAvailability(bool autonomous,Availability availability,InteractionObjectPair iop){
-          CASAGSAvailabilityFlags availabilityFlags = CASUtils.CASAGSAvailabilityFlagsFromCASAgeGenderFlags(this.mActor.SimDescription.Age | this.mActor.SimDescription.Species);
-          if ((availabilityFlags & availability.AgeSpeciesAvailabilityFlags) != availabilityFlags)
-            return InteractionTestResult.Tuning_Age;
+            CASAGSAvailabilityFlags availabilityFlags=CASUtils.CASAGSAvailabilityFlagsFromCASAgeGenderFlags(this.mActor.SimDescription.Age|this.mActor.SimDescription.Species);
+                                if((availabilityFlags&availability.AgeSpeciesAvailabilityFlags)!=availabilityFlags)
+        return(InteractionTestResult.Tuning_Age);
           if (availability.WorldRestrictionType == WorldRestrictionType.Allow)
           {
             if (!availability.WorldRestrictionWorldTypes.Contains(GameUtils.GetCurrentWorldType()) && !availability.WorldRestrictionWorldNames.Contains(GameUtils.GetCurrentWorld()))

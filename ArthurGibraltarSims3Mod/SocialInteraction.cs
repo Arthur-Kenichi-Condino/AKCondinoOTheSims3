@@ -239,53 +239,46 @@ this.EndCommodityUpdates(true);
             CASAGSAvailabilityFlags availabilityFlags=CASUtils.CASAGSAvailabilityFlagsFromCASAgeGenderFlags(this.mActor.SimDescription.Age|this.mActor.SimDescription.Species);
                                 if((availabilityFlags&availability.AgeSpeciesAvailabilityFlags)!=availabilityFlags)
         return(InteractionTestResult.Tuning_Age);
-          if (availability.WorldRestrictionType == WorldRestrictionType.Allow)
-          {
-            if (!availability.WorldRestrictionWorldTypes.Contains(GameUtils.GetCurrentWorldType()) && !availability.WorldRestrictionWorldNames.Contains(GameUtils.GetCurrentWorld()))
-              return InteractionTestResult.Tuning_World;
-          }
-          else if (availability.WorldRestrictionType == WorldRestrictionType.Disallow && (availability.WorldRestrictionWorldTypes.Contains(GameUtils.GetCurrentWorldType()) || availability.WorldRestrictionWorldNames.Contains(GameUtils.GetCurrentWorld())))
-            return InteractionTestResult.Tuning_World;
-          if (availability.MotiveThresholdType != CommodityKind.None)
-          {
-            float num = this.Motives.GetValue(availability.MotiveThresholdType);
-            if (availability.HasFlags(Availability.FlagField.MotiveBelowCheck))
-            {
-              if ((double) num > (double) availability.MotiveThresholdValue)
-                return InteractionTestResult.Tuning_MotiveTooHigh;
+            if(availability.WorldRestrictionType==WorldRestrictionType.Allow){
+                if(!availability.WorldRestrictionWorldTypes.Contains(GameUtils.GetCurrentWorldType())&&!availability.WorldRestrictionWorldNames.Contains(GameUtils.GetCurrentWorld()))
+        return(InteractionTestResult.Tuning_World);
+            }else 
+            if(availability.WorldRestrictionType==WorldRestrictionType.Disallow&&(availability.WorldRestrictionWorldTypes.Contains(GameUtils.GetCurrentWorldType())||availability.WorldRestrictionWorldNames.Contains(GameUtils.GetCurrentWorld())))
+        return(InteractionTestResult.Tuning_World);
+            if(availability.MotiveThresholdType!=CommodityKind.None){
+                float num=this.Motives.GetValue(availability.MotiveThresholdType);
+                if(availability.HasFlags(Availability.FlagField.MotiveBelowCheck)){
+                    if((double)num>(double)availability.MotiveThresholdValue)
+        return(InteractionTestResult.Tuning_MotiveTooHigh);
+                }else 
+                if((double)num<(double)availability.MotiveThresholdValue)
+        return(InteractionTestResult.Tuning_MotiveTooLow);
             }
-            else if ((double) num < (double) availability.MotiveThresholdValue)
-              return InteractionTestResult.Tuning_MotiveTooLow;
-          }
-          if ((autonomous || this.mActor.SimDescription.IsEP11Bot) && availability.ExcludingTraits != null)
-          {
-            foreach (TraitNames excludingTrait in availability.ExcludingTraits)
-            {
-              if (this.mActor.TraitManager.HasElement(excludingTrait))
-                return InteractionTestResult.Tuning_HasTrait;
+            if((autonomous||this.mActor.SimDescription.IsEP11Bot)&&availability.ExcludingTraits!=null){
+                foreach(TraitNames excludingTrait in availability.ExcludingTraits){
+                    if(this.mActor.TraitManager.HasElement(excludingTrait))
+        return(InteractionTestResult.Tuning_HasTrait);
+                }
             }
-          }
-          if (availability.RequiredTraits != null)
-          {
-            bool flag1 = this.mActor.HasTrait(TraitNames.RobotHiddenTrait);
-            bool flag2 = false;
-            bool flag3 = false;
-            foreach (TraitNames requiredTrait in availability.RequiredTraits)
-            {
-              bool flag4 = ActionData.IsBotSpecificTrait(requiredTrait);
-              if (flag4 && flag1)
-                flag3 |= this.mActor.TraitManager.HasElement(requiredTrait);
-              else if (!flag4 && !flag1)
-              {
-                flag2 = true;
-                flag3 |= this.mActor.TraitManager.HasElement(requiredTrait);
-              }
+            if(availability.RequiredTraits!=null){
+                bool flag1=this.mActor.HasTrait(TraitNames.RobotHiddenTrait);
+                bool flag2=false;
+                bool flag3=false;
+                foreach(TraitNames requiredTrait in availability.RequiredTraits){
+                bool flag4=ActionData.IsBotSpecificTrait(requiredTrait);
+                    if(flag4&&flag1)
+                        flag3|=this.mActor.TraitManager.HasElement(requiredTrait);
+                    else
+                    if(!flag4&&!flag1){
+                        flag2=true;
+                        flag3|=this.mActor.TraitManager.HasElement(requiredTrait);
+                    }
+                }
+                if((flag2||flag1)&&!flag3)
+        return(InteractionTestResult.Tuning_MissingTrait);
             }
-            if ((flag2 || flag1) && !flag3)
-              return InteractionTestResult.Tuning_MissingTrait;
-          }
-          if (availability.SkillThresholdType != SkillNames.None && this.mActor.SkillManager.GetSkillLevel(availability.SkillThresholdType) < availability.SkillThresholdValue)
-            return InteractionTestResult.Tuning_SkillTooLow;
+            if(availability.SkillThresholdType!=SkillNames.None&&this.mActor.SkillManager.GetSkillLevel(availability.SkillThresholdType)<availability.SkillThresholdValue)
+        return(InteractionTestResult.Tuning_SkillTooLow);
           if (availability.CareerThresholdType != OccupationNames.Undefined)
           {
             bool flag = true;

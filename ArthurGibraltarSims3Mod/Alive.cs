@@ -43,6 +43,8 @@ using Sims3.SimIFace;
 using Sims3.SimIFace.CAS;
 using Sims3.UI;
 using static ArthurGibraltarSims3Mod.Interaction;
+using static Sims3.Gameplay.Objects.Environment.BonehildaCoffin;
+
 namespace ArthurGibraltarSims3Mod{
     public partial class Alive{
         const                  string                        _CLASS_NAME=".Alive.";
@@ -1125,7 +1127,11 @@ var line=frame.GetFileLineNumber();
                      if(coffin.LotCurrent!=null&&
                         coffin.LotCurrent==bonehilda.LotCurrent&&
                                            bonehilda.InteractionQueue!=null){
-                            foreach(var toilet in coffin.LotCurrent.GetObjects<Toilet>()){
+                            var currentInteraction=bonehilda.InteractionQueue.GetCurrentInteraction();
+                             if(currentInteraction==null||
+                              !(currentInteraction is BonehildaReturnToCoffin||
+                                           bonehilda.InteractionQueue.HasInteractionOfType(typeof(BonehildaReturnToCoffin)))){
+                            foreach (var toilet in coffin.LotCurrent.GetObjects<Toilet>()){
                                      if(toilet.Repairable!=null&&toilet.Repairable.Broken){
                                                                       var repair=Toilet.Repair.Singleton.CreateInstance(toilet,bonehilda,new InteractionPriority(InteractionPriorityLevel.High),false,true);
                                            bonehilda.InteractionQueue.Add(repair);
@@ -1192,6 +1198,7 @@ var line=frame.GetFileLineNumber();
                                      line);
                     }finally{
                     }
+                             }
                      }
           }
             }

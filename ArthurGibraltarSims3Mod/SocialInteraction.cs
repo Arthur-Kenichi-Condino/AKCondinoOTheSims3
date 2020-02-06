@@ -279,49 +279,42 @@ this.EndCommodityUpdates(true);
             }
             if(availability.SkillThresholdType!=SkillNames.None&&this.mActor.SkillManager.GetSkillLevel(availability.SkillThresholdType)<availability.SkillThresholdValue)
         return(InteractionTestResult.Tuning_SkillTooLow);
-          if (availability.CareerThresholdType != OccupationNames.Undefined)
-          {
-            bool flag = true;
-            if (availability.HasFlags(Availability.FlagField.IncludePastCareers) && this.mActor.CareerManager.PreviouslySatisfied(availability.CareerThresholdType, availability.CareerThresholdValue))
-              flag = false;
-            if (flag)
-            {
-              if (this.mActor.Occupation == null)
-                return InteractionTestResult.Tuning_NoCareer;
-              if (this.mActor.Occupation.Guid != availability.CareerThresholdType)
-                return InteractionTestResult.Tuning_WrongCareer;
-              if (this.mActor.Occupation.HighestLevelAchieved < availability.CareerThresholdValue)
-                return InteractionTestResult.Tuning_CareerLevelTooLow;
+            if(availability.CareerThresholdType!=OccupationNames.Undefined){
+                bool flag=true;
+                if(availability.HasFlags(Availability.FlagField.IncludePastCareers)&&this.mActor.CareerManager.PreviouslySatisfied(availability.CareerThresholdType,availability.CareerThresholdValue))
+                     flag=false;
+                if(flag){
+                    if(this.mActor.Occupation==null)
+        return(InteractionTestResult.Tuning_NoCareer);
+                    if(this.mActor.Occupation.Guid!=availability.CareerThresholdType)
+        return(InteractionTestResult.Tuning_WrongCareer);
+                    if(this.mActor.Occupation.HighestLevelAchieved<availability.CareerThresholdValue)
+        return(InteractionTestResult.Tuning_CareerLevelTooLow);
+                }
             }
-          }
-          if (availability.ExcludingBuffs != null)
-          {
-            foreach (BuffNames excludingBuff in availability.ExcludingBuffs)
-            {
-              if (this.mActor.BuffManager.HasElement(excludingBuff))
-                return InteractionTestResult.Tuning_HasBuff;
+            if(availability.ExcludingBuffs!=null){
+                foreach(BuffNames excludingBuff in availability.ExcludingBuffs){
+                    if(this.mActor.BuffManager.HasElement(excludingBuff))
+        return(InteractionTestResult.Tuning_HasBuff);
+                }
             }
-          }
-          if (availability.RequiredBuffs != null)
-          {
-            bool flag = false;
-            foreach (BuffNames requiredBuff in availability.RequiredBuffs)
-            {
-              if (this.mActor.BuffManager.HasElement(requiredBuff))
-              {
-                flag = true;
+            if(availability.RequiredBuffs!=null){
+                bool flag=false;
+                foreach(BuffNames requiredBuff in availability.RequiredBuffs){
+                    if(this.mActor.BuffManager.HasElement(requiredBuff)){
+                     flag=true;
                 break;
-              }
+                    }
+                }
+                 if(!flag)
+        return(InteractionTestResult.Tuning_MissingBuff);
             }
-            if (!flag)
-              return InteractionTestResult.Tuning_MissingBuff;
-          }
-          Lot lot = iop.Target.GetOwnerLot();
-          if (iop.InteractionDefinition is ISoloInteractionDefinition)
-            lot = this.mActor.LotCurrent;
-          DaycareSituation daycareSituationForSim = DaycareSituation.GetDaycareSituationForSim(this.mActor);
-          if ((lot == null || !lot.IsResidentialOwnedBy(this.Actor)) && (daycareSituationForSim == null || daycareSituationForSim.Lot != lot) && !this.CheckAvailabilityOnLot(iop, availability, iop.Target.LotCurrent, autonomous))
-            return InteractionTestResult.Tuning_LotAvailability;
+            Lot lot=iop.Target.GetOwnerLot();
+            if(iop.InteractionDefinition is ISoloInteractionDefinition)
+                lot=this.mActor.LotCurrent;
+            DaycareSituation daycareSituationForSim=DaycareSituation.GetDaycareSituationForSim(this.mActor);
+            if((lot==null||!lot.IsResidentialOwnedBy(this.Actor))&&(daycareSituationForSim==null||daycareSituationForSim.Lot!=lot)&&!this.CheckAvailabilityOnLot(iop,availability,iop.Target.LotCurrent,autonomous))
+        return(InteractionTestResult.Tuning_LotAvailability);
           if (availability.HasFlags(Availability.FlagField.DisallowedFromInventory) && this.mActor.Inventory.Contains(iop.Target))
             return InteractionTestResult.Tuning_InInventory;
           if (this.CurrentSearchType != AutonomySearchType.PostureTransition && autonomous && !availability.HasFlags(Availability.FlagField.AllowInTombRoomAutonomous) && (this.IsActorInTombRoom || TombRoomManager.IsObjectInATombRoom(iop.Target)))
@@ -347,5 +340,39 @@ this.EndCommodityUpdates(true);
           }
           return availability.OccultRestrictionType != OccultRestrictionType.Ignore && (availability.HasFlags(Availability.FlagField.OccultRestrictionsHumanDisallowed) && this.mActor.CurrentOccultType == Sims3.UI.Hud.OccultTypes.None && availability.OccultRestrictionType == OccultRestrictionType.Inclusive || !availability.HasFlags(Availability.FlagField.OccultRestrictionsHumanDisallowed) && this.mActor.CurrentOccultType == Sims3.UI.Hud.OccultTypes.None && availability.OccultRestrictionType == OccultRestrictionType.Exclusive || ((availability.OccultRestrictions ^ (availability.OccultRestrictions | this.mActor.OccultManager.CurrentOccultTypes)) != Sims3.UI.Hud.OccultTypes.None && availability.OccultRestrictionType == OccultRestrictionType.Inclusive || (availability.OccultRestrictions & this.mActor.OccultManager.CurrentOccultTypes) != Sims3.UI.Hud.OccultTypes.None && availability.OccultRestrictionType == OccultRestrictionType.Exclusive)) ? InteractionTestResult.Tuning_OccultTypeNotAllowed : InteractionTestResult.Pass;
         }
+        public new bool CheckAvailabilityOnLot(InteractionObjectPair iop,Availability availability,Lot lot,bool autonomous){
+            if(lot!=null){
+                if(lot.IsCommunityLot&&iop.Target.Level!=int.MaxValue&&(iop.Target.Level!=0||!iop.Target.IsOutside)&&(!lot.IsOpenVenue()&&!(iop.InteractionDefinition is IAllowedOnClosedVenues)))
+        return false;
+                if(this.mActor.SimDescription!=null&&this.mActor.SimDescription.IsBonehilda)
+        return true;
+            InteractionDefinition interactionDefinition=iop.InteractionDefinition;
+                if(autonomous&&!availability.HasFlags(Availability.FlagField.AllowEvenIfNotAllowedInRoomAutonomous)&&!(interactionDefinition is IIgnoreIsAllowedInRoomCheck)){
+                    Sim sim=this.mActor;
+                    int roomId=iop.Target.RoomId;
+                    ulong lotId=lot.LotId;
+                    if(interactionDefinition is IUseTargetForAutonomousIsAllowedInRoomCheck&&iop.Target is Sim target){
+                        sim=target;
+                        roomId=this.mActor.RoomId;
+                        lotId=this.mActor.LotCurrent.LotId;
+                    }
+                    if(!sim.IsAllowedInRoom(lotId,roomId))
+        return false;
+                }
+                if(this.mActor.IsStray&&!this.mActor.IsGreetedOnLot(lot)&&iop.Target.RoomId!=0)
+        return false;
+            if (lot.LotId != ulong.MaxValue && lot != this.mActor.LotHome && !availability.HasFlags(Availability.FlagField.AllowOnAllLots))
+            {
+              if (autonomous)
+              {
+                if (availability.HasFlags(Availability.FlagField.AllowNonGreetedSimsIfObjectOutsideAutonomous) && iop.Target.IsOutside)
+                  return true;
+              }
+              else if (availability.HasFlags(Availability.FlagField.AllowNonGreetedSimsIfObjectOutsideUserDirected) && iop.Target.IsOutside)
+                return true;
+              return availability.HasFlags(Availability.FlagField.AllowGreetedSims) && (this.mActor.Household != null && lot.IsResidentialLot && this.mActor.IsGreetedOnLot(lot) || iop.Target.IsInPublicResidentialRoom) || (availability.HasFlags(Availability.FlagField.AllowOnCommunityLots) && lot != null && lot.IsCommunityLot || this.mActor.LotCurrent == lot && !this.mActor.IsOutside && !this.mActor.IsInPublicResidentialRoom);
+            }
+            }
+        return true;}
     }
 }

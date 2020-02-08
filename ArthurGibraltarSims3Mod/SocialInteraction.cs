@@ -4,16 +4,19 @@ using Sims3.Gameplay.ActorSystems;
 using Sims3.Gameplay.ActorSystems.Children;
 using Sims3.Gameplay.Autonomy;
 using Sims3.Gameplay.Careers;
+using Sims3.Gameplay.CAS;
 using Sims3.Gameplay.Controllers;
 using Sims3.Gameplay.Core;
 using Sims3.Gameplay.Interactions;
 using Sims3.Gameplay.Interfaces;
+using Sims3.Gameplay.Services;
 using Sims3.Gameplay.Skills;
 using Sims3.Gameplay.Socializing;
 using Sims3.SimIFace;
 using Sims3.SimIFace.CAS;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using static ArthurGibraltarSims3Mod.Alive;
 using static ArthurGibraltarSims3Mod.Interaction;
@@ -83,13 +86,13 @@ this.EndCommodityUpdates(true);
             public override bool Test(Sim actor,Sim target,bool isAutonomous,ref GreyedOutTooltipCallback greyedOutTooltipCallback){
                 if(!(target.SimDescription.ToddlerOrBelow)){
                     //if(actor.SimDescription!=null&&actor.SimDescription.IsBonehilda){
-                        //Alive.WriteLog("PickUpChild:Bonehilda:Test:FAIL[4]");
+                    //    Alive.WriteLog("PickUpChild:Bonehilda:Test:FAIL[4]:"+target.Name);
                     //}
             return(false);
                 }
                 if(!(!actor.SimDescription.ChildOrBelow&&target.Posture.Container==target)){
                     //if(actor.SimDescription!=null&&actor.SimDescription.IsBonehilda){
-                        //Alive.WriteLog("PickUpChild:Bonehilda:Test:FAIL[0]:"        +target.Name+":"+target.Posture+":"+target.Posture.Container+":"+actor.SimDescription.ChildOrBelow);
+                    //    Alive.WriteLog("PickUpChild:Bonehilda:Test:FAIL[0]:"        +target.Name+":"+target.Posture+":"+target.Posture.Container+":"+actor.SimDescription.ChildOrBelow);
                     //}
             return(false);
                 }else{
@@ -97,13 +100,13 @@ this.EndCommodityUpdates(true);
                 }
                 if(!(actor.CarryingChildPosture==null)){
                     //if(actor.SimDescription!=null&&actor.SimDescription.IsBonehilda){
-                        //Alive.WriteLog("PickUpChild:Bonehilda:Test:FAIL[1]");
+                    //    Alive.WriteLog("PickUpChild:Bonehilda:Test:FAIL[1]:"+target.Name);
                     //}
             return(false);
                 }
                 if(!(target!=actor.Posture.Container)){
                     //if(actor.SimDescription!=null&&actor.SimDescription.IsBonehilda){
-                        //Alive.WriteLog("PickUpChild:Bonehilda:Test:FAIL[2]:"        +target.Name+":"+actor.Posture+":"+actor.Posture.Container);
+                    //    Alive.WriteLog("PickUpChild:Bonehilda:Test:FAIL[2]:"        +target.Name+":"+actor.Posture+":"+actor.Posture.Container);
                     //}
             return(false);
                 }else{
@@ -111,7 +114,7 @@ this.EndCommodityUpdates(true);
                 }
                 if(!(!target.Posture.Satisfies(CommodityKind.InFairyHouse,(IGameObject)null))){
                     //if(actor.SimDescription!=null&&actor.SimDescription.IsBonehilda){
-                        //Alive.WriteLog("PickUpChild:Bonehilda:Test:FAIL[3]");
+                    //    Alive.WriteLog("PickUpChild:Bonehilda:Test:FAIL[3]:"+target.Name);
                     //}
             return(false);
                 }else{
@@ -128,9 +131,9 @@ this.EndCommodityUpdates(true);
                 }
                                     InteractionTestResult result=TestFix(ref parameters,ref greyedOutTooltipCallback);
                 if(!InteractionDefinitionUtilities.IsPass(result)){
-                    if(parameters.Actor is Sim actor1&&actor1.SimDescription!=null&&actor1.SimDescription.IsBonehilda){
-                        Alive.WriteLog("PickUpChild:Bonehilda:InteractionTest:FAIL[1]:"+result);
-                    }
+                    //if(parameters.Actor is Sim actor1&&actor1.SimDescription!=null&&actor1.SimDescription.IsBonehilda){
+                    //    Alive.WriteLog("PickUpChild:Bonehilda:InteractionTest:FAIL[1]:"+result);
+                    //}
             return(result);
                 }
                 if(PickUpChild.Definition.CanPickUpBabyOrToddler(ref parameters)){
@@ -144,7 +147,7 @@ this.EndCommodityUpdates(true);
                                                                            new GreyedOutTooltipCallback(PickUpChild.Definition.CantPickUpGreyedOutTooltipFemale);
             return(InteractionTestResult.GenericFail);
             }
-            public virtual InteractionTestResult TestFix(ref InteractionInstanceParameters parameters,ref GreyedOutTooltipCallback greyedOutTooltipCallback){
+            public InteractionTestResult TestFix(ref InteractionInstanceParameters parameters,ref GreyedOutTooltipCallback greyedOutTooltipCallback){
                 Sim  actor1=parameters. Actor as Sim;
                 Sim target1=parameters.Target as Sim;
                 if((object) actor1==null){
@@ -181,13 +184,34 @@ this.EndCommodityUpdates(true);
             return(InteractionTestResult.Tuning_DisallowPlayerSim);
                     }
                     if(flag){
-                                     AutonomyFix fix=actor1.Autonomy as AutonomyFix;
-     InteractionTestResult interactionTestResult=fix.CheckAvailability(parameters.Autonomous,tuning.Availability,parameters.InteractionObjectPair);
+     InteractionTestResult interactionTestResult=actor1.Autonomy.CheckAvailability(parameters.Autonomous,tuning.Availability,parameters.InteractionObjectPair);
                         if(interactionTestResult!=InteractionTestResult.Pass){
                             if(actor1.SimDescription!=null&&actor1.SimDescription.IsBonehilda){
-                        Alive.WriteLog("PickUpChild:Bonehilda:TestFix:FAIL[0]:"+interactionTestResult);
+                        Alive.WriteLog("PickUpChild:Bonehilda:TestFix:FAIL[0.0]:"+interactionTestResult);
+                            }
+                    try{
+                                     AutonomyFix fix=new AutonomyFix(actor1.Autonomy.mActor,actor1.Autonomy.Motives,actor1.Autonomy.CurrentSearchType,actor1.Autonomy.IsActorInTombRoom);
+                           interactionTestResult=fix.CheckAvailability1(parameters.Autonomous,tuning.Availability,parameters.InteractionObjectPair);
+                        if(interactionTestResult!=InteractionTestResult.Pass){
+                            if(actor1.SimDescription!=null&&actor1.SimDescription.IsBonehilda){
+                        Alive.WriteLog("PickUpChild:Bonehilda:TestFix:FAIL[0.1]:"+interactionTestResult);
                             }
             return(interactionTestResult);
+                        }
+                    }catch(Exception exception){
+         //  Get stack trace for the exception. with source file information
+               var st=new StackTrace(exception,true);
+         //  Get the top stack frame
+         var frame=st.GetFrame(0);
+         //  Get the line number from the stack frame
+    var line=frame.GetFileLineNumber();
+                      Alive.WriteLog(exception.Message+"\n\n"+
+                                     exception.StackTrace+"\n\n"+
+                                     exception.Source+"\n\n"+
+                                     line);
+            return(InteractionTestResult.GenericUnknown);
+                    }finally{
+                    }
                         }
                     }
                 }
@@ -195,9 +219,30 @@ this.EndCommodityUpdates(true);
                var interactionTestResult1=InteractionDefinitionUtilities.CommonTests((InteractionDefinition)this,actor2,target2,parameters);
                 if(interactionTestResult1!=InteractionTestResult.Pass){
                             if(actor1.SimDescription!=null&&actor1.SimDescription.IsBonehilda){
-                        Alive.WriteLog("PickUpChild:Bonehilda:TestFix:FAIL[1]:"+interactionTestResult1);
+                        Alive.WriteLog("PickUpChild:Bonehilda:TestFix:FAIL[1.0]:"+interactionTestResult1);
+                            }
+                    try{
+                   interactionTestResult1=AutonomyFix.CommonTests1((InteractionDefinition)this,actor2,target2,parameters);
+                if(interactionTestResult1!=InteractionTestResult.Pass){
+                            if(actor1.SimDescription!=null&&actor1.SimDescription.IsBonehilda){
+                        Alive.WriteLog("PickUpChild:Bonehilda:TestFix:FAIL[1.1]:"+interactionTestResult1);
                             }
             return(interactionTestResult1);
+                }
+                    }catch(Exception exception){
+         //  Get stack trace for the exception. with source file information
+               var st=new StackTrace(exception,true);
+         //  Get the top stack frame
+         var frame=st.GetFrame(0);
+         //  Get the line number from the stack frame
+    var line=frame.GetFileLineNumber();
+                      Alive.WriteLog(exception.Message+"\n\n"+
+                                     exception.StackTrace+"\n\n"+
+                                     exception.Source+"\n\n"+
+                                     line);
+            return(InteractionTestResult.GenericUnknown);
+                    }finally{
+                    }
                 }
                var interactionTestResult2=!(this is IMetaInteractionDefinition)?    InteractionDefinitionUtilities.SpecialCaseTests((InteractionDefinition)this,actor2,target2,parameters)
                                                                                :MetaInteractionDefinitionUtilities.SpecialCaseTests(actor2,target2,parameters);
@@ -234,8 +279,101 @@ this.EndCommodityUpdates(true);
             //----------------------------------------
         }
     }
-    public class AutonomyFix:Autonomy{
-        public new InteractionTestResult CheckAvailability(bool autonomous,Availability availability,InteractionObjectPair iop){
+    public class AutonomyFix{
+        public static InteractionTestResult CommonTests1(InteractionDefinition interactionDefinition,Sim actor,IGameObject target,InteractionInstanceParameters parameters){
+            if(parameters.Autonomous){
+                if(actor.Autonomy.IsCacheActive()){
+                    if(target.IsBlocked)
+        return(InteractionTestResult.Common_Blocked);
+                    if(target.Charred)
+        return(InteractionTestResult.Common_Charred);
+                    if(!target.InWorld&&!target.InInventory)
+        return(InteractionTestResult.Common_OutOfWorld);
+                }
+                Lot lot=target.LotCurrent;
+                int num=target.RoomId;
+                if(lot==null){
+                    LotLocation location=new LotLocation();
+                    long lotLocation=(long)World.GetLotLocation(parameters.Hit.mPoint,ref location);
+                    num=(int)location.mRoom;
+                    lot=LotManager.GetLotAtPoint(parameters.Hit.mPoint);
+                }
+                if(lot.LotId!=ulong.MaxValue){
+                    bool flag=!(interactionDefinition is IIgnoreIsAllowedInRoomCheck);
+                    InteractionTuning tuning=parameters.InteractionObjectPair.Tuning;
+                    if(flag&&tuning!=null)
+                         flag=!tuning.Availability.HasFlags(Availability.FlagField.AllowEvenIfNotAllowedInRoomAutonomous);
+                    if(flag&&!(actor.SimDescription!=null&&actor.SimDescription.IsBonehilda)){
+                        Sim sim1=actor;
+                        int roomId=num;
+                        ulong lotId=lot.LotId;
+                        if(interactionDefinition is IUseTargetForAutonomousIsAllowedInRoomCheck&&target is Sim sim2){
+                            sim1=sim2;
+                            roomId=actor.RoomId;
+                            lotId=actor.LotCurrent.LotId;
+                        }
+                        if(!sim1.IsAllowedInRoom(lotId,roomId))
+        return(InteractionTestResult.Common_DisallowedInRoom);
+                    }
+                }
+            }
+          if (actor != null)
+          {
+            if (!actor.IsSelectable && actor.IsActiveSim && (actor.SimDescription.DeathStyle != SimDescription.DeathType.None && actor.GetHiddenFlags() != HiddenFlags.Nothing))
+              return InteractionTestResult.Common_LastActiveSimDied;
+            switch (actor.SimDescription.Age)
+            {
+              case CASAgeGenderFlags.Baby:
+                if ((InteractionDefinitionUtilities.GetSpecialCaseAgeTests(interactionDefinition) & SpecialCaseAgeTests.DisallowIfActorIsBaby) != SpecialCaseAgeTests.None)
+                  return InteractionTestResult.Common_ActorIsBaby;
+                break;
+              case CASAgeGenderFlags.Toddler:
+                SpecialCaseAgeTests specialCaseAgeTests = InteractionDefinitionUtilities.GetSpecialCaseAgeTests(interactionDefinition);
+                if ((specialCaseAgeTests & SpecialCaseAgeTests.DisallowIfTargetIsOnDifferentLevel) != SpecialCaseAgeTests.None && !actor.Inventory.Contains(target))
+                {
+                  if (target is Terrain)
+                  {
+                    LotLocation invalid = LotLocation.Invalid;
+                    long lotLocation = (long) World.GetLotLocation(parameters.Hit.mPoint, ref invalid);
+                    if ((int) invalid.mLevel != actor.Level)
+                      return InteractionTestResult.Common_TargetIsOnDifferentLevel;
+                  }
+                  else if (target.Level != actor.Level)
+                    return InteractionTestResult.Common_TargetIsOnDifferentLevel;
+                }
+                if ((specialCaseAgeTests & SpecialCaseAgeTests.DisallowIfNotStanding) != SpecialCaseAgeTests.None && parameters.Autonomous && (!actor.Posture.Satisfies(CommodityKind.Standing, (IGameObject) null) && !actor.Posture.Satisfies(CommodityKind.WalkingToddler, (IGameObject) null) && !actor.Posture.Satisfies(CommodityKind.InFairyHouse, (IGameObject) null)))
+                  return InteractionTestResult.Common_NotStanding;
+                break;
+            }
+          }
+          InteractionPriorityLevel level = parameters.Priority.Level;
+          if (level < InteractionPriorityLevel.Pregnancy)
+          {
+            if (actor.Autonomy.BabyIsComing && !(interactionDefinition is IUsableDuringBirthSequence))
+              return InteractionTestResult.Common_Birth;
+            if (level <= InteractionPriorityLevel.Fire && !(actor.Service is GrimReaper) && (actor.Autonomy.IsOnFire && !(interactionDefinition is IUsableWhileOnFire) || level < InteractionPriorityLevel.Fire && actor.Autonomy.IsFireOnLot && (!target.LotCurrent.FireManager.HasFireStartedByWitch() || !actor.SimDescription.IsWitch) && !(interactionDefinition is IUsableDuringFire)))
+              return InteractionTestResult.Common_OnFire;
+          }
+          bool flag1 = target is Terrain ? TombRoomManager.IsPointInAFoggedRoom(parameters.Hit.mPoint) : TombRoomManager.IsObjectInAFoggedRoom(target, true);
+          if (!(interactionDefinition is IUsableInFoggedRoom) && flag1 && TombRoomManager.IsObjectFoggable(target))
+            return InteractionTestResult.Common_InFoggedRoom;
+          if (GameUtils.IsInstalled(ProductVersion.EP6) && (actor.OccupationAsPerformanceCareer != null && actor.OccupationAsPerformanceCareer.IsPerformingAShow && !(interactionDefinition is IUsableDuringShow) || target is Sim sim && sim.OccupationAsPerformanceCareer != null && (sim.OccupationAsPerformanceCareer.IsPerformingAShow && !(interactionDefinition is IUsableDuringShow))))
+            return InteractionTestResult.Special_IsPerformingShow;
+          if (GameUtils.IsInstalled(ProductVersion.EP7) && actor.SimDescription.IsZombie && (target != actor && target is Sim) && !(interactionDefinition is IZombieAllowedDefinition))
+            return InteractionTestResult.Special_IsZombieForbidden;
+          InteractionTestResult interactionTestResult = InteractionDefinitionUtilities.ScubaLotTests(interactionDefinition, actor, target, parameters);
+          return interactionTestResult != InteractionTestResult.Pass ? interactionTestResult : InteractionTestResult.Pass;
+        }
+          public AutonomyFix(Sim actor,Motives motives,AutonomySearchType currentSearchType,bool isActorInTombRoom){
+                          mActor=actor;Motives=motives; CurrentSearchType=currentSearchType;
+                                                                               IsActorInTombRoom=isActorInTombRoom;
+          }
+        public Sim mActor;
+         public Sim Actor{get{return mActor;}}
+            public Motives Motives;
+        public AutonomySearchType CurrentSearchType;
+            public bool IsActorInTombRoom;
+        public InteractionTestResult CheckAvailability1(bool autonomous,Availability availability,InteractionObjectPair iop){
             CASAGSAvailabilityFlags availabilityFlags=CASUtils.CASAGSAvailabilityFlagsFromCASAgeGenderFlags(this.mActor.SimDescription.Age|this.mActor.SimDescription.Species);
                                 if((availabilityFlags&availability.AgeSpeciesAvailabilityFlags)!=availabilityFlags)
         return(InteractionTestResult.Tuning_Age);
@@ -313,34 +451,33 @@ this.EndCommodityUpdates(true);
             if(iop.InteractionDefinition is ISoloInteractionDefinition)
                 lot=this.mActor.LotCurrent;
             DaycareSituation daycareSituationForSim=DaycareSituation.GetDaycareSituationForSim(this.mActor);
-            if((lot==null||!lot.IsResidentialOwnedBy(this.Actor))&&(daycareSituationForSim==null||daycareSituationForSim.Lot!=lot)&&!this.CheckAvailabilityOnLot(iop,availability,iop.Target.LotCurrent,autonomous))
+            if((lot==null||!lot.IsResidentialOwnedBy(this.Actor))&&(daycareSituationForSim==null||daycareSituationForSim.Lot!=lot)&&!this.CheckAvailabilityOnLot1(iop,availability,iop.Target.LotCurrent,autonomous))
         return(InteractionTestResult.Tuning_LotAvailability);
-          if (availability.HasFlags(Availability.FlagField.DisallowedFromInventory) && this.mActor.Inventory.Contains(iop.Target))
-            return InteractionTestResult.Tuning_InInventory;
-          if (this.CurrentSearchType != AutonomySearchType.PostureTransition && autonomous && !availability.HasFlags(Availability.FlagField.AllowInTombRoomAutonomous) && (this.IsActorInTombRoom || TombRoomManager.IsObjectInATombRoom(iop.Target)))
-            return InteractionTestResult.Tuning_AutonomousDisableInTombRoom;
-          switch (availability.MoodThresholdType)
-          {
-            case MoodThresholdType.TrueOnlyIfMoodBelowBad:
-              if ((double) this.mActor.MoodManager.MoodValue > (double) MoodManager.MoodStrongNegativeValue)
-                return InteractionTestResult.Tuning_MoodIsNotBad;
-              break;
-            case MoodThresholdType.TrueOnlyIfMoodAboveBad:
-              if ((double) this.mActor.MoodManager.MoodValue < (double) MoodManager.MoodStrongNegativeValue)
-                return InteractionTestResult.Tuning_MoodIsBad;
-              break;
-            case MoodThresholdType.TrueOnlyIfMoodBelowThreshold:
-              if ((double) this.mActor.MoodManager.MoodValue > (double) availability.MoodThresholdValue)
-                return InteractionTestResult.Tuning_MoodTooHigh;
-              break;
-            case MoodThresholdType.TrueOnlyIfMoodAboveThreshold:
-              if ((double) this.mActor.MoodManager.MoodValue < (double) availability.MoodThresholdValue)
-                return InteractionTestResult.Tuning_MoodTooLow;
-              break;
-          }
-          return availability.OccultRestrictionType != OccultRestrictionType.Ignore && (availability.HasFlags(Availability.FlagField.OccultRestrictionsHumanDisallowed) && this.mActor.CurrentOccultType == Sims3.UI.Hud.OccultTypes.None && availability.OccultRestrictionType == OccultRestrictionType.Inclusive || !availability.HasFlags(Availability.FlagField.OccultRestrictionsHumanDisallowed) && this.mActor.CurrentOccultType == Sims3.UI.Hud.OccultTypes.None && availability.OccultRestrictionType == OccultRestrictionType.Exclusive || ((availability.OccultRestrictions ^ (availability.OccultRestrictions | this.mActor.OccultManager.CurrentOccultTypes)) != Sims3.UI.Hud.OccultTypes.None && availability.OccultRestrictionType == OccultRestrictionType.Inclusive || (availability.OccultRestrictions & this.mActor.OccultManager.CurrentOccultTypes) != Sims3.UI.Hud.OccultTypes.None && availability.OccultRestrictionType == OccultRestrictionType.Exclusive)) ? InteractionTestResult.Tuning_OccultTypeNotAllowed : InteractionTestResult.Pass;
+            if(availability.HasFlags(Availability.FlagField.DisallowedFromInventory)&&this.mActor.Inventory.Contains(iop.Target))
+        return(InteractionTestResult.Tuning_InInventory);
+            if(this.CurrentSearchType!=AutonomySearchType.PostureTransition&&autonomous&&!availability.HasFlags(Availability.FlagField.AllowInTombRoomAutonomous)&&(this.IsActorInTombRoom||TombRoomManager.IsObjectInATombRoom(iop.Target)))
+        return(InteractionTestResult.Tuning_AutonomousDisableInTombRoom);
+            switch(availability.MoodThresholdType){
+                case MoodThresholdType.TrueOnlyIfMoodBelowBad:
+                    if((double)this.mActor.MoodManager.MoodValue>(double)MoodManager.MoodStrongNegativeValue)
+        return(InteractionTestResult.Tuning_MoodIsNotBad);
+                    break;
+                case MoodThresholdType.TrueOnlyIfMoodAboveBad:
+                    if((double)this.mActor.MoodManager.MoodValue<(double)MoodManager.MoodStrongNegativeValue)
+        return(InteractionTestResult.Tuning_MoodIsBad);
+                    break;
+                case MoodThresholdType.TrueOnlyIfMoodBelowThreshold:
+                    if((double)this.mActor.MoodManager.MoodValue>(double)availability.MoodThresholdValue)
+        return(InteractionTestResult.Tuning_MoodTooHigh);
+                    break;
+                case MoodThresholdType.TrueOnlyIfMoodAboveThreshold:
+                    if((double)this.mActor.MoodManager.MoodValue<(double)availability.MoodThresholdValue)
+        return(InteractionTestResult.Tuning_MoodTooLow);
+                    break;
+            }
+        return(availability.OccultRestrictionType!=OccultRestrictionType.Ignore&&(availability.HasFlags(Availability.FlagField.OccultRestrictionsHumanDisallowed)&&this.mActor.CurrentOccultType==Sims3.UI.Hud.OccultTypes.None&&availability.OccultRestrictionType==OccultRestrictionType.Inclusive||!availability.HasFlags(Availability.FlagField.OccultRestrictionsHumanDisallowed)&&this.mActor.CurrentOccultType==Sims3.UI.Hud.OccultTypes.None&&availability.OccultRestrictionType==OccultRestrictionType.Exclusive||((availability.OccultRestrictions^(availability.OccultRestrictions|this.mActor.OccultManager.CurrentOccultTypes))!=Sims3.UI.Hud.OccultTypes.None&&availability.OccultRestrictionType==OccultRestrictionType.Inclusive||(availability.OccultRestrictions&this.mActor.OccultManager.CurrentOccultTypes)!=Sims3.UI.Hud.OccultTypes.None&&availability.OccultRestrictionType==OccultRestrictionType.Exclusive))?InteractionTestResult.Tuning_OccultTypeNotAllowed:InteractionTestResult.Pass);
         }
-        public new bool CheckAvailabilityOnLot(InteractionObjectPair iop,Availability availability,Lot lot,bool autonomous){
+        public bool CheckAvailabilityOnLot1(InteractionObjectPair iop,Availability availability,Lot lot,bool autonomous){
             if(lot!=null){
                 if(lot.IsCommunityLot&&iop.Target.Level!=int.MaxValue&&(iop.Target.Level!=0||!iop.Target.IsOutside)&&(!lot.IsOpenVenue()&&!(iop.InteractionDefinition is IAllowedOnClosedVenues)))
         return false;
@@ -361,17 +498,15 @@ this.EndCommodityUpdates(true);
                 }
                 if(this.mActor.IsStray&&!this.mActor.IsGreetedOnLot(lot)&&iop.Target.RoomId!=0)
         return false;
-            if (lot.LotId != ulong.MaxValue && lot != this.mActor.LotHome && !availability.HasFlags(Availability.FlagField.AllowOnAllLots))
-            {
-              if (autonomous)
-              {
-                if (availability.HasFlags(Availability.FlagField.AllowNonGreetedSimsIfObjectOutsideAutonomous) && iop.Target.IsOutside)
-                  return true;
-              }
-              else if (availability.HasFlags(Availability.FlagField.AllowNonGreetedSimsIfObjectOutsideUserDirected) && iop.Target.IsOutside)
-                return true;
-              return availability.HasFlags(Availability.FlagField.AllowGreetedSims) && (this.mActor.Household != null && lot.IsResidentialLot && this.mActor.IsGreetedOnLot(lot) || iop.Target.IsInPublicResidentialRoom) || (availability.HasFlags(Availability.FlagField.AllowOnCommunityLots) && lot != null && lot.IsCommunityLot || this.mActor.LotCurrent == lot && !this.mActor.IsOutside && !this.mActor.IsInPublicResidentialRoom);
-            }
+                if(lot.LotId!=ulong.MaxValue&&lot!=this.mActor.LotHome&&!availability.HasFlags(Availability.FlagField.AllowOnAllLots)){
+                    if(autonomous){
+                        if(availability.HasFlags(Availability.FlagField.AllowNonGreetedSimsIfObjectOutsideAutonomous)&&iop.Target.IsOutside)
+        return true;
+                    }else 
+                    if(availability.HasFlags(Availability.FlagField.AllowNonGreetedSimsIfObjectOutsideUserDirected)&&iop.Target.IsOutside)
+        return true;
+        return(availability.HasFlags(Availability.FlagField.AllowGreetedSims)&&(this.mActor.Household!=null&&lot.IsResidentialLot&&this.mActor.IsGreetedOnLot(lot)||iop.Target.IsInPublicResidentialRoom)||(availability.HasFlags(Availability.FlagField.AllowOnCommunityLots)&&lot!=null&&lot.IsCommunityLot||this.mActor.LotCurrent==lot&&!this.mActor.IsOutside&&!this.mActor.IsInPublicResidentialRoom));
+                }
             }
         return true;}
     }

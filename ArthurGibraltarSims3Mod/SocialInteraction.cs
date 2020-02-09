@@ -103,9 +103,9 @@ this.EndCommodityUpdates(true);
         return false;
             }
             if(!ChildUtils.StartObjectInteractionWithChild((InteractionInstance)this,this.Target,CommodityKind.Standing,"BePickedUp")){
-                    if(this.Actor.SimDescription!=null&&this.Actor.SimDescription.IsBonehilda){
-                        Alive.WriteLog("PickUpChild:Bonehilda:Run:FAIL[1.0]");
-                    }
+                    //if(this.Actor.SimDescription!=null&&this.Actor.SimDescription.IsBonehilda){
+                    //    Alive.WriteLog("PickUpChild:Bonehilda:Run:FAIL[1.0]");
+                    //}
             if(!StartObjectInteractionWithChild((InteractionInstance)this,this.Target,CommodityKind.Standing,"BePickedUp")){
                     if(this.Actor.SimDescription!=null&&this.Actor.SimDescription.IsBonehilda){
                         Alive.WriteLog("PickUpChild:Bonehilda:Run:FAIL[1.1]");
@@ -199,7 +199,7 @@ this.EndCommodityUpdates(true);
         return false;
             }
             Sim instanceActor=interactionA.InstanceActor;
-            InteractionInstance instance=new ChildUtils.ChildPlaceholderInteraction.Definition(ChildUtils.Localize(child.IsFemale,receptiveInteractionNameKey)).CreateInstance((IGameObject)instanceActor,(IActor)child,interactionA.GetPriority(),interactionA.Autonomous,interactionA.CancellableByPlayer);
+            InteractionInstance instance=new /*ChildUtils.*/ChildPlaceholderInteractionFix.Definition(ChildUtils.Localize(child.IsFemale,receptiveInteractionNameKey)).CreateInstance((IGameObject)instanceActor,(IActor)child,interactionA.GetPriority(),interactionA.Autonomous,interactionA.CancellableByPlayer);
                                 instance.LinkedInteractionInstance=interactionA;
             ChildUtils.SetPosturePrecondition(instance,childPosture);
             if(!child.InteractionQueue.Add(instance)){
@@ -209,9 +209,9 @@ this.EndCommodityUpdates(true);
         return false;
             }
             if(!interactionA.StartSync(true)){
-                    if(instanceActor.SimDescription!=null&&instanceActor.SimDescription.IsBonehilda){
-                        Alive.WriteLog("PickUpChild:Bonehilda:StartObjectInteractionWithChild:FAIL[2.0]");
-                    }
+                    //if(instanceActor.SimDescription!=null&&instanceActor.SimDescription.IsBonehilda){
+                    //    Alive.WriteLog("PickUpChild:Bonehilda:StartObjectInteractionWithChild:FAIL[2.0]");
+                    //}
             if(!(interactionA is PickUpChildFix pickUp)||pickUp==null||!pickUp.StartSync1(true,false,(SyncLoopCallbackFunction)null,0.0f,true)){
                     if(instanceActor.SimDescription!=null&&instanceActor.SimDescription.IsBonehilda){
                         Alive.WriteLog("PickUpChild:Bonehilda:StartObjectInteractionWithChild:FAIL[2.1]");
@@ -246,9 +246,9 @@ this.EndCommodityUpdates(true);
             DateAndTime previousDateAndTime2=previousDateAndTime1;
             while((double)SimClock.ElapsedTime(TimeUnit.Minutes,previousDateAndTime1)<(double)InteractionInstance.kNumMinToWaitOnPreSync&&(this.GetTargetCurrentInteraction()==null||this.GetTargetCurrentInteraction().LinkedInteractionInstance!=this)){
                 if(this.InstanceActor.HasExitReason(exitReason)){
-                    if(this.InstanceActor.SimDescription!=null&&this.InstanceActor.SimDescription.IsBonehilda){
-                        Alive.WriteLog("PickUpChild:Bonehilda:StartSync1:FAIL[2.0]:"+this.InstanceActor.ExitReason);
-                    }
+                    //if(this.InstanceActor.SimDescription!=null&&this.InstanceActor.SimDescription.IsBonehilda){
+                    //    Alive.WriteLog("PickUpChild:Bonehilda:StartSync1:FAIL[2.0]:"+this.InstanceActor.ExitReason);
+                    //}
                     if(this.InstanceActor.SimDescription==null||!this.InstanceActor.SimDescription.IsBonehilda||this.InstanceActor.ExitReason!=ExitReason.CanceledByScript){
                     if(this.InstanceActor.SimDescription!=null&&this.InstanceActor.SimDescription.IsBonehilda){
                         Alive.WriteLog("PickUpChild:Bonehilda:StartSync1:FAIL[2.1]:"+this.InstanceActor.ExitReason);
@@ -267,9 +267,14 @@ this.EndCommodityUpdates(true);
                         }
                     }
                 }
-                if(syncTarget.InteractionQueue.GetHeadInteraction() is IPreventSocialization headInteraction&&!headInteraction.SocializationAllowed(this.InstanceActor,syncTarget)||!flag){
+                if(flag){
                     if(this.InstanceActor.SimDescription!=null&&this.InstanceActor.SimDescription.IsBonehilda){
-                        Alive.WriteLog("PickUpChild:Bonehilda:StartSync1:FAIL[3]:"+flag);
+                        Alive.WriteLog("PickUpChild:Bonehilda:StartSync1:flag:"+flag+":"+this.LinkedInteractionInstance);
+                    }
+                }
+                if(syncTarget.InteractionQueue.GetHeadInteraction() is IPreventSocialization headInteraction&&headInteraction!=null&&!headInteraction.SocializationAllowed(this.InstanceActor,syncTarget)||!flag){
+                    if(this.InstanceActor.SimDescription!=null&&this.InstanceActor.SimDescription.IsBonehilda){
+                        Alive.WriteLog("PickUpChild:Bonehilda:StartSync1:FAIL[3]:"+flag+":"+syncTarget.ExitReason+":"+syncTarget.InteractionQueue.GetHeadInteraction()+" "+(syncTarget.InteractionQueue.GetHeadInteraction() as IPreventSocialization)?.SocializationAllowed(this.InstanceActor,syncTarget));
                     }
         return false;
                 }
@@ -491,9 +496,9 @@ this.EndCommodityUpdates(true);
                             }
             return(interactionTestResult4);
                 }
-                            if(actor1.SimDescription!=null&&actor1.SimDescription.IsBonehilda){
-                        Alive.WriteLog("PickUpChild:Bonehilda:TestFix:SUCCESS!");
-                            }
+                        //    if(actor1.SimDescription!=null&&actor1.SimDescription.IsBonehilda){
+                        //Alive.WriteLog("PickUpChild:Bonehilda:TestFix:SUCCESS!");
+                        //    }
             return(InteractionTestResult.Pass);
             }
             //----------------------------------------
@@ -531,34 +536,37 @@ this.EndCommodityUpdates(true);
                     }
         return false;
                 }
-            if (loopCallback != null && (double) SimClock.ElapsedTime(TimeUnit.Minutes, previousDateAndTime2) >= (double) notifySimMinutes)
-            {
-              if (loopCallback())
-              {
-                previousDateAndTime2 = SimClock.CurrentTime();
-              }
-              else
-              {
-                this.OnWaitForSynchronizationLevelWithSimFailed(targetSim);
-                return false;
-              }
+                if(loopCallback!=null&&(double)SimClock.ElapsedTime(TimeUnit.Minutes,previousDateAndTime2)>=(double)notifySimMinutes){
+                    if(loopCallback()){
+                        previousDateAndTime2=SimClock.CurrentTime();
+                    }else{
+                        sim.OnWaitForSynchronizationLevelWithSimFailed(targetSim);
+                    if(sim.SimDescription!=null&&sim.SimDescription.IsBonehilda){
+                        Alive.WriteLog("PickUpChild:Bonehilda:WaitForSynchronizationLevelWithSim1:FAIL[3]");
+                    }
+        return false;
+                    }
+                }
+                Simulator.Sleep(0U);
             }
-            Simulator.Sleep(0U);
+            sim.SynchronizationSleeping=false;
+            ExitReason reason=exitReasonInterrupt;
+            if(sim.SynchronizationRole==Sim.SyncRole.Receiver)
+                reason&=ExitReason.SynchronizationFailed;
+            if(sim.HasExitReason(reason)){
+                sim.OnWaitForSynchronizationLevelWithSimFailed(targetSim);
+                    if(sim.SimDescription!=null&&sim.SimDescription.IsBonehilda){
+                        Alive.WriteLog("PickUpChild:Bonehilda:WaitForSynchronizationLevelWithSim1:FAIL[4]");
+                    }
+        return false;
             }
-          this.SynchronizationSleeping = false;
-          ExitReason reason = exitReasonInterrupt;
-          if (this.SynchronizationRole == Sim.SyncRole.Receiver)
-            reason &= ExitReason.SynchronizationFailed;
-          if (this.HasExitReason(reason))
-          {
-            this.OnWaitForSynchronizationLevelWithSimFailed(targetSim);
-            return false;
-          }
-          if (this.IsAtSynchronizationLevelWith(targetSim, desiredSynchLevel))
-            return true;
-          this.OnWaitForSynchronizationLevelWithSimFailed(targetSim);
-          return false;
-        }
+            if(sim.IsAtSynchronizationLevelWith(targetSim,desiredSynchLevel))
+        return true;
+            sim.OnWaitForSynchronizationLevelWithSimFailed(targetSim);
+                    if(sim.SimDescription!=null&&sim.SimDescription.IsBonehilda){
+                        Alive.WriteLog("PickUpChild:Bonehilda:WaitForSynchronizationLevelWithSim1:FAIL[5]");
+                    }
+        return false;}
     }
     public class AutonomyFix{
         public static InteractionTestResult CommonTests1(InteractionDefinition interactionDefinition,Sim actor,IGameObject target,InteractionInstanceParameters parameters){
@@ -790,5 +798,55 @@ this.EndCommodityUpdates(true);
                 }
             }
         return true;}
+    }
+    public class ChildPlaceholderInteractionFix:ChildUtils.ChildPlaceholderInteraction,IPreLoad,IAddInteraction{
+        public override bool Run(){
+                        Alive.WriteLog("GOT HERE");
+            if(!this.StartSync(false)){
+                    if(this.Target.SimDescription!=null&&this.Target.SimDescription.IsBonehilda){
+                        Alive.WriteLog("ChildPlaceholderInteraction:Bonehilda:Run:FAIL[0]");
+                    }
+        return false;
+            }
+        this.Actor.SynchronizationLevel = Sim.SyncLevel.Committed;
+        if (!this.Actor.WaitForSynchronizationLevelWithSim(this.Target, Sim.SyncLevel.Committed, SocialInteraction.kSocialSyncGiveupTime))
+          return false;
+        bool flag = this.DoLoop(ExitReason.Default);
+        this.CopyExitReasonToLinkedInteraction();
+        this.WaitForMasterInteractionToFinish();
+        return this.WaitForSyncComplete() && flag;
+        }
+        [DoesntRequireTuning]
+        public new class Definition:ChildUtils.ChildPlaceholderInteraction.Definition{
+        public string Name;
+
+        public Definition()
+        {
+        }
+
+        public Definition(string localizedName)
+        {
+          this.Name = localizedName;
+        }
+
+        public override bool Test(
+          Sim a,
+          Sim target,
+          bool isAutonomous,
+          ref GreyedOutTooltipCallback greyedOutTooltipCallback)
+        {
+          return true;
+        }
+
+        public override string GetInteractionName(Sim actor, Sim target, InteractionObjectPair iop)
+        {
+          return this.Name;
+        }
+
+        public SpecialCaseAgeTests GetSpecialCaseAgeTests()
+        {
+          return SpecialCaseAgeTests.None;
+        }
+        }
     }
 }

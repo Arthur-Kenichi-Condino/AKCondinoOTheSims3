@@ -1,4 +1,5 @@
-﻿using Sims3.Gameplay.ActiveCareer.ActiveCareers;
+﻿using Sims3.Gameplay;
+using Sims3.Gameplay.ActiveCareer.ActiveCareers;
 using Sims3.Gameplay.Actors;
 using Sims3.Gameplay.ActorSystems;
 using Sims3.Gameplay.ActorSystems.Children;
@@ -9,9 +10,11 @@ using Sims3.Gameplay.Controllers;
 using Sims3.Gameplay.Core;
 using Sims3.Gameplay.Interactions;
 using Sims3.Gameplay.Interfaces;
+using Sims3.Gameplay.Seasons;
 using Sims3.Gameplay.Services;
 using Sims3.Gameplay.Skills;
 using Sims3.Gameplay.Socializing;
+using Sims3.Gameplay.Utilities;
 using Sims3.SimIFace;
 using Sims3.SimIFace.CAS;
 using System;
@@ -77,6 +80,220 @@ this.EndCommodityUpdates(true);
                                      sOldSingleton=Singleton;
                                                    Singleton=new Definition();
                                    }
+        public override bool Run(){
+          this.Actor.LookAtManager.DisableLookAts();
+          string angle = "";
+          if (this.Actor.IsActiveFirefighter && Occupation.SimIsWorkingAtJobOnLot(this.Actor, this.Target.LotCurrent))
+          {
+            this.SetPriority(new InteractionPriority(InteractionPriorityLevel.Fire, float.MinValue));
+            this.RequestWalkStyle(Sim.WalkStyle.FastJog);
+          }
+          SocialJigTwoPerson objectOutOfWorld;
+          if (this.Target.SimDescription.Baby)
+          {
+            Route route = this.Actor.CreateRoute();
+            route.PlanToPointRadialRange((IHasScriptProxy) this.Target, this.Target.Posture.Container.Position, 0.0f, SocialInteraction.kSocialRouteMinDist, Vector3.UnitZ, 360f, RouteDistancePreference.PreferNearestToRouteOrigin, RouteOrientationPreference.TowardsObject, this.Target.LotCurrent.LotId, new int[1]
+            {
+              this.Target.RoomId
+            });
+            if(!this.Actor.DoRoute(route)){
+                    if(this.Actor.SimDescription!=null&&this.Actor.SimDescription.IsBonehilda){
+                        Alive.WriteLog("PickUpChild:Bonehilda:Run:FAIL[0]");
+                    }
+        return false;
+            }
+            if(!ChildUtils.StartObjectInteractionWithChild((InteractionInstance)this,this.Target,CommodityKind.Standing,"BePickedUp")){
+                    if(this.Actor.SimDescription!=null&&this.Actor.SimDescription.IsBonehilda){
+                        Alive.WriteLog("PickUpChild:Bonehilda:Run:FAIL[1.0]");
+                    }
+            if(!StartObjectInteractionWithChild((InteractionInstance)this,this.Target,CommodityKind.Standing,"BePickedUp")){
+                    if(this.Actor.SimDescription!=null&&this.Actor.SimDescription.IsBonehilda){
+                        Alive.WriteLog("PickUpChild:Bonehilda:Run:FAIL[1.1]");
+                    }
+        return false;
+            }
+            }
+            if(!this.Actor.RouteToObjectRadius((IGameObject)this.Target,0.7f)){
+                    if(this.Actor.SimDescription!=null&&this.Actor.SimDescription.IsBonehilda){
+                        Alive.WriteLog("PickUpChild:Bonehilda:Run:FAIL[2]");
+                    }
+        return false;
+            }
+            this.SocialJig = (SocialJig) (GlobalFunctions.CreateObjectOutOfWorld("SocialJigBabyToddler") as SocialJigTwoPerson);
+            this.SocialJig.SetOpacity(0.0f, 0.0f);
+            Vector3 position = this.Actor.Position;
+            Vector3 forwardVector1 = this.Actor.ForwardVector;
+            this.SocialJig.SetPosition(position);
+            this.SocialJig.SetForward(forwardVector1);
+            this.SocialJig.RegisterParticipants(this.Actor, this.Target);
+            this.SocialJig.AddToWorld();
+            Vector3 forwardOfSlot = this.SocialJig.GetForwardOfSlot(SocialJigTwoPerson.RoutingSlots.SimB);
+            Vector3 forwardVector2 = this.Target.ForwardVector;
+            double x1 = (double) forwardOfSlot.x;
+            double z1 = (double) forwardOfSlot.z;
+            double x2 = (double) forwardVector2.x;
+            double z2 = (double) forwardVector2.z;
+            double x3 = x1 * x2 + z1 * z2;
+            double y = x1 * z2 - z1 * x2;
+            float num1 = (float) Math.Atan2(y, x3) - 0.7853982f;
+            while ((double) num1 < 0.0)
+              num1 += 6.283185f;
+            float num2 = 0.0f;
+            float num3 = (float) (2.0 * (double) num1 / 3.14159274101257);
+            if ((double) num3 < 1.0)
+            {
+              angle = "_270";
+              num2 = 1.570796f;
+            }
+            else if ((double) num3 < 2.0)
+            {
+              angle = "_180";
+              num2 = 3.141593f;
+            }
+            else if ((double) num3 < 3.0)
+            {
+              angle = "_90";
+              num2 = -1.570796f;
+            }
+            else
+              angle = "";
+            this.BabyJig = objectOutOfWorld = GlobalFunctions.CreateObjectOutOfWorld("SocialJigBabyToddler") as SocialJigTwoPerson;
+            objectOutOfWorld.SetOpacity(0.0f, 0.0f);
+            Vector3 forwardVector3 = this.SocialJig.ForwardVector;
+            Vector3 forward = Quaternion.MakeFromEulerAngles(0.0f, (float) Math.Atan2(y, x3) - num2, 0.0f).ToMatrix().TransformVector(forwardVector3);
+            objectOutOfWorld.SetPosition(this.Target.Position - forward * 0.7f);
+            objectOutOfWorld.SetForward(forward);
+            objectOutOfWorld.AddToWorld();
+          }
+          else
+          {
+            if (this.Actor.IsAtHome && this.Actor.LotCurrent.HasVirtualResidentialSlots && (!this.Actor.IsInPublicResidentialRoom || this.Actor.Level != this.Target.Level) && !this.Actor.RouteToObjectRadius((IGameObject) this.Target, 0.7f))
+              return false;
+            this.SocialJig = (SocialJig) (objectOutOfWorld = GlobalFunctions.CreateObjectOutOfWorld("SocialJigBabyToddler") as SocialJigTwoPerson);
+            this.SocialJig.SetOpacity(0.0f, 0.0f);
+            if (!this.BeginSocialInteraction((InteractionDefinition) new SocialInteractionB.NoAgeOrClosedVenueCheckDefinition(ChildUtils.Localize(this.Target.SimDescription.IsFemale, "BePickedUp"), false), true, false))
+              return false;
+          }
+          if (this.LinkedInteractionInstance.InstanceActor.CurrentInteraction != this.LinkedInteractionInstance)
+            return false;
+          this.BeginCommodityUpdates();
+          ChildUtils.PickUpChild(this.Actor, this.Target, (SocialJig) objectOutOfWorld, angle);
+          if (GameUtils.IsInstalled(ProductVersion.EP8) && this.Target.SimDescription.Toddler && (this.Target.CurrentOutfitCategory != OutfitCategories.Outerwear && this.Target.IsOutside) && (double) SeasonsManager.Temperature <= (double) ChangeToddlerClothes.kTemperatureToSwitchToddlerToOuterwear)
+          {
+            ChangeToddlerClothes instance = ChangeToddlerClothes.Singleton.CreateInstance((IGameObject) this.Target, (IActor) this.Actor, this.GetPriority(), this.Autonomous, this.CancellableByPlayer) as ChangeToddlerClothes;
+            instance.Reason = Sim.ClothesChangeReason.TemperatureTooCold;
+            int num = (int) instance.StartBuildingOutfit();
+            this.TryPushAsContinuation((InteractionInstance) instance);
+          }
+          this.FinishLinkedInteraction();
+          this.EndCommodityUpdates(true);
+          this.WaitForSyncComplete();
+          return true;
+        }
+        public static bool StartObjectInteractionWithChild(InteractionInstance interactionA,Sim child,CommodityKind childPosture,string receptiveInteractionNameKey){
+            if(child==null||child.HasBeenDestroyed||!interactionA.SafeToSync()){
+                Sim instanceActor0=interactionA.InstanceActor;
+                    if(instanceActor0.SimDescription!=null&&instanceActor0.SimDescription.IsBonehilda){
+                        Alive.WriteLog("PickUpChild:Bonehilda:StartObjectInteractionWithChild:FAIL[0]");
+                    }
+        return false;
+            }
+            Sim instanceActor=interactionA.InstanceActor;
+            InteractionInstance instance=new ChildUtils.ChildPlaceholderInteraction.Definition(ChildUtils.Localize(child.IsFemale,receptiveInteractionNameKey)).CreateInstance((IGameObject)instanceActor,(IActor)child,interactionA.GetPriority(),interactionA.Autonomous,interactionA.CancellableByPlayer);
+                                instance.LinkedInteractionInstance=interactionA;
+            ChildUtils.SetPosturePrecondition(instance,childPosture);
+            if(!child.InteractionQueue.Add(instance)){
+                    if(instanceActor.SimDescription!=null&&instanceActor.SimDescription.IsBonehilda){
+                        Alive.WriteLog("PickUpChild:Bonehilda:StartObjectInteractionWithChild:FAIL[1]");
+                    }
+        return false;
+            }
+            if(!interactionA.StartSync(true)){
+                    if(instanceActor.SimDescription!=null&&instanceActor.SimDescription.IsBonehilda){
+                        Alive.WriteLog("PickUpChild:Bonehilda:StartObjectInteractionWithChild:FAIL[2.0]");
+                    }
+            if(!(interactionA is PickUpChildFix pickUp)||pickUp==null||!pickUp.StartSync1(true,false,(SyncLoopCallbackFunction)null,0.0f,true)){
+                    if(instanceActor.SimDescription!=null&&instanceActor.SimDescription.IsBonehilda){
+                        Alive.WriteLog("PickUpChild:Bonehilda:StartObjectInteractionWithChild:FAIL[2.1]");
+                    }
+        return false;
+            }
+            }
+            instanceActor.SynchronizationLevel=Sim.SyncLevel.Committed;
+            if(instanceActor.WaitForSynchronizationLevelWithSim(child,Sim.SyncLevel.Committed,SocialInteraction.kSocialSyncGiveupTime))
+        return true;
+                    if(instanceActor.SimDescription!=null&&instanceActor.SimDescription.IsBonehilda){
+                        Alive.WriteLog("PickUpChild:Bonehilda:StartObjectInteractionWithChild:FAIL[3]");
+                    }
+            instanceActor.ClearSynchronizationData();
+        return false;}
+        public bool StartSync1(bool shouldBeMaster,bool ignoreExitReasons,SyncLoopCallbackFunction loopCallback,float notifySimMinutes,bool performSocializeWithTest){
+            if(!this.SafeToSync()){
+                    if(this.InstanceActor.SimDescription!=null&&this.InstanceActor.SimDescription.IsBonehilda){
+                        Alive.WriteLog("PickUpChild:Bonehilda:StartSync1:FAIL[0]");
+                    }
+        return false;
+            }
+            Sim syncTarget=this.GetSyncTarget();
+            if(syncTarget==null){
+                    if(this.InstanceActor.SimDescription!=null&&this.InstanceActor.SimDescription.IsBonehilda){
+                        Alive.WriteLog("PickUpChild:Bonehilda:StartSync1:FAIL[1]");
+                    }
+        return false;
+            }
+            ExitReason exitReason=ignoreExitReasons?ExitReason.None:ExitReason.Default;
+            DateAndTime previousDateAndTime1=SimClock.CurrentTime();
+            DateAndTime previousDateAndTime2=previousDateAndTime1;
+            while((double)SimClock.ElapsedTime(TimeUnit.Minutes,previousDateAndTime1)<(double)InteractionInstance.kNumMinToWaitOnPreSync&&(this.GetTargetCurrentInteraction()==null||this.GetTargetCurrentInteraction().LinkedInteractionInstance!=this)){
+                if(this.InstanceActor.HasExitReason(exitReason)){
+                    if(this.InstanceActor.SimDescription!=null&&this.InstanceActor.SimDescription.IsBonehilda){
+                        Alive.WriteLog("PickUpChild:Bonehilda:StartSync1:FAIL[2.0]:"+this.InstanceActor.ExitReason);
+                    }
+                    if(this.InstanceActor.SimDescription==null||!this.InstanceActor.SimDescription.IsBonehilda||this.InstanceActor.ExitReason!=ExitReason.CanceledByScript){
+                    if(this.InstanceActor.SimDescription!=null&&this.InstanceActor.SimDescription.IsBonehilda){
+                        Alive.WriteLog("PickUpChild:Bonehilda:StartSync1:FAIL[2.1]:"+this.InstanceActor.ExitReason);
+                    }
+        return false;
+                    }
+                }
+                bool flag=false;
+                if(syncTarget.InteractionQueue.IsRunning(this.LinkedInteractionInstance,true)){
+                     flag=true;
+                }else{
+                    foreach(InteractionInstance interaction in syncTarget.InteractionQueue.InteractionList){
+                        if(interaction.LinkedInteractionInstance==this){
+                     flag=true;
+                            break;
+                        }
+                    }
+                }
+                if(syncTarget.InteractionQueue.GetHeadInteraction() is IPreventSocialization headInteraction&&!headInteraction.SocializationAllowed(this.InstanceActor,syncTarget)||!flag){
+                    if(this.InstanceActor.SimDescription!=null&&this.InstanceActor.SimDescription.IsBonehilda){
+                        Alive.WriteLog("PickUpChild:Bonehilda:StartSync1:FAIL[3]:"+flag);
+                    }
+        return false;
+                }
+                if(loopCallback!=null&&(double)SimClock.ElapsedTime(TimeUnit.Minutes,previousDateAndTime2)>=(double)notifySimMinutes){
+                    if(!loopCallback()){
+                    if(this.InstanceActor.SimDescription!=null&&this.InstanceActor.SimDescription.IsBonehilda){
+                        Alive.WriteLog("PickUpChild:Bonehilda:StartSync1:FAIL[4]");
+                    }
+        return false;
+                    }
+                    previousDateAndTime2=SimClock.CurrentTime();
+                }
+                Simulator.Sleep(0U);
+            }
+            this.InstanceActor.SynchronizationRole=shouldBeMaster?Sim.SyncRole.Initiator:Sim.SyncRole.Receiver;
+            this.InstanceActor.SynchronizationTarget=syncTarget;
+            this.InstanceActor.SynchronizationLevel=Sim.SyncLevel.Started;
+            if(!this.InstanceActor.WaitForSynchronizationLevelWithSim(syncTarget,Sim.SyncLevel.Started,exitReason,(float)InteractionInstance.kNumMinToWaitOnSyncStart,loopCallback,notifySimMinutes,performSocializeWithTest)){
+                    if(this.InstanceActor.SimDescription!=null&&this.InstanceActor.SimDescription.IsBonehilda){
+                        Alive.WriteLog("PickUpChild:Bonehilda:StartSync1:FAIL[5]");
+                    }
+        return false;
+            }
+        return true;}
         public new class Definition:PickUpChild.Definition{
             public override InteractionInstance CreateInstance(ref InteractionInstanceParameters parameters){
                             InteractionInstance na=new PickUpChildFix();
@@ -274,9 +491,73 @@ this.EndCommodityUpdates(true);
                             }
             return(interactionTestResult4);
                 }
+                            if(actor1.SimDescription!=null&&actor1.SimDescription.IsBonehilda){
+                        Alive.WriteLog("PickUpChild:Bonehilda:TestFix:SUCCESS!");
+                            }
             return(InteractionTestResult.Pass);
             }
             //----------------------------------------
+        }
+    }
+    public class SimFix{
+          public SimFix(Sim sim){
+                   this.sim=sim;
+          }
+          public Sim sim;
+        public bool WaitForSynchronizationLevelWithSim1(Sim targetSim,Sim.SyncLevel desiredSynchLevel,ExitReason exitReasonInterrupt,float giveupTime,SyncLoopCallbackFunction loopCallback,float notifySimMinutes,bool performSocializeWithTest){
+            DateAndTime previousDateAndTime1=SimClock.CurrentTime();
+            DateAndTime previousDateAndTime2=previousDateAndTime1;
+            GreyedOutTooltipCallback greyedOutTooltipCallback=(GreyedOutTooltipCallback)null;
+            sim.SynchronizationSleeping=sim.SynchronizationLevel>=desiredSynchLevel;
+            while(!sim.IsAtSynchronizationLevelWith(targetSim,desiredSynchLevel)){
+                if((double)SimClock.ElapsedTime(TimeUnit.Minutes,previousDateAndTime1)>=(double)giveupTime){
+                    sim.OnWaitForSynchronizationLevelWithSimFailed(targetSim);
+                    if(sim.SimDescription!=null&&sim.SimDescription.IsBonehilda){
+                        Alive.WriteLog("PickUpChild:Bonehilda:WaitForSynchronizationLevelWithSim1:FAIL[0]");
+                    }
+        return false;
+                }
+                if(sim.HasExitReason(exitReasonInterrupt)){
+                    sim.OnWaitForSynchronizationLevelWithSimFailed(targetSim);
+                    if(sim.SimDescription!=null&&sim.SimDescription.IsBonehilda){
+                        Alive.WriteLog("PickUpChild:Bonehilda:WaitForSynchronizationLevelWithSim1:FAIL[1]");
+                    }
+        return false;
+                }
+                if(performSocializeWithTest&&!IUtil.IsPass(SocialInteractionA.Definition.CanSocializeWithSyncCheck((string)null,sim,targetSim,sim.IsInAutonomousInteraction(),ref greyedOutTooltipCallback,true,true))){
+                    sim.OnWaitForSynchronizationLevelWithSimFailed(targetSim);
+                    if(sim.SimDescription!=null&&sim.SimDescription.IsBonehilda){
+                        Alive.WriteLog("PickUpChild:Bonehilda:WaitForSynchronizationLevelWithSim1:FAIL[2]");
+                    }
+        return false;
+                }
+            if (loopCallback != null && (double) SimClock.ElapsedTime(TimeUnit.Minutes, previousDateAndTime2) >= (double) notifySimMinutes)
+            {
+              if (loopCallback())
+              {
+                previousDateAndTime2 = SimClock.CurrentTime();
+              }
+              else
+              {
+                this.OnWaitForSynchronizationLevelWithSimFailed(targetSim);
+                return false;
+              }
+            }
+            Simulator.Sleep(0U);
+            }
+          this.SynchronizationSleeping = false;
+          ExitReason reason = exitReasonInterrupt;
+          if (this.SynchronizationRole == Sim.SyncRole.Receiver)
+            reason &= ExitReason.SynchronizationFailed;
+          if (this.HasExitReason(reason))
+          {
+            this.OnWaitForSynchronizationLevelWithSimFailed(targetSim);
+            return false;
+          }
+          if (this.IsAtSynchronizationLevelWith(targetSim, desiredSynchLevel))
+            return true;
+          this.OnWaitForSynchronizationLevelWithSimFailed(targetSim);
+          return false;
         }
     }
     public class AutonomyFix{

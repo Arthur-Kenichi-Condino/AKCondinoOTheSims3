@@ -1179,7 +1179,7 @@ var line=frame.GetFileLineNumber();
                                     }
                                      if(sim.SimDescription.Baby){
                                                                       var feed=GiveBottle.Singleton.CreateInstanceWithCallbacks(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.High),false,true,GiveBottleOnStarted,GiveBottleOnCompleted,GiveBottleOnFailed);
-                              Alive.WriteLog("Can Bonehilda GiveBottle? "+feed.Test());
+                              //Alive.WriteLog("Can Bonehilda GiveBottle? "+feed.Test());
                                            bonehilda.InteractionQueue.Add(feed);
                                      }
                                      if(sim.SimDescription.Toddler){
@@ -1221,7 +1221,7 @@ var line=frame.GetFileLineNumber();
         private static void GiveBottleOnCompleted(Sim s,float x){
         }
         private static void GiveBottleOnFailed(Sim s,float x){
-            Alive.WriteLog("Failed to GiveBottle:"+s.ExitReason);
+            //Alive.WriteLog("Failed to GiveBottle:"+s.ExitReason);
         }
         private static void RepairAllInOneBathroomOnStarted(Sim s,float x){
         }

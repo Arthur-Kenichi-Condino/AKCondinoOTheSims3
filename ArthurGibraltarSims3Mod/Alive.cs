@@ -1133,38 +1133,38 @@ var line=frame.GetFileLineNumber();
                                            bonehilda.InteractionQueue.HasInteractionOfType(typeof(BonehildaReturnToCoffin)))){
                             foreach (var toilet in coffin.LotCurrent.GetObjects<Toilet>()){
                                      if(toilet.Repairable!=null&&toilet.Repairable.Broken){
-                                                                      var repair=Toilet.Repair.Singleton.CreateInstance(toilet,bonehilda,new InteractionPriority(InteractionPriorityLevel.High),false,true);
+                                                                      var repair=Toilet.Repair.Singleton.CreateInstance(toilet,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
                                            bonehilda.InteractionQueue.Add(repair);
                                      }
                             }
                             foreach(var shower in coffin.LotCurrent.GetObjects<Shower>()){
                                      if(shower.Repairable!=null&&shower.Repairable.Broken){
-                                                                      var repair=Shower.RepairShower.Singleton.CreateInstance(shower,bonehilda,new InteractionPriority(InteractionPriorityLevel.High),false,true);
+                                                                      var repair=Shower.RepairShower.Singleton.CreateInstance(shower,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
                                            bonehilda.InteractionQueue.Add(repair);
                                      }
                             }
                             foreach(var hotTub in coffin.LotCurrent.GetObjects<HotTubBase>()){
                                      if(hotTub.Repairable!=null&&hotTub.Repairable.Broken){
-                                                                      var repair=HotTubBase.RepairHotTub.Singleton.CreateInstance(hotTub,bonehilda,new InteractionPriority(InteractionPriorityLevel.High),false,true);
+                                                                      var repair=HotTubBase.RepairHotTub.Singleton.CreateInstance(hotTub,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
                                            bonehilda.InteractionQueue.Add(repair);
                                      }
                             }
                             foreach(var allInOneBathroom in coffin.LotCurrent.GetObjects<AllInOneBathroom>()){
                                      if(allInOneBathroom.Repairable!=null&&allInOneBathroom.Repairable.Broken){
-                                                                      var repair=AllInOneBathroom.RepairAllInOneBathroom.Singleton.CreateInstanceWithCallbacks(allInOneBathroom,bonehilda,new InteractionPriority(InteractionPriorityLevel.High),false,true,RepairAllInOneBathroomOnStarted,RepairAllInOneBathroomOnCompleted,RepairAllInOneBathroomOnFailed);
+                                                                      var repair=AllInOneBathroom.RepairAllInOneBathroom.Singleton.CreateInstanceWithCallbacks(allInOneBathroom,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true,RepairAllInOneBathroomOnStarted,RepairAllInOneBathroomOnCompleted,RepairAllInOneBathroomOnFailed);
  //Alive.WriteLog("Can Bonehilda AllInOneBathroom.RepairAllInOneBathroom? "+repair.Test());
                                            bonehilda.InteractionQueue.Add(repair);
                                      }
                             }
                             foreach(var TV in coffin.LotCurrent.GetObjects<TV>()){
                                      if(TV.Repairable!=null&&TV.Repairable.Broken){
-                                                                      var repair=TV.RepairTV.Singleton.CreateInstance(TV,bonehilda,new InteractionPriority(InteractionPriorityLevel.High),false,true);
+                                                                      var repair=TV.RepairTV.Singleton.CreateInstance(TV,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
                                            bonehilda.InteractionQueue.Add(repair);
                                      }
                             }
                             foreach(var computer in coffin.LotCurrent.GetObjects<Computer>()){
                                      if(computer.Repairable!=null&&computer.Repairable.Broken){
-                                                                      var repair=Computer.RepairComputer.Singleton.CreateInstance(computer,bonehilda,new InteractionPriority(InteractionPriorityLevel.High),false,true);
+                                                                      var repair=Computer.RepairComputer.Singleton.CreateInstance(computer,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
                                            bonehilda.InteractionQueue.Add(repair);
                                      }
                             }
@@ -1178,7 +1178,7 @@ var line=frame.GetFileLineNumber();
                                         continue;
                                     }
                                      if(sim.SimDescription.Baby){
-                                                                      var feed=GiveBottle.Singleton.CreateInstanceWithCallbacks(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.High),false,true,GiveBottleOnStarted,GiveBottleOnCompleted,GiveBottleOnFailed);
+                                                                      var feed=GiveBottle.Singleton.CreateInstanceWithCallbacks(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true,GiveBottleOnStarted,GiveBottleOnCompleted,GiveBottleOnFailed);
                               //Alive.WriteLog("Can Bonehilda GiveBottle? "+feed.Test());
                                            bonehilda.InteractionQueue.Add(feed);
                                      }

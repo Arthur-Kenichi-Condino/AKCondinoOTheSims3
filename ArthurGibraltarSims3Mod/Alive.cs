@@ -1179,7 +1179,6 @@ var line=frame.GetFileLineNumber();
                                     }
                                      if(sim.SimDescription.Baby){
                                                                       var feed=GiveBottle.Singleton.CreateInstanceWithCallbacks(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true,GiveBottleOnStarted,GiveBottleOnCompleted,GiveBottleOnFailed);
-                              //Alive.WriteLog("Can Bonehilda GiveBottle? "+feed.Test());
                                            bonehilda.InteractionQueue.Add(feed);
                                      }
                                      if(sim.SimDescription.Toddler){

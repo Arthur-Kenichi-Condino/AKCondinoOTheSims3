@@ -1178,6 +1178,8 @@ var line=frame.GetFileLineNumber();
                                         continue;
                                     }
                                      if(sim.SimDescription.Baby){
+                                                                      var pickUp=PickUpChild.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(pickUp);
                                                                       var feed=GiveBottle.Singleton.CreateInstanceWithCallbacks(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true,GiveBottleOnStarted,GiveBottleOnCompleted,GiveBottleOnFailed);
                                            bonehilda.InteractionQueue.Add(feed);
                                      }

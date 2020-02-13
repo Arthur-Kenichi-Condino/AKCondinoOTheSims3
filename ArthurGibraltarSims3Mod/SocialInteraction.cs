@@ -13,6 +13,8 @@ using Sims3.Gameplay.Core;
 using Sims3.Gameplay.Interactions;
 using Sims3.Gameplay.Interfaces;
 using Sims3.Gameplay.Objects;
+using Sims3.Gameplay.Objects.Beds;
+using Sims3.Gameplay.Objects.Miscellaneous;
 using Sims3.Gameplay.Pools;
 using Sims3.Gameplay.Scuba;
 using Sims3.Gameplay.Seasons;
@@ -30,7 +32,7 @@ using System.Text;
 using static ArthurGibraltarSims3Mod.Alive;
 using static ArthurGibraltarSims3Mod.Interaction;
 namespace ArthurGibraltarSims3Mod{
-    //  TO DO: PutDownChild LetChildOut GetSelfPickedUp FeedOnFloor TeachToTalk TeachToWalk Sims3.Gameplay.ActorSystems.Children.PlayWith TossInAir Tickle ChangeDiaper ChangeToddlerClothes Snuggle FeedToddlerInHighChair PutChildInCrib (InteractionDefinition) ToddlerHug (InteractionDefinition) PlayPeekAboo Crib.Hold Crib.PutChildOnLotInCrib Crib.PutCarriedChildInCrib (InteractionDefinition) HighChairBase.PutCarriedChildInChair HighChairBase.PutChildOnLotInChair HighChairBase.ServeFood HighChairBase.GiveBabyFood HighChairBase.GiveBottle HighChairBase.Hold 
+    //  TO DO: LetChildOut GetSelfPickedUp FeedOnFloor TeachToTalk TeachToWalk Sims3.Gameplay.ActorSystems.Children.PlayWith TossInAir Tickle ChangeDiaper ChangeToddlerClothes Snuggle FeedToddlerInHighChair (InteractionDefinition) ToddlerHug (InteractionDefinition) PlayPeekAboo Crib.Hold Crib.PutChildOnLotInCrib (InteractionDefinition) HighChairBase.PutCarriedChildInChair HighChairBase.PutChildOnLotInChair HighChairBase.ServeFood HighChairBase.GiveBabyFood HighChairBase.GiveBottle HighChairBase.Hold Crib_ReadToSleep
     public class GiveBottleFix:GiveBottle,IPreLoad,IAddInteraction{
         static InteractionDefinition sOldSingleton;
                                               public void AddInteraction(InteractionInjectorList interactions){
@@ -318,66 +320,59 @@ Simulator.Sleep(0U);
             public override bool Test(Sim actor,Sim target,bool isAutonomous,ref GreyedOutTooltipCallback greyedOutTooltipCallback){
             return actor!=null&&target!=null&&actor!=target;
             }
-            public override InteractionTestResult Test(
-      ref InteractionInstanceParameters parameters,
-      ref GreyedOutTooltipCallback greyedOutTooltipCallback)
-    {
-      Sim actor1 = parameters.Actor as Sim;
-      Sim target1 = parameters.Target as Sim;
-      if ((object) actor1 == null)
-        return InteractionTestResult.Root_Null_Actor;
-      if ((object) target1 == null)
-        return InteractionTestResult.Root_Null_Target;
-      Sim actor2 = (object) actor1 as Sim;
-      IGameObject target2 = (IGameObject) target1;
-      for (IGameObject gameObject = (IGameObject) target1; gameObject != null; gameObject = gameObject.Parent)
-      {
-        if (gameObject == LiveDragHelperModel.CachedTopDraggedObject)
-          return InteractionTestResult.Root_TargetOnHandTool;
-      }
-      bool flag = true;
-      InteractionTuning tuning = parameters.InteractionObjectPair.Tuning;
-      Tradeoff mTradeoff = tuning?.mTradeoff;
-      if (tuning != null)
-      {
-        CommodityKind workMotive = actor1.WorkMotive;
-        if (workMotive != CommodityKind.None && mTradeoff.SatisfiesCommodity(workMotive))
-          flag = false;
-        if (parameters.Autonomous)
-        {
-          if (tuning.HasFlags(InteractionTuning.FlagField.DisallowAutonomous) && flag)
+            public override InteractionTestResult Test(ref InteractionInstanceParameters parameters,ref GreyedOutTooltipCallback greyedOutTooltipCallback){
+                Sim  actor1=parameters. Actor as Sim;
+                Sim target1=parameters.Target as Sim;
+                if((object) actor1==null)
+            return InteractionTestResult.Root_Null_Actor;
+                if((object)target1==null)
+            return InteractionTestResult.Root_Null_Target;
+                Sim actor2=(object)actor1 as Sim;
+                IGameObject target2=(IGameObject)target1;
+                for(IGameObject gameObject=(IGameObject)target1;gameObject!=null;gameObject=gameObject.Parent){
+                    if(gameObject==LiveDragHelperModel.CachedTopDraggedObject)
+            return InteractionTestResult.Root_TargetOnHandTool;
+                }
+                bool flag=true;
+                InteractionTuning tuning=parameters.InteractionObjectPair.Tuning;
+                Tradeoff mTradeoff = tuning?.mTradeoff;
+                if(tuning!=null){
+                    CommodityKind workMotive=actor1.WorkMotive;
+                    if(workMotive!=CommodityKind.None&&mTradeoff.SatisfiesCommodity(workMotive))
+                     flag=false;
+                    if(parameters.Autonomous){
+                        if(tuning.HasFlags(InteractionTuning.FlagField.DisallowAutonomous)&&flag)
             return InteractionTestResult.Tuning_DisallowAutonomous;
-          if (mTradeoff.FunExit && actor1.Motives.FunInteractionTest(false))
+                        if(mTradeoff.FunExit&&actor1.Motives.FunInteractionTest(false))
             return InteractionTestResult.Tuning_FunInteractionTest;
-        }
-        else if (tuning.HasFlags(InteractionTuning.FlagField.DisallowUserDirected))
-          return InteractionTestResult.Tuning_DisallowUserDirected;
-        if (actor1.IsSelectable && tuning.HasFlags(InteractionTuning.FlagField.DisallowPlayerSim))
-          return InteractionTestResult.Tuning_DisallowPlayerSim;
-        if (flag)
-        {
-          InteractionTestResult interactionTestResult = actor1.Autonomy.CheckAvailability(parameters.Autonomous, tuning.Availability, parameters.InteractionObjectPair);
-          if (interactionTestResult != InteractionTestResult.Pass)
+                    }else if(tuning.HasFlags(InteractionTuning.FlagField.DisallowUserDirected))
+            return InteractionTestResult.Tuning_DisallowUserDirected;
+                    if(actor1.IsSelectable&&tuning.HasFlags(InteractionTuning.FlagField.DisallowPlayerSim))
+            return InteractionTestResult.Tuning_DisallowPlayerSim;
+                  if(flag){
+                                                    AutonomyFix fix=new AutonomyFix(actor1.Autonomy.mActor,actor1.Autonomy.Motives,actor1.Autonomy.CurrentSearchType,actor1.Autonomy.IsActorInTombRoom);
+                    InteractionTestResult interactionTestResult=fix.CheckAvailability1(parameters.Autonomous,tuning.Availability,parameters.InteractionObjectPair);
+                    if(interactionTestResult!=InteractionTestResult.Pass)
             return interactionTestResult;
-        }
-      }
-      actor1.Autonomy.UpdateCacheIfNeeded((IGameObject) target1);
-      InteractionTestResult interactionTestResult1 = InteractionDefinitionUtilities.CommonTests((InteractionDefinition) this, actor2, target2, parameters);
-      if (interactionTestResult1 != InteractionTestResult.Pass)
-        return interactionTestResult1;
-      InteractionTestResult interactionTestResult2 = !(this is IMetaInteractionDefinition) ? InteractionDefinitionUtilities.SpecialCaseTests((InteractionDefinition) this, actor2, target2, parameters) : MetaInteractionDefinitionUtilities.SpecialCaseTests(actor2, target2, parameters);
-      if (interactionTestResult2 != InteractionTestResult.Pass)
-        return interactionTestResult2;
-      if (!this.Test(actor1, target1, parameters.Autonomous, ref greyedOutTooltipCallback))
-        return InteractionTestResult.Def_TestFailed;
-      if (tuning != null)
-      {
-        InteractionTestResult interactionTestResult3 = actor1.Autonomy.CheckAvailabilityTooltip((InteractionDefinition) this, (IGameObject) target1, tuning.Availability, parameters, mTradeoff, ref greyedOutTooltipCallback);
-        if (interactionTestResult3 != InteractionTestResult.Pass)
-          return interactionTestResult3;
-      }
-      InteractionTestResult interactionTestResult4 = InteractionDefinitionUtilities.SpecialCaseTooltipTests((InteractionDefinition) this, actor2, target2, parameters, ref greyedOutTooltipCallback);
-      return interactionTestResult4 != InteractionTestResult.Pass ? interactionTestResult4 : InteractionTestResult.Pass;
+                  }
+                }
+                actor1.Autonomy.UpdateCacheIfNeeded((IGameObject)target1);
+               var interactionTestResult1=AutonomyFix.CommonTests1((InteractionDefinition)this,actor2,target2,parameters);
+                if(interactionTestResult1!=InteractionTestResult.Pass)
+            return interactionTestResult1;
+               var interactionTestResult2=!(this is IMetaInteractionDefinition)?    InteractionDefinitionUtilities.SpecialCaseTests((InteractionDefinition)this,actor2,target2,parameters) 
+                                                                               :MetaInteractionDefinitionUtilities.SpecialCaseTests(actor2,target2,parameters);
+                if(interactionTestResult2!=InteractionTestResult.Pass)
+            return interactionTestResult2;
+                if(!this.Test(actor1,target1,parameters.Autonomous,ref greyedOutTooltipCallback))
+            return InteractionTestResult.Def_TestFailed;
+                if(tuning!=null){
+ InteractionTestResult interactionTestResult3=actor1.Autonomy.CheckAvailabilityTooltip((InteractionDefinition)this,(IGameObject)target1,tuning.Availability,parameters,mTradeoff,ref greyedOutTooltipCallback);
+                    if(interactionTestResult3!=InteractionTestResult.Pass)
+                return interactionTestResult3;
+                }
+ InteractionTestResult interactionTestResult4=InteractionDefinitionUtilities.SpecialCaseTooltipTests((InteractionDefinition)this,actor2,target2,parameters,ref greyedOutTooltipCallback);
+                return interactionTestResult4!=InteractionTestResult.Pass?interactionTestResult4:InteractionTestResult.Pass;
             }
         }
         public static bool StartInteractionWithCarriedChild1(SocialInteraction interactionA,string receptiveInteractionNameKey){
@@ -420,10 +415,881 @@ Simulator.Sleep(0U);
         return false;
         }
     }
+    public class PutChildInCribFix:PutChildInCrib,IPreLoad,IAddInteraction{
+        static InteractionDefinition sOldSingleton;
+                                              public void AddInteraction(InteractionInjectorList interactions){
+                                                                                                 interactions.ReplaceNoTest<Sim,PutChildInCrib.Definition>(Singleton);
+                                              }
+                                   public void OnPreLoad(){
+            Tunings.Inject<Sim,PutChildInCrib.Definition,Definition>(false);
+                                     sOldSingleton=Singleton;
+                                                   Singleton=new Definition();
+                                   }
+        public override bool Run(){
+            ICrib[]objects=Sims3.Gameplay.Queries.GetObjects<ICrib>(this.Target.LotCurrent);
+            float num1=float.MaxValue;
+            ICrib crib1=(ICrib)null;
+            if(objects.Length==1){
+                if(objects[0].IsEmpty())
+                    crib1=objects[0];
+            }else{
+                foreach(ICrib crib2 in objects){
+                    if(crib2.IsEmpty()){
+                        float num2=(crib2.Position-this.Target.Position).LengthSqr();
+                        if((double)num2<(double)num1){
+                            num1=num2;
+                            crib1=crib2;
+                        }
+                    }
+                }
+            }
+            if(crib1==null)
+        return false;
+this.BeginCommodityUpdates();
+            this.Actor.InteractionQueue.PushAsContinuation(crib1.PutInCrib(this.Actor),true);
+this.EndCommodityUpdates(true);
+        return true;
+        }
+        public new class Definition:PutChildInCrib.Definition{
+            public override InteractionInstance CreateInstance(ref InteractionInstanceParameters parameters){
+                            InteractionInstance na=new PutChildInCribFix();
+                                                na.Init(ref parameters);
+                                         return na;
+            }
+            public override InteractionTestResult Test(ref InteractionInstanceParameters parameters,ref GreyedOutTooltipCallback greyedOutTooltipCallback){
+                Sim  actor1=parameters. Actor as Sim;
+                Sim target1=parameters.Target as Sim;
+                if((object) actor1==null){
+            return(InteractionTestResult.Root_Null_Actor );
+                }
+                if((object)target1==null){
+            return(InteractionTestResult.Root_Null_Target);
+                }
+                Sim  actor2=(object)actor1 as Sim;
+        IGameObject target2=(IGameObject)target1;
+                for(IGameObject gameObject=(IGameObject)target1;gameObject!=null;gameObject=gameObject.Parent){
+                             if(gameObject==Sims3.Gameplay.UI.LiveDragHelperModel.CachedTopDraggedObject)
+            return(InteractionTestResult.Root_TargetOnHandTool);
+                }
+                bool flag=( true);
+                InteractionTuning tuning=parameters.InteractionObjectPair.Tuning;
+                Tradeoff mTradeoff=tuning?.mTradeoff;
+                if(tuning!=null){
+                    CommodityKind workMotive=actor1.WorkMotive;
+                               if(workMotive!=CommodityKind.None&&mTradeoff.SatisfiesCommodity(workMotive)){
+                     flag=(false);
+                               }
+                    if(parameters.Autonomous){
+                        if(tuning.HasFlags(InteractionTuning.FlagField.DisallowAutonomous)&&flag){
+            return(InteractionTestResult.Tuning_DisallowAutonomous);
+                        }
+                        if(mTradeoff.FunExit&&actor1.Motives.FunInteractionTest(false))
+            return(InteractionTestResult.Tuning_FunInteractionTest);
+                    }else 
+                    if(tuning.HasFlags(InteractionTuning.FlagField.DisallowUserDirected)){
+            return(InteractionTestResult.Tuning_DisallowUserDirected);
+                    }
+                    if(actor1.IsSelectable&&tuning.HasFlags(InteractionTuning.FlagField.DisallowPlayerSim)){
+            return(InteractionTestResult.Tuning_DisallowPlayerSim);
+                    }
+                    if(flag){
+                    try{
+                                     AutonomyFix fix=new AutonomyFix(actor1.Autonomy.mActor,actor1.Autonomy.Motives,actor1.Autonomy.CurrentSearchType,actor1.Autonomy.IsActorInTombRoom);
+     InteractionTestResult interactionTestResult=fix.CheckAvailability1(parameters.Autonomous,tuning.Availability,parameters.InteractionObjectPair);
+                        if(interactionTestResult!=InteractionTestResult.Pass){
+            return(interactionTestResult);
+                        }
+                    }catch(Exception exception){
+         //  Get stack trace for the exception. with source file information
+               var st=new StackTrace(exception,true);
+         //  Get the top stack frame
+         var frame=st.GetFrame(0);
+         //  Get the line number from the stack frame
+    var line=frame.GetFileLineNumber();
+                      Alive.WriteLog(exception.Message+"\n\n"+
+                                     exception.StackTrace+"\n\n"+
+                                     exception.Source+"\n\n"+
+                                     line);
+            return(InteractionTestResult.GenericUnknown);
+                    }finally{
+                    }
+                    }
+                }
+                actor1.Autonomy.UpdateCacheIfNeeded((IGameObject)target1);
+                    try{
+               var interactionTestResult1=AutonomyFix.CommonTests1((InteractionDefinition)this,actor2,target2,parameters);
+                if(interactionTestResult1!=InteractionTestResult.Pass){
+            return(interactionTestResult1);
+                }
+                    }catch(Exception exception){
+         //  Get stack trace for the exception. with source file information
+               var st=new StackTrace(exception,true);
+         //  Get the top stack frame
+         var frame=st.GetFrame(0);
+         //  Get the line number from the stack frame
+    var line=frame.GetFileLineNumber();
+                      Alive.WriteLog(exception.Message+"\n\n"+
+                                     exception.StackTrace+"\n\n"+
+                                     exception.Source+"\n\n"+
+                                     line);
+            return(InteractionTestResult.GenericUnknown);
+                    }finally{
+                    }
+               var interactionTestResult2=!(this is IMetaInteractionDefinition)?    InteractionDefinitionUtilities.SpecialCaseTests((InteractionDefinition)this,actor2,target2,parameters)
+                                                                               :MetaInteractionDefinitionUtilities.SpecialCaseTests(actor2,target2,parameters);
+                if(interactionTestResult2!=InteractionTestResult.Pass){
+            return(interactionTestResult2);
+                }
+                if(!this.Test(actor1,target1,parameters.Autonomous,ref greyedOutTooltipCallback)){
+            return(InteractionTestResult.Def_TestFailed);
+                }
+                if(tuning!=null){
+               var interactionTestResult3=actor1.Autonomy.CheckAvailabilityTooltip((InteractionDefinition)this,(IGameObject)target1,tuning.Availability,parameters,mTradeoff,ref greyedOutTooltipCallback);
+                if(interactionTestResult3!=InteractionTestResult.Pass){
+            return(interactionTestResult3);
+                }
+                }
+               var interactionTestResult4=InteractionDefinitionUtilities.SpecialCaseTooltipTests((InteractionDefinition)this,actor2,target2,parameters,ref greyedOutTooltipCallback);
+                if(interactionTestResult4!=InteractionTestResult.Pass){
+            return(interactionTestResult4);
+                }
+            return(InteractionTestResult.Pass);
+            }
+        }
+    }
+    public class PutCarriedChildInCribFix:Crib.PutCarriedChildInCrib,IPreLoad,IAddInteraction{
+        static InteractionDefinition sOldSingleton;
+                                              public void AddInteraction(InteractionInjectorList interactions){
+                                                                                                 interactions.ReplaceNoTest<Crib,Crib.PutCarriedChildInCrib.Definition>(Singleton);
+                                              }
+                                   public void OnPreLoad(){
+            Tunings.Inject<Sims3.Gameplay.Objects.Beds.Mimics.CribCheap    ,Crib.PutCarriedChildInCrib.Definition,Definition>(false);
+            Tunings.Inject<Sims3.Gameplay.Objects.Beds.Mimics.CribExpensive,Crib.PutCarriedChildInCrib.Definition,Definition>(false);
+            Tunings.Inject<Crib,Crib.PutCarriedChildInCrib.Definition,Definition>(false);
+                                     sOldSingleton=Singleton;
+                                                   Singleton=new Definition();
+                                   }
+        public override bool Run(){
+            if(this.Actor.CarryingChildPosture==null)
+        return false;
+            Sim child=this.Actor.CarryingChildPosture.Child;
+            if(!this.mTriedChangingClothes&&child.SimDescription.Toddler&&child.CurrentOutfitCategory!=OutfitCategories.Sleepwear){
+                this.mTriedChangingClothes=true;
+                this.mChangeToddlerClothes=ChangeToddlerClothes.Singleton.CreateInstance((IGameObject)child,(IActor)this.Actor,this.GetPriority(),false,this.CancellableByPlayer)as ChangeToddlerClothes;
+                this.mChangeToddlerClothes.Reason=Sim.ClothesChangeReason.GoingToBed;
+                int num=(int)this.mChangeToddlerClothes.StartBuildingOutfit();
+            }
+            if(!this.Actor.RouteToSlotAndCheckInUse((IGameObject)this.Target,this.Target.GetRoutingSlot(child)))
+        return false;
+            if(this.mChangeToddlerClothes!=null&&this.Actor.InteractionQueue.PushAsContinuation((InteractionInstance)this.mChangeToddlerClothes,true)){
+                this.Actor.InteractionQueue.PushAsContinuation((InteractionInstance)this,true);
+                this.mChangeToddlerClothes=(ChangeToddlerClothes)null;
+        return true;
+            }
+            if(!StartObjectInteractionWithChild1((InteractionInstance)this,child,CommodityKind.BeingCarried,"BePutInCrib"))
+        return false;
+this.StandardEntry();
+            this.Target.AddToUseList(child);
+            StateMachineClient cribStateMachine=StateMachineClient.Acquire((IHasScriptProxy)child,nameof(Crib));
+                               cribStateMachine.SetActor("x",(IHasScriptProxy)this.Actor);
+                               cribStateMachine.SetActor("y",(IHasScriptProxy)child);
+                               cribStateMachine.SetActor("crib",(IHasScriptProxy) this.Target);
+                               cribStateMachine.SetParameter("ExitFacingCrib",this.Actor.InteractionQueue.GetHeadInteraction()is Crib.Crib_ReadToSleep);
+                               cribStateMachine.EnterState("x","EnterCarrying");
+                               cribStateMachine.EnterState("y","EnterCarrying");
+this.BeginCommodityUpdates();
+            if(child.SimDescription.Age==CASAgeGenderFlags.Toddler){
+                child.UnParent();
+                child.SetPosition(this.Target.GetPositionOfSlot(Slot.ContainmentSlot_1));
+                child.SetForward(this.Target.GetForwardOfSlot(Slot.ContainmentSlot_1));
+            }
+                               cribStateMachine.RequestState(false,"x","PutDown");
+                               cribStateMachine.RequestState(true,"y","PutDown");
+                               cribStateMachine.RequestState(false,"x","ExitStanding");
+                               cribStateMachine.RequestState(true,"y","InCrib");
+            if(child.SimDescription.Age==CASAgeGenderFlags.Baby&&child.Parent!=this.Target)
+                child.ParentToSlot((IGameObject)this.Target,Slot.ContainmentSlot_1);
+            StuffedAnimal stuffedAnimal=child.Inventory.Find<StuffedAnimal>();
+            if(stuffedAnimal!=null&&!stuffedAnimal.InUse&&this.Target.StuffedAnimal==null)
+                this.Target.ParentStuffedAnimal((IStuffedAnimal)stuffedAnimal,true);
+this.EndCommodityUpdates(true);
+            Crib.InCribPosture inCribPosture=new Crib.InCribPosture(child,this.Target,cribStateMachine);
+            child.Posture=(Posture)inCribPosture;
+            this.Actor.Posture=this.Actor.Standing;
+            child.BridgeOrigin=child.Posture.Idle();
+            InteractionInstance headInteraction=this.Actor.InteractionQueue.GetHeadInteraction();
+            if(headInteraction==null||headInteraction.Target!=child){
+                if(child.BuffManager.HasAnyElement(BuffNames.Sleepy,BuffNames.Tired,BuffNames.Exhausted)&&!child.InteractionQueue.HasInteractionOfType(Sims3.Gameplay.ActorSystems.Children.Sleep.Singleton)){
+                           InteractionInstance instance=Sims3.Gameplay.ActorSystems.Children.Sleep.Singleton.CreateInstance((IGameObject)child,(IActor)child,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,false);
+                    child.InteractionQueue.Add(instance);
+                }
+            }
+                               cribStateMachine.RemoveActor("x");
+this.StandardExit();
+        return ChildUtils.FinishObjectInteractionWithChild((InteractionInstance)this,child);
+        }
+        public static bool StartObjectInteractionWithChild1(InteractionInstance interactionA,Sim child,CommodityKind childPosture,string receptiveInteractionNameKey){
+            if(child==null||child.HasBeenDestroyed||!interactionA.SafeToSync()){
+                Sim instanceActor0=interactionA.InstanceActor;
+        return false;
+            }
+            Sim instanceActor=interactionA.InstanceActor;
+            InteractionInstance instance=new ChildPlaceholderInteractionFix.Definition(ChildUtils.Localize(child.IsFemale,receptiveInteractionNameKey)).CreateInstance((IGameObject)instanceActor,(IActor)child,interactionA.GetPriority(),interactionA.Autonomous,interactionA.CancellableByPlayer);
+                                instance.LinkedInteractionInstance=interactionA;
+            ChildUtils.SetPosturePrecondition(instance,childPosture);
+            if(!child.InteractionQueue.Add(instance)){
+        return false;
+            }
+            if(!(interactionA is PutCarriedChildInCribFix putCarriedChildInCrib)||putCarriedChildInCrib==null||!putCarriedChildInCrib.StartSync1(true,false,(SyncLoopCallbackFunction)null,0.0f,true)){
+        return false;
+            }
+            instanceActor.SynchronizationLevel=Sim.SyncLevel.Committed;
+        SimFix fix=new SimFix(instanceActor);
+            if(fix.WaitForSynchronizationLevelWithSim1(child,Sim.SyncLevel.Committed,SocialInteraction.kSocialSyncGiveupTime))
+        return true;
+            instanceActor.ClearSynchronizationData();
+        return false;}
+        public bool StartSync1(bool shouldBeMaster,bool ignoreExitReasons,SyncLoopCallbackFunction loopCallback,float notifySimMinutes,bool performSocializeWithTest){
+            if(!this.SafeToSync()){
+        return false;
+            }
+            Sim syncTarget=this.GetSyncTarget();
+            if(syncTarget==null){
+        return false;
+            }
+            ExitReason exitReason=ignoreExitReasons?ExitReason.None:ExitReason.Default;
+            DateAndTime previousDateAndTime1=SimClock.CurrentTime();
+            DateAndTime previousDateAndTime2=previousDateAndTime1;
+            while((double)SimClock.ElapsedTime(TimeUnit.Minutes,previousDateAndTime1)<(double)InteractionInstance.kNumMinToWaitOnPreSync&&(this.GetTargetCurrentInteraction()==null||this.GetTargetCurrentInteraction().LinkedInteractionInstance!=this)){
+                if(this.InstanceActor.HasExitReason(exitReason)){
+        return false;
+                }
+                bool flag=false;
+                if(syncTarget.InteractionQueue.IsRunning(this.LinkedInteractionInstance,true)){
+                     flag=true;
+                }else{
+                    foreach(InteractionInstance interaction in syncTarget.InteractionQueue.InteractionList){
+                        if(interaction.LinkedInteractionInstance==this){
+                     flag=true;
+                            break;
+                        }
+                    }
+                }
+                if(syncTarget.InteractionQueue.GetHeadInteraction() is IPreventSocialization headInteraction&&headInteraction!=null&&!headInteraction.SocializationAllowed(this.InstanceActor,syncTarget)||!flag){
+        return false;
+                }
+                if(loopCallback!=null&&(double)SimClock.ElapsedTime(TimeUnit.Minutes,previousDateAndTime2)>=(double)notifySimMinutes){
+                    if(!loopCallback()){
+        return false;
+                    }
+                    previousDateAndTime2=SimClock.CurrentTime();
+                }
+Simulator.Sleep(0U);
+            }
+            this.InstanceActor.SynchronizationRole=shouldBeMaster?Sim.SyncRole.Initiator:Sim.SyncRole.Receiver;
+            this.InstanceActor.SynchronizationTarget=syncTarget;
+            this.InstanceActor.SynchronizationLevel=Sim.SyncLevel.Started;
+         SimFix fix=new SimFix(this.InstanceActor);
+            if(!fix.WaitForSynchronizationLevelWithSim1(syncTarget,Sim.SyncLevel.Started,exitReason,(float)InteractionInstance.kNumMinToWaitOnSyncStart,loopCallback,notifySimMinutes,performSocializeWithTest)){
+        return false;
+            }
+        return true;}
+        public new class Definition:Crib.PutCarriedChildInCrib.Definition{
+            public override InteractionInstance CreateInstance(ref InteractionInstanceParameters parameters){
+                            InteractionInstance na=new PutCarriedChildInCribFix();
+                                                na.Init(ref parameters);
+                                         return na;
+            }
+            public override InteractionTestResult Test(ref InteractionInstanceParameters parameters,ref GreyedOutTooltipCallback greyedOutTooltipCallback){
+                Sim   actor1=parameters. Actor as Sim;
+                Crib target1=parameters.Target as Crib;
+                if((object) actor1==null)
+            return InteractionTestResult.Root_Null_Actor;
+                if((object)target1==null)
+            return InteractionTestResult.Root_Null_Target;
+                Sim actor2=(object)actor1 as Sim;
+                IGameObject target2=(IGameObject)target1;
+                for(IGameObject gameObject=(IGameObject)target1;gameObject!=null;gameObject=gameObject.Parent){
+                    if(gameObject==LiveDragHelperModel.CachedTopDraggedObject)
+            return InteractionTestResult.Root_TargetOnHandTool;
+                }
+                bool flag=true;
+                InteractionTuning tuning=parameters.InteractionObjectPair.Tuning;
+                Tradeoff mTradeoff=tuning?.mTradeoff;
+                if(tuning!=null){
+                    CommodityKind workMotive=actor1.WorkMotive;
+                    if(workMotive!=CommodityKind.None&&mTradeoff.SatisfiesCommodity(workMotive))
+                     flag=false;
+                    if(parameters.Autonomous){
+                        if(tuning.HasFlags(InteractionTuning.FlagField.DisallowAutonomous)&&flag)
+            return InteractionTestResult.Tuning_DisallowAutonomous;
+                        if(mTradeoff.FunExit&&actor1.Motives.FunInteractionTest(false))
+            return InteractionTestResult.Tuning_FunInteractionTest;
+                    }else if(tuning.HasFlags(InteractionTuning.FlagField.DisallowUserDirected))
+            return InteractionTestResult.Tuning_DisallowUserDirected;
+                    if(actor1.IsSelectable&&tuning.HasFlags(InteractionTuning.FlagField.DisallowPlayerSim))
+            return InteractionTestResult.Tuning_DisallowPlayerSim;
+                  if(flag){
+                                     AutonomyFix fix=new AutonomyFix(actor1.Autonomy.mActor,actor1.Autonomy.Motives,actor1.Autonomy.CurrentSearchType,actor1.Autonomy.IsActorInTombRoom);
+     InteractionTestResult interactionTestResult=fix.CheckAvailability1(parameters.Autonomous,tuning.Availability,parameters.InteractionObjectPair);
+                        if(interactionTestResult!=InteractionTestResult.Pass)
+            return interactionTestResult;
+                  }
+                }
+                actor1.Autonomy.UpdateCacheIfNeeded((IGameObject) target1);
+               var interactionTestResult1=AutonomyFix.CommonTests1((InteractionDefinition)this,actor2,target2,parameters);
+                if(interactionTestResult1!=InteractionTestResult.Pass)
+            return interactionTestResult1;
+               var interactionTestResult2=!(this is IMetaInteractionDefinition)?    InteractionDefinitionUtilities.SpecialCaseTests((InteractionDefinition)this,actor2,target2,parameters)
+                                                                               :MetaInteractionDefinitionUtilities.SpecialCaseTests(actor2,target2,parameters);
+                if(interactionTestResult2!=InteractionTestResult.Pass)
+            return interactionTestResult2;
+                if(!this.Test(actor1,target1,parameters.Autonomous,ref greyedOutTooltipCallback))
+            return InteractionTestResult.Def_TestFailed;
+                if(tuning!=null){
+ InteractionTestResult interactionTestResult3=actor1.Autonomy.CheckAvailabilityTooltip((InteractionDefinition)this,(IGameObject)target1,tuning.Availability,parameters,mTradeoff,ref greyedOutTooltipCallback);
+                    if(interactionTestResult3!=InteractionTestResult.Pass)
+            return interactionTestResult3;
+                }
+               var interactionTestResult4=InteractionDefinitionUtilities.SpecialCaseTooltipTests((InteractionDefinition)this,actor2,target2,parameters,ref greyedOutTooltipCallback);
+            return interactionTestResult4!=InteractionTestResult.Pass?interactionTestResult4:InteractionTestResult.Pass;
+            }
+        }
+    }
+    public class PutDownChildFix:PutDownChild,IPreLoad,IAddInteraction{
+        static InteractionDefinition sOldSingleton;
+                                              public void AddInteraction(InteractionInjectorList interactions){
+                                                                                                 interactions.ReplaceNoTest<Sim,PutDownChild.Definition>(Singleton);
+                                              }
+                                   public void OnPreLoad(){
+            Tunings.Inject<Sim,PutDownChild.Definition,Definition>(false);
+                                     sOldSingleton=Singleton;
+                                                   Singleton=new Definition();
+                                   }
+        public override bool Run(){
+            BeingCarriedPosture.PushPutDownOnParent pushPutDownOnParent1=(BeingCarriedPosture.PushPutDownOnParent)null;
+            if(!(this.Target.InteractionQueue.TransitionInteraction is BeingCarriedPosture.PushPutDownOnParent pushPutDownOnParent2))
+                pushPutDownOnParent2=this.Target.InteractionQueue.GetHeadInteraction() as BeingCarriedPosture.PushPutDownOnParent;
+            BeingCarriedPosture.PushPutDownOnParent pushPutDownOnParent3=pushPutDownOnParent2;
+            bool flag1=pushPutDownOnParent3!=null&&pushPutDownOnParent3.Target==this.Target&&this.Target.Posture.Container==this.Actor;
+              if(flag1){
+                if(this.LinkedInteractionInstance!=pushPutDownOnParent3){
+                    pushPutDownOnParent3.LinkedInteractionInstance=(InteractionInstance)null;
+                    this.LinkedInteractionInstance=(InteractionInstance)pushPutDownOnParent3;
+                }
+              }else{
+                    pushPutDownOnParent1=this.LinkedInteractionInstance as BeingCarriedPosture.PushPutDownOnParent;
+                    this.LinkedInteractionInstance=(InteractionInstance)null;
+                if(!CarriedChildInteractionBFix.StartInteractionWithCarriedChild1((SocialInteraction)this,"BePutDown")){
+                    if(pushPutDownOnParent1!=null){
+                        if(this.LinkedInteractionInstance!=null){
+                            this.CopyExitReasonToLinkedInteraction();
+                            this.LinkedInteractionInstance.InstanceActor.InteractionQueue.CancelInteraction(this.LinkedInteractionInstance,false);
+                            this.LinkedInteractionInstance=(InteractionInstance)null;
+                        }
+                            this.LinkedInteractionInstance=(InteractionInstance)pushPutDownOnParent1;
+                    }
+                    this.CopyExitReasonToLinkedInteraction();
+        return false;
+                }
+              }
+            TerrainType terrainType=World.GetTerrainType(this.Actor.Position);
+            for(int index=0;index<PutDownChildHere.kProhibitedTerrainTypes.Length;++index){
+                if(terrainType==PutDownChildHere.kProhibitedTerrainTypes[index]){
+                    Vector3 invalid=Vector3.Invalid;
+                    Quaternion identity=Quaternion.Identity;
+                    if(!World.FindPlaceOnRoad(this.Actor.Proxy,this.Actor.Position,2U,ref invalid,ref identity)||!this.Actor.RouteToPoint(invalid)){
+        return false;
+                    }
+                    break;
+                }
+            }
+            this.CreateJig();
+            ChildUtils.PutDownClass putDownClass=new ChildUtils.PutDownClass(this.Actor,this.Target,this.PutDownType,this.PutDownTargetLocation,this.mSocialToPushToTarget,this.SocialJig as SocialJigTwoPerson,this.FindGoodLocationStrategies);
+       PutDownClassFix fix=new PutDownClassFix(putDownClass);
+            if(this.Actor.IsActiveFirefighter&&Occupation.SimIsWorkingAtJobOnLot(this.Actor,this.Target.LotCurrent))
+                this.RequestWalkStyle(Sim.WalkStyle.FastJog);
+            bool flag2=fix.PutDownChild1();
+             if(!flag1&&(this.mSocialToPushToTarget==null||this.LinkedInteractionInstance==null||this.LinkedInteractionInstance.InteractionDefinition!=this.mSocialToPushToTarget)){
+                 flag2=ChildUtils.FinishInteractionWithCarriedChild((SocialInteraction)this)&&flag2;
+                this.LinkedInteractionInstance=(InteractionInstance)pushPutDownOnParent1;
+                this.CopyExitReasonToLinkedInteraction();
+             }
+          return flag2;
+        }
+        public class PutDownClassFix{
+              public PutDownClassFix(ChildUtils.PutDownClass putDownClass){
+                                           this.putDownClass=putDownClass;
+              }
+                 public ChildUtils.PutDownClass putDownClass;
+            public bool PutDownChild1(){
+                    try{
+                CarryingChildPosture carryingChildPosture=putDownClass.Actor.CarryingChildPosture;
+                if(carryingChildPosture==null){
+            return false;
+                }
+                ChildUtils.PutDownClass.Phase phase=ChildUtils.PutDownClass.Phase.Nearby;
+                bool flag1=false;
+                putDownClass.mPutDownActualLocation=Vector3.Zero;
+                putDownClass.mPutDownActualForward=Vector3.UnitZ;
+                for(;phase<=ChildUtils.PutDownClass.Phase.Corner3&&!flag1;++phase){
+                    putDownClass.Actor.RemoveExitReason(ExitReason.RouteFailed);
+                    if(!putDownClass.Actor.HasExitReason(ExitReason.Default)){
+                        switch(putDownClass.mPutDownType){
+                            case ChildUtils.Where.BestSpot:
+                            case ChildUtils.Where.ClosestSpot:
+                                putDownClass.mPutDownActualLocation=putDownClass.Actor.Position;
+                                putDownClass.mPutDownActualForward=putDownClass.Actor.ForwardVector;
+                                break;
+                            case ChildUtils.Where.SpecificSpot:
+                                putDownClass.mPutDownActualLocation=World.SnapToFloor(putDownClass.mPutDownTargetLocation);
+                                putDownClass.mPutDownActualForward=putDownClass.mPutDownActualLocation-putDownClass.Actor.Position;
+                                putDownClass.mPutDownActualForward.y=0.0f;
+                                putDownClass.mPutDownActualForward.Normalize();
+                                break;
+                        }
+                        if(putDownClass.Actor.LotCurrent.IsFireOnLot()&&!putDownClass.Actor.IsActiveFirefighter){
+                            Route route=putDownClass.Actor.CreateRoute();
+                                  route.PlanToPointRadialRange(putDownClass.Actor.LotCurrent.FireManager.FireCentroid,FireManager.kMinBabyPutDownDistance,FireManager.kMaxBabyPutDownDistance,RouteDistancePreference.PreferFurthestFromRouteDestination,RouteOrientationPreference.NoPreference,putDownClass.Actor.LotCurrent.LotId,(int[])null);
+                               if(route.PlanResult.Succeeded())
+                                putDownClass.mPutDownActualLocation=route.PlanResult.mDestination;
+                        }
+                        bool flag2=true;
+                        bool tempPlacement=true;
+                        switch(phase){
+                            case ChildUtils.PutDownClass.Phase.Nearby:
+                                flag2=false;
+                                if(putDownClass.mPutDownType==ChildUtils.Where.SpecificSpot){
+                                    phase=ChildUtils.PutDownClass.Phase.Corner3;
+                                    break;
+                                }
+                                break;
+                            case ChildUtils.PutDownClass.Phase.FrontDoor:
+                                Door frontDoor=putDownClass.Actor.LotCurrent.FindFrontDoor();
+                                if(frontDoor!=null){
+                                    flag2=false;
+                                    tempPlacement=false;
+                                    putDownClass.mPutDownActualLocation=frontDoor.Position;
+                                    putDownClass.mPutDownActualForward=frontDoor.ForwardVector;
+                                    break;
+                                }
+                                break;
+                            case ChildUtils.PutDownClass.Phase.Mailbox:
+                                Mailbox mailbox=putDownClass.Actor.LotCurrent.FindMailbox();
+                                if(mailbox!=null){
+                                    flag2=false;
+                                    putDownClass.mPutDownActualLocation=mailbox.Position;
+                                    putDownClass.mPutDownActualForward=mailbox.ForwardVector;
+                                  break;
+                                }
+                                break;
+                            case ChildUtils.PutDownClass.Phase.Corner0:
+                            case ChildUtils.PutDownClass.Phase.Corner1:
+                            case ChildUtils.PutDownClass.Phase.Corner2:
+                            case ChildUtils.PutDownClass.Phase.Corner3:
+                                flag2=false;
+                                putDownClass.mPutDownActualLocation=putDownClass.Actor.LotCurrent.Corners[(int)(phase-3)];
+                                putDownClass.mPutDownActualForward=Vector3.UnitZ;
+                                break;
+                        }
+                        if((double)putDownClass.mPutDownActualForward.LengthSqr()<0.00999999977648258)
+                            putDownClass.mPutDownActualForward=putDownClass.Actor.ForwardVector;
+                        if(flag2)
+                            putDownClass.mPutDownActualLocation=Vector3.Zero;
+                        else if(!GlobalFunctions.FindGoodLocationNearby((IGameObject)putDownClass.SocialJig,ref putDownClass.mPutDownActualLocation,ref putDownClass.mPutDownActualForward,putDownClass.mStrategies,tempPlacement)){
+Simulator.Sleep(0U);
+                            putDownClass.mPutDownActualLocation=Vector3.Zero;
+                        }
+                        if(putDownClass.mPutDownActualLocation!=Vector3.Zero){
+                            putDownClass.SocialJig.SetPosition(putDownClass.mPutDownActualLocation);
+                            putDownClass.SocialJig.SetForward(putDownClass.mPutDownActualForward);
+                            putDownClass.SocialJig.SetOpacity(0.0f,0.0f);
+                            putDownClass.SocialJig.AddToWorld();
+                            if((double)(putDownClass.Actor.Position-putDownClass.mPutDownActualLocation).Length()<0.100000001490116){
+                                Route routeTurnToFace=putDownClass.Actor.RoutingComponent.CreateRouteTurnToFace(putDownClass.SocialJig.GetSlotPosition(SocialJigTwoPerson.RoutingSlots.SimB));
+                                routeTurnToFace.AddObjectToIgnoreForRoute(putDownClass.SocialJig.ObjectId);
+                                flag1=putDownClass.Actor.DoRoute(routeTurnToFace);
+                            }else{
+                                Route jigA=putDownClass.SocialJig.RouteToJigA(putDownClass.Actor);
+                                jigA.DoRouteFail=phase==ChildUtils.PutDownClass.Phase.Corner3;
+                                flag1=putDownClass.Actor.DoRoute(jigA);
+                            }
+                        }
+                    }else
+                        break;
+                }
+                if(!flag1){
+            return false;
+                }
+                carryingChildPosture.RemoveSocialBoost();
+                if(putDownClass.Target.SimDescription.Toddler){
+                    Slots.DetachFromSlot(putDownClass.Target.ObjectId);
+                    putDownClass.Target.SetPosition(putDownClass.SocialJig.GetPositionOfSlot(SocialJigTwoPerson.RoutingSlots.SimB));
+                    putDownClass.Target.SetForward(putDownClass.SocialJig.GetForwardOfSlot(SocialJigTwoPerson.RoutingSlots.SimB));
+                }
+                carryingChildPosture.CurrentStateMachine.SetActor("socialTemplate",(IHasScriptProxy)putDownClass.SocialJig);
+                carryingChildPosture.CurrentStateMachine.RequestState((string)null,"PutDown");
+                carryingChildPosture.CurrentStateMachine.RequestState((string)null,"Exit");
+                carryingChildPosture.CurrentStateMachine.RemoveActor("socialTemplate");
+                if(putDownClass.Target.SimDescription.Baby){
+                    putDownClass.Target.UnParent();
+                    putDownClass.Target.SetPosition(putDownClass.SocialJig.GetPositionOfSlot(SocialJigTwoPerson.RoutingSlots.SimB));
+                    putDownClass.Target.SetForward(putDownClass.SocialJig.GetForwardOfSlot(SocialJigTwoPerson.RoutingSlots.SimB));
+                    if(DeepSnowEffectManager.ShouldPlayDeepSnowEffectsNow(putDownClass.Target))
+                    putDownClass.Target.DeepSnowEffectManager.PlayDeepSnowEffect(false,true);
+                }
+                putDownClass.Target.Posture=putDownClass.Target.Standing;
+                putDownClass.Actor.Posture=putDownClass.Actor.Standing;
+                putDownClass.Actor.SimRoutingComponent.EnableDynamicFootprint();
+                putDownClass.Actor.SimRoutingComponent.ForceUpdateDynamicFootprint();
+                putDownClass.Target.SimRoutingComponent.EnableDynamicFootprint();
+                putDownClass.Target.SimRoutingComponent.ForceUpdateDynamicFootprint();
+                if(putDownClass.mSocialToPushToTarget!=null){
+                    SocialInteraction socialInteraction=(putDownClass.Actor.InteractionQueue.TransitionInteraction??putDownClass.Actor.CurrentInteraction)as SocialInteraction;
+                                      socialInteraction.FinishLinkedInteraction();
+                                      socialInteraction.WaitForSyncComplete();
+                    putDownClass.Actor.ClearExitReasons();
+                    putDownClass.PushSocialB(socialInteraction);
+                    putDownClass.Actor.SynchronizationRole=Sim.SyncRole.Initiator;
+                    putDownClass.Actor.SynchronizationLevel=Sim.SyncLevel.Started;
+                    putDownClass.Actor.SynchronizationTarget=putDownClass.Target;
+                 SimFix fix=new SimFix(putDownClass.Actor);
+                    if(!fix.WaitForSynchronizationLevelWithSim1(putDownClass.Target,Sim.SyncLevel.Started   ,15f)){
+            return false;
+                    }
+                        putDownClass.Actor.SynchronizationLevel=Sim.SyncLevel.Routed;
+                 SimFix fix1=new SimFix(putDownClass.Actor);
+                    if(!fix1.WaitForSynchronizationLevelWithSim1(putDownClass.Target,Sim.SyncLevel.Routed   ,15f)){
+            return false;
+                    }
+                        putDownClass.Actor.SynchronizationLevel=Sim.SyncLevel.Committed;
+                 SimFix fix2=new SimFix(putDownClass.Actor);
+                    if(!fix2.WaitForSynchronizationLevelWithSim1(putDownClass.Target,Sim.SyncLevel.Committed,15f)){
+            return false;
+                    }
+                }
+            return true;
+                    }catch(Exception exception){
+         //  Get stack trace for the exception. with source file information
+               var st=new StackTrace(exception,true);
+         //  Get the top stack frame
+         var frame=st.GetFrame(0);
+         //  Get the line number from the stack frame
+    var line=frame.GetFileLineNumber();
+                      Alive.WriteLog(exception.Message+"\n\n"+
+                                     exception.StackTrace+"\n\n"+
+                                     exception.Source+"\n\n"+
+                                     line);
+            return false;
+                    }finally{
+                    }
+            }
+        }
+        public new class Definition:PutDownChild.Definition{
+            public override InteractionInstance CreateInstance(ref InteractionInstanceParameters parameters){
+                            InteractionInstance na=new PutDownChildFix();
+                                                na.Init(ref parameters);
+                                         return na;
+            }
+            public override bool Test(Sim a,Sim target,bool isAutonomous,ref GreyedOutTooltipCallback greyedOutTooltipCallback){
+            return a!=target&&a.CarryingChildPosture!=null&&a.CarryingChildPosture.Child==target;
+            }
+            public override InteractionTestResult Test(ref InteractionInstanceParameters parameters,ref GreyedOutTooltipCallback greyedOutTooltipCallback){
+                Sim  actor1=parameters. Actor as Sim;
+                Sim target1=parameters.Target as Sim;
+                if((object) actor1==null){
+            return(InteractionTestResult.Root_Null_Actor );
+                }
+                if((object)target1==null){
+            return(InteractionTestResult.Root_Null_Target);
+                }
+                Sim  actor2=(object)actor1 as Sim;
+        IGameObject target2=(IGameObject)target1;
+                for(IGameObject gameObject=(IGameObject)target1;gameObject!=null;gameObject=gameObject.Parent){
+                             if(gameObject==Sims3.Gameplay.UI.LiveDragHelperModel.CachedTopDraggedObject)
+            return(InteractionTestResult.Root_TargetOnHandTool);
+                }
+                bool flag=( true);
+                InteractionTuning tuning=parameters.InteractionObjectPair.Tuning;
+                Tradeoff mTradeoff=tuning?.mTradeoff;
+                if(tuning!=null){
+                    CommodityKind workMotive=actor1.WorkMotive;
+                               if(workMotive!=CommodityKind.None&&mTradeoff.SatisfiesCommodity(workMotive)){
+                     flag=(false);
+                               }
+                    if(parameters.Autonomous){
+                        if(tuning.HasFlags(InteractionTuning.FlagField.DisallowAutonomous)&&flag){
+            return(InteractionTestResult.Tuning_DisallowAutonomous);
+                        }
+                        if(mTradeoff.FunExit&&actor1.Motives.FunInteractionTest(false))
+            return(InteractionTestResult.Tuning_FunInteractionTest);
+                    }else 
+                    if(tuning.HasFlags(InteractionTuning.FlagField.DisallowUserDirected)){
+            return(InteractionTestResult.Tuning_DisallowUserDirected);
+                    }
+                    if(actor1.IsSelectable&&tuning.HasFlags(InteractionTuning.FlagField.DisallowPlayerSim)){
+            return(InteractionTestResult.Tuning_DisallowPlayerSim);
+                    }
+                    if(flag){
+                    try{
+                                     AutonomyFix fix=new AutonomyFix(actor1.Autonomy.mActor,actor1.Autonomy.Motives,actor1.Autonomy.CurrentSearchType,actor1.Autonomy.IsActorInTombRoom);
+     InteractionTestResult interactionTestResult=fix.CheckAvailability1(parameters.Autonomous,tuning.Availability,parameters.InteractionObjectPair);
+                        if(interactionTestResult!=InteractionTestResult.Pass){
+            return(interactionTestResult);
+                        }
+                    }catch(Exception exception){
+         //  Get stack trace for the exception. with source file information
+               var st=new StackTrace(exception,true);
+         //  Get the top stack frame
+         var frame=st.GetFrame(0);
+         //  Get the line number from the stack frame
+    var line=frame.GetFileLineNumber();
+                      Alive.WriteLog(exception.Message+"\n\n"+
+                                     exception.StackTrace+"\n\n"+
+                                     exception.Source+"\n\n"+
+                                     line);
+            return(InteractionTestResult.GenericUnknown);
+                    }finally{
+                    }
+                    }
+                }
+                actor1.Autonomy.UpdateCacheIfNeeded((IGameObject)target1);
+                    try{
+               var interactionTestResult1=AutonomyFix.CommonTests1((InteractionDefinition)this,actor2,target2,parameters);
+                if(interactionTestResult1!=InteractionTestResult.Pass){
+            return(interactionTestResult1);
+                }
+                    }catch(Exception exception){
+         //  Get stack trace for the exception. with source file information
+               var st=new StackTrace(exception,true);
+         //  Get the top stack frame
+         var frame=st.GetFrame(0);
+         //  Get the line number from the stack frame
+    var line=frame.GetFileLineNumber();
+                      Alive.WriteLog(exception.Message+"\n\n"+
+                                     exception.StackTrace+"\n\n"+
+                                     exception.Source+"\n\n"+
+                                     line);
+            return(InteractionTestResult.GenericUnknown);
+                    }finally{
+                    }
+               var interactionTestResult2=!(this is IMetaInteractionDefinition)?    InteractionDefinitionUtilities.SpecialCaseTests((InteractionDefinition)this,actor2,target2,parameters)
+                                                                               :MetaInteractionDefinitionUtilities.SpecialCaseTests(actor2,target2,parameters);
+                if(interactionTestResult2!=InteractionTestResult.Pass){
+            return(interactionTestResult2);
+                }
+                if(!this.Test(actor1,target1,parameters.Autonomous,ref greyedOutTooltipCallback)){
+            return(InteractionTestResult.Def_TestFailed);
+                }
+                if(tuning!=null){
+               var interactionTestResult3=actor1.Autonomy.CheckAvailabilityTooltip((InteractionDefinition)this,(IGameObject)target1,tuning.Availability,parameters,mTradeoff,ref greyedOutTooltipCallback);
+                if(interactionTestResult3!=InteractionTestResult.Pass){
+            return(interactionTestResult3);
+                }
+                }
+               var interactionTestResult4=InteractionDefinitionUtilities.SpecialCaseTooltipTests((InteractionDefinition)this,actor2,target2,parameters,ref greyedOutTooltipCallback);
+                if(interactionTestResult4!=InteractionTestResult.Pass){
+            return(interactionTestResult4);
+                }
+            return(InteractionTestResult.Pass);
+            }
+        }
+    }
+    public class CribHoldFix:Crib.Hold,IPreLoad,IAddInteraction{
+        static InteractionDefinition sOldSingleton;
+                                              public void AddInteraction(InteractionInjectorList interactions){
+                                                                                                 interactions.ReplaceNoTest<Crib,Crib.Hold.Definition>(Singleton);
+                                              }
+                                   public void OnPreLoad(){
+            Tunings.Inject<Sims3.Gameplay.Objects.Beds.Mimics.CribCheap    ,Crib.Hold.Definition,Definition>(false);
+            Tunings.Inject<Sims3.Gameplay.Objects.Beds.Mimics.CribExpensive,Crib.Hold.Definition,Definition>(false);
+            Tunings.Inject<Crib,Crib.Hold.Definition,Definition>(false);
+                                     sOldSingleton=Singleton;
+                                                   Singleton=new Definition();
+                                   }
+        public override bool Run(){
+            if(!this.Actor.RouteToSlot((IGameObject)this.Target,this.Target.GetRoutingSlotForContainedSim()))
+        return false;
+this.StandardEntry(false);
+            Sim child=this.Target.Child;
+            if(child==null){
+this.StandardExit(false,false);
+        return false;
+            }
+            if(child.SimDescription.ChildOrAbove){
+this.StandardExit(false,false);
+        return false;
+            }
+            if(!StartObjectInteractionWithChild1((InteractionInstance)this,child,CommodityKind.InCrib,"BeTakenFromCrib")){
+this.StandardExit(false,false);
+        return false;
+            }
+            StateMachineClient currentStateMachine=(child.Posture as Crib.InCribPosture).CurrentStateMachine;
+            StuffedAnimal stuffedAnimal=this.Target.StuffedAnimal;
+            if(stuffedAnimal!=null&&child.Inventory.Contains((IGameObject)stuffedAnimal)){
+                this.mTeddyBear=stuffedAnimal;
+                this.mChild=child;
+                stuffedAnimal.FadeOut();
+            }
+this.BeginCommodityUpdates();
+                               currentStateMachine.SetActor("x",(IHasScriptProxy)this.Actor);
+                               currentStateMachine.EnterState("x","EnterStanding");
+                               currentStateMachine.RequestState(false,"x","ExitCarrying");
+                               currentStateMachine.RequestState(true,"y","ExitCarrying");
+this.EndCommodityUpdates(true);
+            ChildUtils.CarryChild(this.Actor,child,false);
+            this.Target.RemoveFromUseList(child);
+this.StandardExit(false,false);
+        return ChildUtils.FinishObjectInteractionWithChild((InteractionInstance)this,child);
+        }
+        public static bool StartObjectInteractionWithChild1(InteractionInstance interactionA,Sim child,CommodityKind childPosture,string receptiveInteractionNameKey){
+            if(child==null||child.HasBeenDestroyed||!interactionA.SafeToSync()){
+                Sim instanceActor0=interactionA.InstanceActor;
+        return false;
+            }
+            Sim instanceActor=interactionA.InstanceActor;
+            InteractionInstance instance=new ChildPlaceholderInteractionFix.Definition(ChildUtils.Localize(child.IsFemale,receptiveInteractionNameKey)).CreateInstance((IGameObject)instanceActor,(IActor)child,interactionA.GetPriority(),interactionA.Autonomous,interactionA.CancellableByPlayer);
+                                instance.LinkedInteractionInstance=interactionA;
+            ChildUtils.SetPosturePrecondition(instance,childPosture);
+            if(!child.InteractionQueue.Add(instance)){
+        return false;
+            }
+            if(!(interactionA is CribHoldFix cribHoldFix)||cribHoldFix==null||!cribHoldFix.StartSync1(true,false,(SyncLoopCallbackFunction)null,0.0f,true)){
+        return false;
+            }
+            instanceActor.SynchronizationLevel=Sim.SyncLevel.Committed;
+        SimFix fix=new SimFix(instanceActor);
+            if(fix.WaitForSynchronizationLevelWithSim1(child,Sim.SyncLevel.Committed,SocialInteraction.kSocialSyncGiveupTime))
+        return true;
+            instanceActor.ClearSynchronizationData();
+        return false;}
+        public bool StartSync1(bool shouldBeMaster,bool ignoreExitReasons,SyncLoopCallbackFunction loopCallback,float notifySimMinutes,bool performSocializeWithTest){
+            if(!this.SafeToSync()){
+        return false;
+            }
+            Sim syncTarget=this.GetSyncTarget();
+            if(syncTarget==null){
+        return false;
+            }
+            ExitReason exitReason=ignoreExitReasons?ExitReason.None:ExitReason.Default;
+            DateAndTime previousDateAndTime1=SimClock.CurrentTime();
+            DateAndTime previousDateAndTime2=previousDateAndTime1;
+            while((double)SimClock.ElapsedTime(TimeUnit.Minutes,previousDateAndTime1)<(double)InteractionInstance.kNumMinToWaitOnPreSync&&(this.GetTargetCurrentInteraction()==null||this.GetTargetCurrentInteraction().LinkedInteractionInstance!=this)){
+                if(this.InstanceActor.HasExitReason(exitReason)){
+        return false;
+                }
+                bool flag=false;
+                if(syncTarget.InteractionQueue.IsRunning(this.LinkedInteractionInstance,true)){
+                     flag=true;
+                }else{
+                    foreach(InteractionInstance interaction in syncTarget.InteractionQueue.InteractionList){
+                        if(interaction.LinkedInteractionInstance==this){
+                     flag=true;
+                            break;
+                        }
+                    }
+                }
+                if(syncTarget.InteractionQueue.GetHeadInteraction() is IPreventSocialization headInteraction&&headInteraction!=null&&!headInteraction.SocializationAllowed(this.InstanceActor,syncTarget)||!flag){
+        return false;
+                }
+                if(loopCallback!=null&&(double)SimClock.ElapsedTime(TimeUnit.Minutes,previousDateAndTime2)>=(double)notifySimMinutes){
+                    if(!loopCallback()){
+        return false;
+                    }
+                    previousDateAndTime2=SimClock.CurrentTime();
+                }
+Simulator.Sleep(0U);
+            }
+            this.InstanceActor.SynchronizationRole=shouldBeMaster?Sim.SyncRole.Initiator:Sim.SyncRole.Receiver;
+            this.InstanceActor.SynchronizationTarget=syncTarget;
+            this.InstanceActor.SynchronizationLevel=Sim.SyncLevel.Started;
+         SimFix fix=new SimFix(this.InstanceActor);
+            if(!fix.WaitForSynchronizationLevelWithSim1(syncTarget,Sim.SyncLevel.Started,exitReason,(float)InteractionInstance.kNumMinToWaitOnSyncStart,loopCallback,notifySimMinutes,performSocializeWithTest)){
+        return false;
+            }
+        return true;}
+        public new class Definition:Crib.Hold.Definition{
+            public override InteractionInstance CreateInstance(ref InteractionInstanceParameters parameters){
+                            InteractionInstance na=new CribHoldFix();
+                                                na.Init(ref parameters);
+                                         return na;
+            }
+            public override InteractionTestResult Test(ref InteractionInstanceParameters parameters,ref GreyedOutTooltipCallback greyedOutTooltipCallback){
+                if(parameters.Target is Crib target){
+                    if(target.Child==null)
+            return InteractionTestResult.GenericFail;
+                    InteractionTestResult result=InteractionDefinitionUtilities.RunSpecialCaseAgeTests(ref parameters,parameters.Actor as Sim,target.Child,SpecialCaseAgeTests.Standard);
+                    if(!parameters.Autonomous&&!InteractionDefinitionUtilities.IsPass(result)){
+                        greyedOutTooltipCallback=!((Sim)parameters.Actor).IsFemale?new GreyedOutTooltipCallback(Crib.Hold.Definition.CantPickUpGreyedOutTooltipMale)
+                                                                                  :new GreyedOutTooltipCallback(Crib.Hold.Definition.CantPickUpGreyedOutTooltipFemale);
+                    if(parameters.Actor.SimDescription!=null&&parameters.Actor.SimDescription.IsBonehilda){
+                        Alive.WriteLog("Bonehilda:CribHoldFix:Test:FAIL[0]:"+result+":"+parameters.Actor.ExitReason);
+                    }
+            return result;
+                    }
+                }
+            return TestFix(ref parameters,ref greyedOutTooltipCallback);
+            }
+            public InteractionTestResult TestFix(ref InteractionInstanceParameters parameters,ref GreyedOutTooltipCallback greyedOutTooltipCallback){
+                Sim   actor1=parameters. Actor as Sim;
+                Crib target1=parameters.Target as Crib;
+                if((object) actor1==null)
+            return InteractionTestResult.Root_Null_Actor;
+                if((object)target1==null)
+            return InteractionTestResult.Root_Null_Target;
+                Sim actor2=(object)actor1 as Sim;
+                IGameObject target2=(IGameObject)target1;
+                for(IGameObject gameObject=(IGameObject)target1;gameObject!=null;gameObject=gameObject.Parent){
+                    if(gameObject==LiveDragHelperModel.CachedTopDraggedObject)
+            return InteractionTestResult.Root_TargetOnHandTool;
+                }
+                bool flag=true;
+                InteractionTuning tuning=parameters.InteractionObjectPair.Tuning;
+                Tradeoff mTradeoff=tuning?.mTradeoff;
+                if(tuning!=null){
+                    CommodityKind workMotive=actor1.WorkMotive;
+                    if(workMotive!=CommodityKind.None&&mTradeoff.SatisfiesCommodity(workMotive))
+                     flag=false;
+                    if(parameters.Autonomous){
+                        if(tuning.HasFlags(InteractionTuning.FlagField.DisallowAutonomous)&&flag)
+            return InteractionTestResult.Tuning_DisallowAutonomous;
+                        if(mTradeoff.FunExit&&actor1.Motives.FunInteractionTest(false))
+            return InteractionTestResult.Tuning_FunInteractionTest;
+                    }else if(tuning.HasFlags(InteractionTuning.FlagField.DisallowUserDirected))
+            return InteractionTestResult.Tuning_DisallowUserDirected;
+                    if(actor1.IsSelectable&&tuning.HasFlags(InteractionTuning.FlagField.DisallowPlayerSim))
+            return InteractionTestResult.Tuning_DisallowPlayerSim;
+                  if(flag){
+                                     AutonomyFix fix=new AutonomyFix(actor1.Autonomy.mActor,actor1.Autonomy.Motives,actor1.Autonomy.CurrentSearchType,actor1.Autonomy.IsActorInTombRoom);
+     InteractionTestResult interactionTestResult=fix.CheckAvailability1(parameters.Autonomous,tuning.Availability,parameters.InteractionObjectPair);
+                        if(interactionTestResult!=InteractionTestResult.Pass)
+            return interactionTestResult;
+                  }
+                }
+                actor1.Autonomy.UpdateCacheIfNeeded((IGameObject) target1);
+               var interactionTestResult1=AutonomyFix.CommonTests1((InteractionDefinition)this,actor2,target2,parameters);
+                if(interactionTestResult1!=InteractionTestResult.Pass)
+            return interactionTestResult1;
+               var interactionTestResult2=!(this is IMetaInteractionDefinition)?    InteractionDefinitionUtilities.SpecialCaseTests((InteractionDefinition)this,actor2,target2,parameters)
+                                                                               :MetaInteractionDefinitionUtilities.SpecialCaseTests(actor2,target2,parameters);
+                if(interactionTestResult2!=InteractionTestResult.Pass)
+            return interactionTestResult2;
+                if(!this.Test(actor1,target1,parameters.Autonomous,ref greyedOutTooltipCallback))
+            return InteractionTestResult.Def_TestFailed;
+                if(tuning!=null){
+ InteractionTestResult interactionTestResult3=actor1.Autonomy.CheckAvailabilityTooltip((InteractionDefinition)this,(IGameObject)target1,tuning.Availability,parameters,mTradeoff,ref greyedOutTooltipCallback);
+                    if(interactionTestResult3!=InteractionTestResult.Pass)
+            return interactionTestResult3;
+                }
+               var interactionTestResult4=InteractionDefinitionUtilities.SpecialCaseTooltipTests((InteractionDefinition)this,actor2,target2,parameters,ref greyedOutTooltipCallback);
+            return interactionTestResult4!=InteractionTestResult.Pass?interactionTestResult4:InteractionTestResult.Pass;
+            }
+        }
+    }
     public class PickUpChildFix:PickUpChild,IPreLoad,IAddInteraction{
         static InteractionDefinition sOldSingleton;
                                               public void AddInteraction(InteractionInjectorList interactions){
-                                                                                                 interactions.Replace<Sim,PickUpChild.Definition>(Singleton);
+                                                                                                 interactions.ReplaceNoTest<Sim,PickUpChild.Definition>(Singleton);
                                               }
                                    public void OnPreLoad(){
             Tunings.Inject<Sim,PickUpChild.Definition,Definition>(false);

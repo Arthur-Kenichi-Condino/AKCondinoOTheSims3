@@ -2363,6 +2363,132 @@ this.EndCommodityUpdates(true);
         return true;
             instanceActor.ClearSynchronizationData();
         return false;}
+        public class SocialInteractionFix{
+              public SocialInteractionFix(SocialInteraction interaction){
+                                           this.interaction=interaction;
+              }
+                       public SocialInteraction interaction;
+            public bool BeginSocialInteraction1(InteractionDefinition socialToPushToTarget,bool pairedSocial,bool doCallOver){
+            return this.BeginSocialInteraction1(socialToPushToTarget,pairedSocial,interaction.Target.GetSocialRadiusWith(interaction.Actor),doCallOver);
+            }
+            public bool BeginSocialInteraction1(InteractionDefinition socialToPushToTarget,bool pairedSocial,float separationDist,bool doCallOver){
+                interaction.mSocialDist=separationDist;
+                if(doCallOver&&interaction.Actor.IsActiveSim&&(!interaction.Autonomous&&interaction.Target.IsNPC)&&(interaction.Target.IsRouting&&!(interaction.Actor.Posture is SwimmingInPool)&&(!(interaction.Actor.Posture is ScubaDiving)&&LotManager.RoomIdIsOutside(interaction.Target.RoomId)))&&(interaction.Target.CurrentInteraction==null||interaction.Target.CurrentInteraction.Autonomous)){
+                    Vector3 vector3=interaction.Target.Position-interaction.Actor.Position;
+                    float num1 = vector3.LengthSqr();
+                    vector3 = vector3.Normalize();
+                    float num2 = 100f;
+                    if ((double)num1 <= (double)num2 * (double)num2)
+                    {
+                        float num3 = 1.570796f;
+                        if ((double)(vector3 * interaction.Target.ForwardVector) > Math.Cos((double)num3))
+                            interaction.CallOver();
+                    }
+                }
+                interaction.mResultCode = SocialInteraction.SocialResultCode.None;
+                Sim actor = interaction.Actor;
+                Sim target = interaction.Target;
+                SocialInteraction.SocialResultCode resultCode;
+                bool flag1;
+                if ((actor.Conversation == null || actor.Conversation != target.Conversation) && !actor.IsRiding(interaction.Target) || pairedSocial)
+                {
+                    if (target.SimRoutingComponent.IsInCarSequence() || target.IsSleeping && !SocialInteraction.CanInteractWithSleepingSim(actor, target))
+                    {
+                        interaction.SetResultCodeIfNoneIsSet(SocialInteraction.SocialResultCode.SocialNotAvailableOnTarget);
+                        return false;
+                    }
+                    interaction.mSleepingListener = EventTracker.AddListener(EventTypeId.kSimFellAsleep, new ProcessEventDelegate(interaction.CancelSocialOnEventTrackerEvent), target, (GameObject)null);
+                    flag1 = interaction.SocialRouteA(socialToPushToTarget, pairedSocial, separationDist, out resultCode);
+                }
+                else
+                {
+                    resultCode = interaction.LockSimB(socialToPushToTarget, pairedSocial, separationDist);
+                    flag1 = resultCode == SocialInteraction.SocialResultCode.Succeeded;
+                }
+                interaction.SetInitialRouteComplete();
+                bool flag2 = false;
+                if (flag1)
+                {
+                    actor.LoopIdle();
+                    if (interaction.StartSync3(true))
+                    {
+                        SocialInteraction interactionInstance = interaction.LinkedInteractionInstance as SocialInteraction;
+                        if (interaction.mbIsTurnToFace)
+                        {
+                            DateAndTime previousDateAndTime = SimClock.CurrentTime();
+                            while (!interactionInstance.mbBRoutePlanned)
+                            {
+                                if ((double)SimClock.ElapsedTime(TimeUnit.Minutes, previousDateAndTime) >= (double)SocialInteraction.kSocialTimeoutTime || actor.HasExitReason(ExitReason.Default) || (target.HasExitReason(ExitReason.Default) || interactionInstance.Cancelled))
+                                {
+                                    interaction.mResultCode = SocialInteraction.SocialResultCode.PathPlanToToSocialTargetFailed;
+                                    return false;
+                                }
+                                Simulator.Sleep(0U);
+                            }
+                        }
+                        if (interaction.mbIsTurnToFace && !interactionInstance.mbIsTurnToFace)
+                            interaction.SetApproachRouteComplete();
+                        actor.SynchronizationLevel = Sim.SyncLevel.Started;
+                        if (actor.WaitForSynchronizationLevelWithSim1(target, Sim.SyncLevel.Routed, SocialInteraction.kSocialSyncGiveupTime))
+                        {
+                            if (interaction.mRoute != null)
+                            {
+                                if (interaction.mbIsTurnToFace && interactionInstance.mbIsTurnToFace && interaction.mRoute.PlanResult.Succeeded())
+                                {
+                                    interaction.mRoute.CreateSegmentAtDistanceBeforeEndOfRoute(SocialInteraction.kApproachGreetDistance);
+                                    interaction.mRoute.RegisterCallback(new RouteCallback(interaction.ReleaseSimBApproach), RouteCallbackType.TriggerOnce, RouteCallbackConditions.LessThan(SocialInteraction.kApproachGreetDistance + 0.5f));
+                                }
+                                flag1 = actor.DoRoute(interaction.mRoute);
+                                interaction.mRoute = (Sims3.SimIFace.Route)null;
+                                if (interaction.Actor.Posture is ScubaDiving && flag1)
+                                    actor.LoopIdle();
+                            }
+                        }
+                        else
+                        {
+                            flag2 = true;
+                            resultCode = SocialInteraction.SocialResultCode.SyncToSocialTargetTimedOut;
+                            flag1 = false;
+                        }
+                        actor.SynchronizationLevel = Sim.SyncLevel.Committed;
+                        if (!actor.WaitForSynchronizationLevelWithSim1(target, Sim.SyncLevel.Committed, SocialInteraction.kSocialSyncGiveupTime))
+                        {
+                            resultCode = SocialInteraction.SocialResultCode.SyncToSocialTargetTimedOut;
+                            flag1 = false;
+                        }
+                    }
+                    else
+                        flag1 = false;
+                }
+                if (flag2 && !actor.HasExitReason(ExitReason.UserCanceled))
+                    actor.PlayRouteFailure(target.GetThoughtBalloonThumbnailKey());
+                if (actor.HasExitReason())
+                {
+                    flag1 = false;
+                    resultCode = SocialInteraction.SocialResultCode.CanceledByExitReason;
+                }
+                if (flag1 && interaction.mbValidateFacing && !interaction.SimsAreFacing(actor, target))
+                    actor.RoutingComponent.RouteTurnToFace(target.PositionOnFloor);
+                if (!interaction.OnBeginSocialInteractionDone())
+                    flag1 = false;
+                if (flag1)
+                {
+                    actor.PopCanePostureIfNecessary();
+                    if (!(actor.CurrentInteraction is IUmbrellaSupportedSocial))
+                        Umbrella.PopUmbrellaPostureIfNecessary(actor, false);
+                    actor.PopBackpackPostureIfNecessary();
+                    if (!(actor.CurrentInteraction is IJetpackInteraction))
+                        actor.PopJetpackPostureIfNecessary();
+                }
+                interaction.SetResultCodeIfNoneIsSet(resultCode);
+                if (flag1)
+                {
+                    interaction.CheckForPlayTimeBuffs(interaction.Actor, interaction.Target);
+                    interaction.CheckForPlayTimeBuffs(interaction.Target, interaction.Actor);
+                }
+                return flag1;
+            }
+        }
         public bool StartSync1(bool shouldBeMaster,bool ignoreExitReasons,SyncLoopCallbackFunction loopCallback,float notifySimMinutes,bool performSocializeWithTest){
             if(!this.SafeToSync()){
         return false;

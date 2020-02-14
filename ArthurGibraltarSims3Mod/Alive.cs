@@ -1196,6 +1196,10 @@ var line=frame.GetFileLineNumber();
                                            bonehilda.InteractionQueue.Add(changeDiaper);
                                                                       var snuggle=Snuggle.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
                                            bonehilda.InteractionQueue.Add(snuggle);
+                                                                      var tossInAir=TossInAir.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(tossInAir);
+                                                                      var feedOnFloor=FeedOnFloor.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(feedOnFloor);
                                      }
                             }
                     }catch(Exception exception){

@@ -197,11 +197,11 @@ var line=frame.GetFileLineNumber();
             //Sims3.SimIFace.
              //---------------------------------------------------------------
                 try{
-                     string recipeNames="Alive_recipeNames_LOG:NOT_ERROR\n";
-                foreach(var recipe in Recipe.NameToRecipeHash){
-                            recipeNames+="Recipe.NameToRecipeHash["+recipe.Key+"]="+recipe.Value+"\n";
-                }
-             Alive.WriteLog(recipeNames);
+             //        string recipeNames="Alive_recipeNames_LOG:NOT_ERROR\n";
+             //   foreach(var recipe in Recipe.NameToRecipeHash){
+             //               recipeNames+="Recipe.NameToRecipeHash["+recipe.Key+"]="+recipe.Value+"\n";
+             //   }
+             //Alive.WriteLog(recipeNames);
                 }catch(Exception exception){
      //  Get stack trace for the exception. with source file information
            var st=new StackTrace(exception,true);
@@ -676,23 +676,23 @@ tuning.Availability.AddFlags(Availability.FlagField.AllowNonGreetedSimsIfObjectO
 tuning.Availability.AddFlags(Availability.FlagField.AllowOnCommunityLots);
 tuning.Availability.AddFlags(Availability.FlagField.AllowOnAllLots);
                         tuning.RemoveFlags(InteractionTuning.FlagField.ConsiderCodeVersion);
-                            string debug="Alive_debugInfo_Sims3.Gameplay.Objects.Plumbing.AllInOneBathroom+RepairAllInOneBathroom+Definition_LOG:NOT_ERROR\n\n";
-                            if(tuning.mChecks!=null){
-                                foreach(var check in tuning.mChecks){
-                                   debug+=check.mType+":"+check.mThreshold+"\n";
-                                }
-                                   debug+="\n\n";
-                            }
-                            if(tuning.PosturePreconditions?.mOptions!=null){
-                                foreach(var posture in tuning.PosturePreconditions.mOptions){
-                                   debug+=posture.Commodity+":"+posture.mValue+":";
-                                    foreach(var condition in posture.Conditions){
-                                   debug+=condition+",";
-                                    }
-                                   debug+="\n";
-                                }
-                                   debug+="\n\n";
-                            }
+                            //string debug="Alive_debugInfo_Sims3.Gameplay.Objects.Plumbing.AllInOneBathroom+RepairAllInOneBathroom+Definition_LOG:NOT_ERROR\n\n";
+                            //if(tuning.mChecks!=null){
+                            //    foreach(var check in tuning.mChecks){
+                            //       debug+=check.mType+":"+check.mThreshold+"\n";
+                            //    }
+                            //       debug+="\n\n";
+                            //}
+                            //if(tuning.PosturePreconditions?.mOptions!=null){
+                            //    foreach(var posture in tuning.PosturePreconditions.mOptions){
+                            //       debug+=posture.Commodity+":"+posture.mValue+":";
+                            //        foreach(var condition in posture.Conditions){
+                            //       debug+=condition+",";
+                            //        }
+                            //       debug+="\n";
+                            //    }
+                            //       debug+="\n\n";
+                            //}
                      }
                     }catch(Exception exception){
          //  Get stack trace for the exception. with source file information
@@ -755,12 +755,12 @@ var line=frame.GetFileLineNumber();
                                                  cookingApplianceGameObject.ParentToSlot(parent,parentSlot);
                                        }
                                               if(cookingApplianceGameObject.LotCurrent==Household.ActiveHouseholdLot){
-                               string debugInfo="Alive_debugInfo_LOG:NOT_ERROR\n";
-                                      debugInfo+=cookingApplianceGameObject.ObjectInstanceName+"_l1\n";
-                                      debugInfo+=cookingApplianceGameObject.ObjectId+"_l2\n";
-                                      debugInfo+=cookingApplianceGameObject.ActorsUsingMe?.Count+"_l3\n";
-                                      debugInfo+=cookingApplianceGameObject.SimLine?.SimsInQueue?.Count+"_l4\n";
-                                      debugInfo+=cookingApplianceGameObject.SimLine?.FirstSim?.Name+"_l5\n";
+                               //string debugInfo="Alive_debugInfo_LOG:NOT_ERROR\n";
+                                      //debugInfo+=cookingApplianceGameObject.ObjectInstanceName+"_l1\n";
+                                      //debugInfo+=cookingApplianceGameObject.ObjectId+"_l2\n";
+                                      //debugInfo+=cookingApplianceGameObject.ActorsUsingMe?.Count+"_l3\n";
+                                      //debugInfo+=cookingApplianceGameObject.SimLine?.SimsInQueue?.Count+"_l4\n";
+                                      //debugInfo+=cookingApplianceGameObject.SimLine?.FirstSim?.Name+"_l5\n";
                        //Alive.WriteLog(debugInfo);
                                               }
                                               }
@@ -1180,10 +1180,22 @@ var line=frame.GetFileLineNumber();
                                      if(sim.SimDescription.Baby){
                                                                       var pickUp=PickUpChild.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
                                            bonehilda.InteractionQueue.Add(pickUp);
+                                                                      var changeDiaper=ChangeDiaper.Singleton.CreateInstanceWithCallbacks(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true,ChangeDiaperOnStarted,ChangeDiaperOnCompleted,ChangeDiaperOnFailed);
+                                           bonehilda.InteractionQueue.Add(changeDiaper);
                                                                       var feed=GiveBottle.Singleton.CreateInstanceWithCallbacks(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true,GiveBottleOnStarted,GiveBottleOnCompleted,GiveBottleOnFailed);
                                            bonehilda.InteractionQueue.Add(feed);
+                                                                      var snuggle=Snuggle.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(snuggle);
+                                                                      var playWith=PlayWith.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(playWith);
                                      }
                                      if(sim.SimDescription.Toddler){
+                                                                      var pickUp=PickUpChild.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(pickUp);
+                                                                      var changeDiaper=ChangeDiaper.Singleton.CreateInstanceWithCallbacks(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true,ChangeDiaperOnStarted,ChangeDiaperOnCompleted,ChangeDiaperOnFailed);
+                                           bonehilda.InteractionQueue.Add(changeDiaper);
+                                                                      var snuggle=Snuggle.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(snuggle);
                                      }
                             }
                     }catch(Exception exception){
@@ -1222,6 +1234,13 @@ var line=frame.GetFileLineNumber();
         private static void GiveBottleOnCompleted(Sim s,float x){
         }
         private static void GiveBottleOnFailed(Sim s,float x){
+            //Alive.WriteLog("Failed to GiveBottle:"+s.ExitReason);
+        }
+        private static void ChangeDiaperOnStarted(Sim s,float x){
+        }
+        private static void ChangeDiaperOnCompleted(Sim s,float x){
+        }
+        private static void ChangeDiaperOnFailed(Sim s,float x){
             //Alive.WriteLog("Failed to GiveBottle:"+s.ExitReason);
         }
         private static void RepairAllInOneBathroomOnStarted(Sim s,float x){
@@ -1529,6 +1548,13 @@ goto _DidReset;
       }
                           InteractionInstance 
                                 currentInteraction=sim.InteractionQueue?.GetCurrentInteraction();
+            if(!Objects.IsValid(sim.ObjectId)||
+             Simulator.GetProxy(sim.ObjectId)==null||
+                                sim.SimDescription==null||
+                                sim.SimDescription.CreatedSim!=sim){
+                                     new ResetClearSimTask(sim);
+goto _DidReset;
+            }else
                              if(currentInteraction!=null&&
                                (currentInteraction is BedSleep||
                                 currentInteraction is WorkInRabbitHole)){
@@ -1540,16 +1566,12 @@ goto _Skipped;
                                 sim.Service.ServiceType==ServiceType.Repoman   ||
                                 sim.Service.ServiceType==ServiceType.Police    ||
                                 sim.Service.ServiceType==ServiceType.Firefighter||
-                                sim.Service.ServiceType==ServiceType.SocialWorkerChildProtection)){
+                                sim.Service.ServiceType==ServiceType.SocialWorkerAdoption||
+                                sim.Service.ServiceType==ServiceType.SocialWorkerChildProtection||
+                                sim.Service.ServiceType==ServiceType.SocialWorkerPetAdoption||
+                                sim.Service.ServiceType==ServiceType.SocialWorkerPetPutUp)){
 goto _Skipped;
                              }else 
-            if(!Objects.IsValid(sim.ObjectId)||
-             Simulator.GetProxy(sim.ObjectId)==null||
-                                sim.SimDescription==null||
-                                sim.SimDescription.CreatedSim!=sim){
-                                     new ResetClearSimTask(sim);
-goto _DidReset;
-            }else
                              if(sim.SimDescription.IsGhost||
 (LunarCycleManager.sFullMoonZombies!=null&&  
  LunarCycleManager.sFullMoonZombies.Contains(sim.SimDescription))){

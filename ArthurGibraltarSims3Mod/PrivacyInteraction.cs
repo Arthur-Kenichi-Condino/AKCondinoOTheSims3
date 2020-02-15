@@ -23,18 +23,18 @@ namespace ArthurGibraltarSims3Mod{
                                                                                                  interactions.ReplaceNoTest<Toilet,Toilet.Repair.Definition>(Singleton);
                                               }
                                    public void OnPreLoad(){
-            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ToiletCheap            ,Toilet.Repair.Definition,Definition>(true);
-            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ToiletModerate         ,Toilet.Repair.Definition,Definition>(true);
-            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ToiletExpensive        ,Toilet.Repair.Definition,Definition>(true);
-            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ToiletDarkLux          ,Toilet.Repair.Definition,Definition>(true);
-            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ToiletDive             ,Toilet.Repair.Definition,Definition>(true);
-            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ToiletEgyptAncient     ,Toilet.Repair.Definition,Definition>(true);
-            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ToiletFuture           ,Toilet.Repair.Definition,Definition>(true);
-            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ToiletModern           ,Toilet.Repair.Definition,Definition>(true);
-            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ToiletRanch            ,Toilet.Repair.Definition,Definition>(true);
-            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ToiletRomantic         ,Toilet.Repair.Definition,Definition>(true);
-            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ToiletStall            ,Toilet.Repair.Definition,Definition>(true);
-            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Toilet,Toilet.Repair.Definition,Definition>(true);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ToiletCheap            ,Toilet.Repair.Definition,Definition>(false);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ToiletModerate         ,Toilet.Repair.Definition,Definition>(false);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ToiletExpensive        ,Toilet.Repair.Definition,Definition>(false);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ToiletDarkLux          ,Toilet.Repair.Definition,Definition>(false);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ToiletDive             ,Toilet.Repair.Definition,Definition>(false);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ToiletEgyptAncient     ,Toilet.Repair.Definition,Definition>(false);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ToiletFuture           ,Toilet.Repair.Definition,Definition>(false);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ToiletModern           ,Toilet.Repair.Definition,Definition>(false);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ToiletRanch            ,Toilet.Repair.Definition,Definition>(false);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ToiletRomantic         ,Toilet.Repair.Definition,Definition>(false);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ToiletStall            ,Toilet.Repair.Definition,Definition>(false);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Toilet,Toilet.Repair.Definition,Definition>(false);
                                      sOldSingleton=Singleton;
                                                    Singleton=new Definition();
                                    }
@@ -77,16 +77,16 @@ namespace ArthurGibraltarSims3Mod{
                                                                                                  interactions.ReplaceNoTest<HotTubBase,HotTubBase.RepairHotTub.Definition>(Singleton);
                                               }
                                    public void OnPreLoad(){
-            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.HotTubGrottoLightRim       ,HotTubBase.RepairHotTub.Definition,Definition>(true);
-            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.HotTubGrottoPatioModern    ,HotTubBase.RepairHotTub.Definition,Definition>(true);
-            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.HotTubGrottoPatioRockGarden,HotTubBase.RepairHotTub.Definition,Definition>(true);
-            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.HotTubGrottoSeasonElegant  ,HotTubBase.RepairHotTub.Definition,Definition>(true);
-            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.HotTubGrottoSpanCol        ,HotTubBase.RepairHotTub.Definition,Definition>(true);
-            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.HotTubGrottoTIGranite      ,HotTubBase.RepairHotTub.Definition,Definition>(true);
-            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.HotTubPatioElite           ,HotTubBase.RepairHotTub.Definition,Definition>(true);
-            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.HotTubSleekSopSimple       ,HotTubBase.RepairHotTub.Definition,Definition>(true);
-            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.HotTubGrottoCeleb                 ,HotTubBase.RepairHotTub.Definition,Definition>(true);
-            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.HotTubBase,HotTubBase.RepairHotTub.Definition,Definition>(true);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.HotTubGrottoLightRim       ,HotTubBase.RepairHotTub.Definition,Definition>(false);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.HotTubGrottoPatioModern    ,HotTubBase.RepairHotTub.Definition,Definition>(false);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.HotTubGrottoPatioRockGarden,HotTubBase.RepairHotTub.Definition,Definition>(false);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.HotTubGrottoSeasonElegant  ,HotTubBase.RepairHotTub.Definition,Definition>(false);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.HotTubGrottoSpanCol        ,HotTubBase.RepairHotTub.Definition,Definition>(false);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.HotTubGrottoTIGranite      ,HotTubBase.RepairHotTub.Definition,Definition>(false);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.HotTubPatioElite           ,HotTubBase.RepairHotTub.Definition,Definition>(false);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.HotTubSleekSopSimple       ,HotTubBase.RepairHotTub.Definition,Definition>(false);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.HotTubGrottoCeleb                 ,HotTubBase.RepairHotTub.Definition,Definition>(false);
+            Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.HotTubBase,HotTubBase.RepairHotTub.Definition,Definition>(false);
                                      sOldSingleton=Singleton;
                                                    Singleton=new Definition();
                                    }

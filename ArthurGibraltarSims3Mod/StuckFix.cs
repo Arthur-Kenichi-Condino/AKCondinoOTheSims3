@@ -295,6 +295,11 @@ InteractionInstance
                 Sim.kDistanceForSocials=15f;
                 Sim.kMaxDistanceForSocials=75f;
                 Sim.kBabyToddlerLikingThresholdToAllowInteractionsWithStrangers=-101;
+                Sim.kMaxStandBackFromDoorDistance=16f;
+                Sim.kPortalIntersectRadius=2f;
+                Sim.kPortalPushMinDistance=0f;
+                Sim.kPortalPushMaxDistance=16f;
+                Sim.kIdleTimeAmount=1f;
             //------------------------------------------------------
                 ElevatorInterior.kElevatorToElevatorPortalCost=20f;
                 Ladder.kPortalCost=22f;
@@ -311,7 +316,12 @@ InteractionInstance
                                 //------------------------------------------------------
                                 Autonomy.kHoursAfterWhichBubbledUpScoreIsMax=.25f;
                                 //------------------------------------------------------
-                                Autonomy.kAllowEvenIfNotAllowedInRoomAutonomousMultiplier=0f;
+                                Autonomy.kRandomness=.5f;
+                                //------------------------------------------------------
+                                Autonomy.kPreferSeatedSocialsMultiplier=1.5f;
+                                Autonomy.kSocialThatWillCauseDismountMultiplier=.025f;
+                                //------------------------------------------------------
+                                Autonomy.kAllowEvenIfNotAllowedInRoomAutonomousMultiplier=0.5f;
                                 Autonomy.kAutonomyDelayNormal           =0;
                                 Autonomy.kAutonomyDelayWhileMounted     =0;
                                 Autonomy.kAutonomyDelayDuringSocializing=0;

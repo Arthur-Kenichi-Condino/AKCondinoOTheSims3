@@ -29,6 +29,7 @@ using Sims3.Gameplay.Objects.FoodObjects;
 using Sims3.Gameplay.Objects.Lighting;
 using Sims3.Gameplay.Objects.Miscellaneous;
 using Sims3.Gameplay.Objects.Plumbing;
+using Sims3.Gameplay.Objects.Seating;
 using Sims3.Gameplay.Objects.Vehicles;
 using Sims3.Gameplay.Opportunities;
 using Sims3.Gameplay.Passport;
@@ -1211,6 +1212,25 @@ var line=frame.GetFileLineNumber();
                                            bonehilda.InteractionQueue.Add(playWith);
                                      }
                                      if(sim.SimDescription.Toddler){
+                                           var highChairs=Sims3.Gameplay.Queries.GetObjects<HighChair>(coffin.LotCurrent,sim.RoomId);
+                                            if(highChairs!=null){
+                                           var highChair=GlobalFunctions.GetClosestObject<HighChair>(highChairs,sim);
+                                                                      var pickUp=PickUpChild.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(pickUp);
+                                                                      var changeDiaper=ChangeDiaper.Singleton.CreateInstanceWithCallbacks(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true,ChangeDiaperOnStarted,ChangeDiaperOnCompleted,ChangeDiaperOnFailed);
+                                           bonehilda.InteractionQueue.Add(changeDiaper);
+                                                                      var snuggle=Snuggle.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(snuggle);
+                                                                      var tossInAir=TossInAir.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(tossInAir);
+                                                            if(RandomUtil.CoinFlip()){
+                                                                      var giveBottle=HighChairBase.GiveBottle.Singleton.CreateInstance(highChair,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(giveBottle);
+                                                            }else{
+                                                                      var giveBabyFood=HighChairBase.GiveBabyFood.Singleton.CreateInstance(highChair,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(giveBabyFood);
+                                                            }
+                                            }else{
                                                                       var pickUp=PickUpChild.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
                                            bonehilda.InteractionQueue.Add(pickUp);
                                                                       var changeDiaper=ChangeDiaper.Singleton.CreateInstanceWithCallbacks(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true,ChangeDiaperOnStarted,ChangeDiaperOnCompleted,ChangeDiaperOnFailed);
@@ -1221,18 +1241,70 @@ var line=frame.GetFileLineNumber();
                                            bonehilda.InteractionQueue.Add(tossInAir);
                                                                       var feedOnFloor=FeedOnFloor.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
                                            bonehilda.InteractionQueue.Add(feedOnFloor);
+                                            }
                                      }
                                      }else 
                                      if(sim.Motives.IsSleepy()){
                                      if(sim.SimDescription.Toddler){
+                                                                      var pickUp=PickUpChild.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(pickUp);
+                                                                      var changeDiaper=ChangeDiaper.Singleton.CreateInstanceWithCallbacks(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true,ChangeDiaperOnStarted,ChangeDiaperOnCompleted,ChangeDiaperOnFailed);
+                                           bonehilda.InteractionQueue.Add(changeDiaper);
                                                                       var putInCrib=PutChildInCrib.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
                                            bonehilda.InteractionQueue.Add(putInCrib);
+                                     }
+                                     }else 
+                                     if(sim.Motives.HasMotive(CommodityKind.Hygiene)&&sim.Motives.GetValue(CommodityKind.Hygiene)<=0){
+                                     if(sim.SimDescription.Baby){
+                                                                      var pickUp=PickUpChild.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(pickUp);
+                                                                      var changeDiaper=ChangeDiaper.Singleton.CreateInstanceWithCallbacks(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true,ChangeDiaperOnStarted,ChangeDiaperOnCompleted,ChangeDiaperOnFailed);
+                                           bonehilda.InteractionQueue.Add(changeDiaper);
+                                                                      var feed=GiveBottle.Singleton.CreateInstanceWithCallbacks(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true,GiveBottleOnStarted,GiveBottleOnCompleted,GiveBottleOnFailed);
+                                           bonehilda.InteractionQueue.Add(feed);
+                                                                      var snuggle=Snuggle.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(snuggle);
+                                                                      var playWith=PlayWith.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(playWith);
+                                     }
+                                     if(sim.SimDescription.Toddler){
+                                                                      var pickUp=PickUpChild.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(pickUp);
+                                                                      var changeDiaper=ChangeDiaper.Singleton.CreateInstanceWithCallbacks(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true,ChangeDiaperOnStarted,ChangeDiaperOnCompleted,ChangeDiaperOnFailed);
+                                           bonehilda.InteractionQueue.Add(changeDiaper);
+                                                                      var putDownChild=PutDownChild.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(putDownChild);
+                                     }
+                                     }else 
+                                     if(sim.Motives.HasMotive(CommodityKind.Social)&&sim.Motives.GetValue(CommodityKind.Social)<=0){
+                                     if(sim.SimDescription.Baby){
+                                                                      var pickUp=PickUpChild.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(pickUp);
+                                                                      var snuggle=Snuggle.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(snuggle);
+                                                                      var playWith=PlayWith.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(playWith);
+                                     }
+                                     if(sim.SimDescription.Toddler){
+                                                                      var pickUp=PickUpChild.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(pickUp);
+                                                                      var snuggle=Snuggle.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(snuggle);
+                                                                      var tossInAir=TossInAir.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(tossInAir);
+                                                                      var putDownChild=PutDownChild.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(putDownChild);
                                      }
                                      }else{
                                      if(sim.SimDescription.Toddler){
                                     if(!sim.IsSleeping){
+                                     if(sim.Posture!=null&&
+                                       !sim.Posture.Satisfies(CommodityKind.Standing      ,(IGameObject)null)&&
+                                       !sim.Posture.Satisfies(CommodityKind.BeingCarried  ,(IGameObject)null)&&
+                                       !sim.Posture.Satisfies(CommodityKind.WalkingToddler,(IGameObject)null)){
                                                                       var letChildOut=LetChildOut.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
                                            bonehilda.InteractionQueue.Add(letChildOut);
+                                     }
                                     }
                                      }
                                      }

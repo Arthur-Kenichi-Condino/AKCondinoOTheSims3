@@ -1152,7 +1152,7 @@ var line=frame.GetFileLineNumber();
                              if(currentInteraction==null||
                               !(currentInteraction is BonehildaReturnToCoffin||
                                            bonehilda.InteractionQueue.HasInteractionOfType(typeof(BonehildaReturnToCoffin)))){
-           if(bonehilda==tasks[0]){
+           if(bonehilda==tasks[0]&&bonehilda.InteractionQueue.Count<=8){
                             foreach (var toilet in coffin.LotCurrent.GetObjects<Toilet>()){
                                      if(toilet.Repairable!=null&&toilet.Repairable.Broken){
                                                                       var repair=Toilet.Repair.Singleton.CreateInstance(toilet,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
@@ -1191,7 +1191,7 @@ var line=frame.GetFileLineNumber();
                                      }
                             }
            }
-           if(bonehilda==tasks[1]){
+           if(bonehilda==tasks[1]&&bonehilda.InteractionQueue.Count<=8){
                     try{
                             foreach(var sim in coffin.LotCurrent.GetObjects<Sim>()){
                                      if(sim.SimDescription==null||
@@ -1230,8 +1230,13 @@ var line=frame.GetFileLineNumber();
                                            bonehilda.InteractionQueue.Add(snuggle);
                                                                       var tossInAir=TossInAir.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
                                            bonehilda.InteractionQueue.Add(tossInAir);
+                                                            if(RandomUtil.CoinFlip()){
                                                                       var feedOnFloor=FeedOnFloor.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
                                            bonehilda.InteractionQueue.Add(feedOnFloor);
+                                                            }else{
+                                                                      var feedToddlerInHighChair=FeedToddlerInHighChair.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(feedToddlerInHighChair);
+                                                            }
                                             }
                                      }
                                      }else 

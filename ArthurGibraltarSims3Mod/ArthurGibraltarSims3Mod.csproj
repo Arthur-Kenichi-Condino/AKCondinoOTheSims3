@@ -53,43 +53,43 @@
     <Compile Include="Task.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="mscorlib">
+    <Reference Include="mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>C:\Users\Arthur\AKCondinoOTheSims3\mscorlib.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="ScriptCore">
+    <Reference Include="ScriptCore, Version=1.0.5077.30881, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\ScriptCore.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SimIFace">
+    <Reference Include="SimIFace, Version=1.0.0.50, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\SimIFace.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Sims3GameplayObjects">
+    <Reference Include="Sims3GameplayObjects, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\Sims3GameplayObjects.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Sims3GameplaySystems">
+    <Reference Include="Sims3GameplaySystems, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\Sims3GameplaySystems.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Sims3Metadata">
+    <Reference Include="Sims3Metadata, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
       <HintPath>..\Sims3Metadata.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Sims3StoreObjects">
+    <Reference Include="Sims3StoreObjects, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\Sims3StoreObjects.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System">
+    <Reference Include="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>C:\Users\Arthur\AKCondinoOTheSims3\System.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.Xml">
+    <Reference Include="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>C:\Users\Arthur\AKCondinoOTheSims3\System.Xml.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="UI">
+    <Reference Include="UI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\UI.dll</HintPath>
       <Private>True</Private>
     </Reference>

@@ -239,7 +239,7 @@ var line=frame.GetFileLineNumber();
              //---------------------------------------------------------------
              new AlarmTask( 5,DaysOfTheWeek.All,AutoPause);
              //---------------------------------------------------------------
-             new AlarmTask( 1,TimeUnit.Hours  ,CheckShowVenues       ,1,TimeUnit.Hours);
+             new AlarmTask( 1,TimeUnit.Hours  ,CheckShowVenues       ,3,TimeUnit.Hours);
              //---------------------------------------------------------------
              new AlarmTask( 7,TimeUnit.Minutes,RecoverMissingSims    ,1,TimeUnit.Hours);
              //---------------------------------------------------------------
@@ -1115,7 +1115,11 @@ var line=frame.GetFileLineNumber();
                 }finally{
                 }
                 try{
-            foreach(var coffin in Sims3.Gameplay.Queries.GetObjects<BonehildaCoffin>()){
+                foreach(var lot in Sims3.Gameplay.Queries.GetObjects<Lot>()){
+                 BonehildaCoffin[]coffins;
+                                  coffins=Sims3.Gameplay.Queries.GetObjects<BonehildaCoffin>(lot);
+                Sim[]tasks=new Sim[3];int count=0;
+            foreach(var coffin in coffins){
           Sim bonehilda;
           if((bonehilda=coffin.BonehildaSim)!=null){
                      if(coffin.LotCurrent!=null&&
@@ -1125,6 +1129,29 @@ var line=frame.GetFileLineNumber();
                              if(currentInteraction==null||
                               !(currentInteraction is BonehildaReturnToCoffin||
                                            bonehilda.InteractionQueue.HasInteractionOfType(typeof(BonehildaReturnToCoffin)))){
+                     tasks[count++]=bonehilda;
+                        if(count>=2)break;
+                             }
+                     }
+          }
+            }
+                  if(tasks[0]!=null){
+                  if(tasks[1]==null)
+                     tasks[1]=tasks[0];
+                  if(tasks[2]==null)
+                     tasks[2]=tasks[1];
+                  }
+            foreach(var coffin in coffins){
+          Sim bonehilda;
+          if((bonehilda=coffin.BonehildaSim)!=null){
+                     if(coffin.LotCurrent!=null&&
+                        coffin.LotCurrent==bonehilda.LotCurrent&&
+                                           bonehilda.InteractionQueue!=null){
+                            var currentInteraction=bonehilda.InteractionQueue.GetCurrentInteraction();
+                             if(currentInteraction==null||
+                              !(currentInteraction is BonehildaReturnToCoffin||
+                                           bonehilda.InteractionQueue.HasInteractionOfType(typeof(BonehildaReturnToCoffin)))){
+           if(bonehilda==tasks[0]){
                             foreach (var toilet in coffin.LotCurrent.GetObjects<Toilet>()){
                                      if(toilet.Repairable!=null&&toilet.Repairable.Broken){
                                                                       var repair=Toilet.Repair.Singleton.CreateInstance(toilet,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
@@ -1162,6 +1189,8 @@ var line=frame.GetFileLineNumber();
                                            bonehilda.InteractionQueue.Add(repair);
                                      }
                             }
+           }
+           if(bonehilda==tasks[1]){
                     try{
                             foreach(var sim in coffin.LotCurrent.GetObjects<Sim>()){
                                      if(sim.SimDescription==null||
@@ -1199,8 +1228,18 @@ var line=frame.GetFileLineNumber();
                                                                       var putInCrib=PutChildInCrib.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
                                            bonehilda.InteractionQueue.Add(putInCrib);
                                      }
+                                     }else{
+                                     if(sim.SimDescription.Toddler){
+                                    if(!sim.IsSleeping){
+                                                                      var letChildOut=LetChildOut.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(letChildOut);
+                                    }
+                                     }
                                      }
                                      if(sim.Motives.IsSleepy()){
+                                     if(sim.SimDescription.ChildOrAbove){
+                                         
+                                     }
                                      }
                             }
                     }catch(Exception exception){
@@ -1216,10 +1255,12 @@ var line=frame.GetFileLineNumber();
                                      line);
                     }finally{
                     }
+           }
                              }
                      }
           }
             }
+                }
                 }catch(Exception exception){
      //  Get stack trace for the exception. with source file information
            var st=new StackTrace(exception,true);
@@ -1294,7 +1335,7 @@ if(LunarCycleManager.sFullMoonZombies!=null&&
                                     fridges.Length>0){
                         if(sim.SimDescription.IsVampire&&
                            sim.Motives.IsVampireThirsty()){
-var interaction=Fridge_Have.Singleton.CreateInstanceWithCallbacks(fridges[ModRandom.Next(0,fridges.Length)],sim,new InteractionPriority(InteractionPriorityLevel.UserDirected),true,true,OnFridge_HaveStarted,OnFridge_HaveCompleted,OnFridge_HaveFailed) as Fridge_Have;
+var interaction=Fridge_Have.Singleton.CreateInstanceWithCallbacks(GlobalFunctions.GetClosestObject<Fridge>(fridges,sim),sim,new InteractionPriority(InteractionPriorityLevel.UserDirected),true,true,OnFridge_HaveStarted,OnFridge_HaveCompleted,OnFridge_HaveFailed) as Fridge_Have;
  if(interaction!=null){
     interaction.    Quantity=(Recipe.MealQuantity.Single);
     interaction.ChosenRecipe=(Recipe.NameToRecipeHash["VampireJuiceEP7"]);
@@ -1302,7 +1343,7 @@ var interaction=Fridge_Have.Singleton.CreateInstanceWithCallbacks(fridges[ModRan
  }
                         }else
                         if(sim.Motives.IsHungry()){
-var interaction=Fridge_Have.Singleton.CreateInstanceWithCallbacks(fridges[ModRandom.Next(0,fridges.Length)],sim,new InteractionPriority(InteractionPriorityLevel.UserDirected),true,true,OnFridge_HaveStarted,OnFridge_HaveCompleted,OnFridge_HaveFailed) as Fridge_Have;
+var interaction=Fridge_Have.Singleton.CreateInstanceWithCallbacks(GlobalFunctions.GetClosestObject<Fridge>(fridges,sim),sim,new InteractionPriority(InteractionPriorityLevel.UserDirected),true,true,OnFridge_HaveStarted,OnFridge_HaveCompleted,OnFridge_HaveFailed) as Fridge_Have;
  if(interaction!=null){
            Cooking cooking;
                         if(sim.SkillManager!=null&&
@@ -1463,12 +1504,9 @@ var line=frame.GetFileLineNumber();
                     for(int i=Situation.sAllSituations.Count-1;i>=0;i--){
           Situation situation=Situation.sAllSituations[i];
                     try{
-                    bool tested=(false),
-                         remove=(false);
-                 if(situation is FieldTripSituation){
-                         tested=( true);
-                         remove=( true);
-                 }
+                 if(situation is GrimReaperSituation        ){continue;}
+                 //
+                 if(situation is ParentsLeavingTownSituation){continue;}
                         try{
                     situation.Exit();
                         }catch(Exception exception){
@@ -1524,6 +1562,7 @@ List<Sim>
    toRemove.Add(simPosData.Key);
              }else 
              if(simPosData.Key.Posture?.Container!=null&&
+                simPosData.Key.Posture?.Container!=simPosData.Key&&
                 simPosData.Key.SimDescription!=null&&
                 simPosData.Key.SimDescription.ToddlerOrBelow){
    toRemove.Add(simPosData.Key);
@@ -1567,7 +1606,23 @@ goto _DidReset;
             }else
                              if(currentInteraction!=null&&
                                (currentInteraction is BedSleep||
-                                currentInteraction is WorkInRabbitHole)){
+                                sim.InteractionQueue.HasInteractionOfType(typeof(Sleep)))){
+                             if(currentInteraction.Cancelled||
+                                sim.Motives==null){
+goto _SoftReset;
+                             }else 
+                            if(!sim.Motives.IsSleepy()||
+                               !sim.IsSleeping){
+                      for(int i=sim.InteractionQueue.mInteractionList.Count-1;i>=0;i--){
+                           if(!(sim.InteractionQueue.mInteractionList[i] is BedSleep||
+                                sim.InteractionQueue.mInteractionList[i] is Sleep))continue;
+                                sim.InteractionQueue.CancelInteraction(sim.InteractionQueue.mInteractionList[i].Id,ExitReason.CanceledByScript);
+                      }
+                            }
+goto _Skipped;
+                             }else
+                             if(currentInteraction!=null&&
+                                currentInteraction is WorkInRabbitHole){
 goto _Skipped;
                              }else
                              if(sim.Service!=null&&
@@ -1618,6 +1673,18 @@ goto _DidReset;
 goto _SoftReset;
                              }
      _SoftReset:{
+                          InteractionInstance 
+                                currentInteraction1=sim.InteractionQueue?.GetCurrentInteraction();
+                             if(currentInteraction1!=null){
+                                sim.InteractionQueue.CancelInteraction(currentInteraction1.Id,ExitReason.CanceledByScript);
+                             if(currentInteraction1.Target!=null){
+               var targetObject=currentInteraction1.Target as GameObject;
+                if(targetObject!=null){
+                   targetObject.SimLine?.DoReset();
+                }
+                             }
+                                currentInteraction1.Target?.SetObjectToReset();
+                             }
                                 sim.SimDescription.ClearOutfits(OutfitCategories.MartialArts,true);
                              if(sim.SimDescription.IsBonehilda){
 try{
@@ -1655,9 +1722,22 @@ try{
                                      line);
                     }
                     try{
+                             if(sim.Service!=null&&
+                               (sim.Service.ServiceType==ServiceType.GrimReaper||
+                                sim.Service.ServiceType==ServiceType.Burglar   ||
+                                sim.Service.ServiceType==ServiceType.Repoman   ||
+                                sim.Service.ServiceType==ServiceType.Police    ||
+                                sim.Service.ServiceType==ServiceType.Firefighter||
+                                sim.Service.ServiceType==ServiceType.SocialWorkerAdoption||
+                                sim.Service.ServiceType==ServiceType.SocialWorkerChildProtection||
+                                sim.Service.ServiceType==ServiceType.SocialWorkerPetAdoption||
+                                sim.Service.ServiceType==ServiceType.SocialWorkerPetPutUp)){
+                             }else{
                       if(sim.InteractionQueue!=null&&sim.InteractionQueue.mInteractionList!=null){
                for(int i=sim.InteractionQueue.mInteractionList.Count-1;i>=1;i--){
+                     if(!sim.InteractionQueue.mInteractionList[i].Autonomous        )continue;
                       if(sim.InteractionQueue.mInteractionList[i]is BedSleep        )continue;
+                      if(sim.InteractionQueue.mInteractionList[i]is Sleep           )continue;
                       if(sim.InteractionQueue.mInteractionList[i]is WorkInRabbitHole)continue;
                          //
                       if(sim.InteractionQueue.mInteractionList[i].Target!=null){
@@ -1666,7 +1746,6 @@ try{
             targetObject.SimLine?.DoReset();
          }
                       }
-                         sim.InteractionQueue.mInteractionList[i].Target?.SetObjectToReset();
                          sim.InteractionQueue.RemoveInteraction(i,false);
                          //
                          //sim.SetObjectToReset();
@@ -1676,6 +1755,7 @@ InteractionInstance
   if((currentInteraction=sim.InteractionQueue.GetCurrentInteraction())!=null){
 //InteractionInstance clone=null;
  if(!(currentInteraction is BedSleep        ||
+      currentInteraction is Sleep           ||
       currentInteraction is WorkInRabbitHole)){
                     //clone=currentInteraction.Clone();
                          sim.InteractionQueue.CancelInteraction(currentInteraction.Id,ExitReason.CanceledByScript);
@@ -1695,6 +1775,7 @@ var targetObject=currentInteraction.Target as GameObject;
  }
   }
                       }
+                             }
                     }catch(Exception exception){
          //  Get stack trace for the exception. with source file information
                var st=new StackTrace(exception,true);

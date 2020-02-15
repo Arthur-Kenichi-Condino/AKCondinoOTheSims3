@@ -141,6 +141,7 @@ var line=frame.GetFileLineNumber();
             public        readonly long                          ShowStartTimeTicks;
         }
         //==================================================================================================================
+        //==================================================================================================================
         static void RecoverMissingSims(){
                 try{
                       List<Sim>sims=new List<Sim>(LotManager.Actors);

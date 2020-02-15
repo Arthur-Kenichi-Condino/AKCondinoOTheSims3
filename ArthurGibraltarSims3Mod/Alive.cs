@@ -1225,10 +1225,10 @@ var line=frame.GetFileLineNumber();
                                            bonehilda.InteractionQueue.Add(tossInAir);
                                                             if(RandomUtil.CoinFlip()){
                                                                       var giveBottle=HighChairBase.GiveBottle.Singleton.CreateInstance(highChair,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
-                                           bonehilda.InteractionQueue.Add(giveBottle);
+                                           bonehilda.InteractionQueue.PushAsContinuation(giveBottle,true);
                                                             }else{
                                                                       var giveBabyFood=HighChairBase.GiveBabyFood.Singleton.CreateInstance(highChair,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
-                                           bonehilda.InteractionQueue.Add(giveBabyFood);
+                                           bonehilda.InteractionQueue.PushAsContinuation(giveBabyFood,true);
                                                             }
                                             }else{
                                                                       var pickUp=PickUpChild.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);

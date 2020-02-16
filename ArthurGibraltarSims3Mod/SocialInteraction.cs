@@ -1713,7 +1713,7 @@ Simulator.Sleep(0U);
                                    }
         public new class Definition:HighChairBase.GiveBottle.Definition{
             public override InteractionInstance CreateInstance(ref InteractionInstanceParameters parameters){
-                            InteractionInstance na=new GiveBottleFix();
+                            InteractionInstance na=new HighChairBaseGiveBottleFix();
                                                 na.Init(ref parameters);
                                          return na;
             }

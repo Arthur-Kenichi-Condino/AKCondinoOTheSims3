@@ -297,9 +297,9 @@ InteractionInstance
                 Sim.kBabyToddlerLikingThresholdToAllowInteractionsWithStrangers=-101;
                 Sim.kMaxStandBackFromDoorDistance=16f;
                 Sim.kPortalIntersectRadius=2f;
-                Sim.kPortalPushMinDistance=0f;
+                Sim.kPortalPushMinDistance=8f;
                 Sim.kPortalPushMaxDistance=16f;
-                Sim.kIdleTimeAmount=1f;
+                Sim.kIdleTimeAmount=10f;
             //------------------------------------------------------
                 ElevatorInterior.kElevatorToElevatorPortalCost=20f;
                 Ladder.kPortalCost=22f;

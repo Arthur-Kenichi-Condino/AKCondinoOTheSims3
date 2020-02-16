@@ -316,7 +316,7 @@ InteractionInstance
                                 //------------------------------------------------------
                                 Autonomy.kHoursAfterWhichBubbledUpScoreIsMax=.25f;
                                 //------------------------------------------------------
-                                Autonomy.kRandomness=.5f;
+                                Autonomy.kRandomness=.027f;
                                 //------------------------------------------------------
                                 Autonomy.kPreferSeatedSocialsMultiplier=1.5f;
                                 Autonomy.kSocialThatWillCauseDismountMultiplier=.025f;

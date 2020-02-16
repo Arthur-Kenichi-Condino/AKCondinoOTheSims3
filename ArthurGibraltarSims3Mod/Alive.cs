@@ -1200,6 +1200,7 @@ var line=frame.GetFileLineNumber();
                                      }
                                      if(sim.Motives.IsHungry()){
                                      if(sim.SimDescription.Baby){
+                                       if(!bonehilda.InteractionQueue.HasInteractionOfTypeAndTarget(GiveBottle.Singleton,sim)){
                                                                       var pickUp=PickUpChild.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
                                            bonehilda.InteractionQueue.Add(pickUp);
                                                                       var changeDiaper=ChangeDiaper.Singleton.CreateInstanceWithCallbacks(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true,ChangeDiaperOnStarted,ChangeDiaperOnCompleted,ChangeDiaperOnFailed);
@@ -1210,18 +1211,24 @@ var line=frame.GetFileLineNumber();
                                            bonehilda.InteractionQueue.Add(snuggle);
                                                                       var playWith=PlayWith.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
                                            bonehilda.InteractionQueue.Add(playWith);
+                                       }
                                      }
                                      if(sim.SimDescription.Toddler){
                                             if(sim.Posture!=null&&
                                                sim.Posture is HighChair.InChairPosture){
+                                       if(!bonehilda.InteractionQueue.HasInteractionOfTypeAndTarget(HighChairBase.GiveBottle  .Singleton,(GameObject)sim.Posture.Container)&&
+                                          !bonehilda.InteractionQueue.HasInteractionOfTypeAndTarget(HighChairBase.GiveBabyFood.Singleton,(GameObject)sim.Posture.Container)){
                                                             if(RandomUtil.CoinFlip()){
-                                                                      var giveBottle=HighChairBase.GiveBottle.Singleton.CreateInstance(sim.Posture.Container,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                                                      var giveBottle  =HighChairBase.GiveBottle  .Singleton.CreateInstance(sim.Posture.Container,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
                                            bonehilda.InteractionQueue.Add(giveBottle);
                                                             }else{
                                                                       var giveBabyFood=HighChairBase.GiveBabyFood.Singleton.CreateInstance(sim.Posture.Container,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
                                            bonehilda.InteractionQueue.Add(giveBabyFood);
                                                             }
+                                       }
                                             }else{
+                                       if(!bonehilda.InteractionQueue.HasInteractionOfTypeAndTarget(FeedOnFloor           .Singleton,sim)&&
+                                          !bonehilda.InteractionQueue.HasInteractionOfTypeAndTarget(FeedToddlerInHighChair.Singleton,sim)){
                                                                       var pickUp=PickUpChild.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
                                            bonehilda.InteractionQueue.Add(pickUp);
                                                                       var changeDiaper=ChangeDiaper.Singleton.CreateInstanceWithCallbacks(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true,ChangeDiaperOnStarted,ChangeDiaperOnCompleted,ChangeDiaperOnFailed);
@@ -1237,6 +1244,7 @@ var line=frame.GetFileLineNumber();
                                                                       var feedToddlerInHighChair=FeedToddlerInHighChair.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
                                            bonehilda.InteractionQueue.Add(feedToddlerInHighChair);
                                                             }
+                                       }
                                             }
                                      }
                                      }else 
@@ -1259,6 +1267,7 @@ var line=frame.GetFileLineNumber();
                                      }else 
                                      if(sim.Motives.HasMotive(CommodityKind.Hygiene)&&sim.Motives.GetValue(CommodityKind.Hygiene)<=0){
                                     if(!sim.IsSleeping){
+                                       if(!bonehilda.InteractionQueue.HasInteractionOfTypeAndTarget(ChangeDiaper.Singleton,sim)){
                                      if(sim.SimDescription.Baby){
                                                                       var pickUp=PickUpChild.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
                                            bonehilda.InteractionQueue.Add(pickUp);
@@ -1279,10 +1288,12 @@ var line=frame.GetFileLineNumber();
                                                                       var putDownChild=PutDownChild.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
                                            bonehilda.InteractionQueue.Add(putDownChild);
                                      }
+                                     }
                                     }
                                      }else 
                                      if(sim.Motives.HasMotive(CommodityKind.Social)&&sim.Motives.GetValue(CommodityKind.Social)<=0){
                                     if(!sim.IsSleeping){
+                                       if(!bonehilda.InteractionQueue.HasInteractionOfTypeAndTarget(PickUpChild.Singleton,sim)){
                                      if(sim.SimDescription.Baby){
                                                                       var pickUp=PickUpChild.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
                                            bonehilda.InteractionQueue.Add(pickUp);
@@ -1301,6 +1312,7 @@ var line=frame.GetFileLineNumber();
                                                                       var putDownChild=PutDownChild.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
                                            bonehilda.InteractionQueue.Add(putDownChild);
                                      }
+                                       }
                                     }
                                      }else{
                                      if(sim.SimDescription.Toddler){
@@ -1309,8 +1321,10 @@ var line=frame.GetFileLineNumber();
                                        !sim.Posture.Satisfies(CommodityKind.Standing      ,(IGameObject)null)&&
                                        !sim.Posture.Satisfies(CommodityKind.BeingCarried  ,(IGameObject)null)&&
                                        !sim.Posture.Satisfies(CommodityKind.WalkingToddler,(IGameObject)null)){
+                                       if(!bonehilda.InteractionQueue.HasInteractionOfTypeAndTarget(LetChildOut.Singleton,sim)){
                                                                       var letChildOut=LetChildOut.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
                                            bonehilda.InteractionQueue.Add(letChildOut);
+                                       }
                                      }
                                     }
                                      }

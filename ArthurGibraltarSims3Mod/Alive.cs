@@ -1242,12 +1242,17 @@ var line=frame.GetFileLineNumber();
                                      }else 
                                      if(sim.Motives.IsSleepy()){
                                      if(sim.SimDescription.Toddler){
+                                    if(!sim.IsSleeping){
+                                     if(sim.Posture!=null&&
+                                      !(sim.Posture is Crib.InCribPosture)){
                                                                       var pickUp=PickUpChild.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
                                            bonehilda.InteractionQueue.Add(pickUp);
                                                                       var changeDiaper=ChangeDiaper.Singleton.CreateInstanceWithCallbacks(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true,ChangeDiaperOnStarted,ChangeDiaperOnCompleted,ChangeDiaperOnFailed);
                                            bonehilda.InteractionQueue.Add(changeDiaper);
                                                                       var putInCrib=PutChildInCrib.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
                                            bonehilda.InteractionQueue.Add(putInCrib);
+                                     }
+                                    }
                                      }
                                      }else 
                                      if(sim.Motives.HasMotive(CommodityKind.Hygiene)&&sim.Motives.GetValue(CommodityKind.Hygiene)<=0){

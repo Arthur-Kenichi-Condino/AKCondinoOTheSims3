@@ -18,10 +18,12 @@ using Sims3.Gameplay.Core;
 using Sims3.Gameplay.EventSystem;
 using Sims3.Gameplay.Interactions;
 using Sims3.Gameplay.Interfaces;
+using Sims3.Gameplay.Moving;
 using Sims3.Gameplay.ObjectComponents;
 using Sims3.Gameplay.Objects;
 using Sims3.Gameplay.Objects.Appliances;
 using Sims3.Gameplay.Objects.Beds;
+using Sims3.Gameplay.Objects.CookingObjects;
 using Sims3.Gameplay.Objects.Electronics;
 using Sims3.Gameplay.Objects.Elevator;
 using Sims3.Gameplay.Objects.Environment;
@@ -1190,6 +1192,40 @@ var line=frame.GetFileLineNumber();
                                            bonehilda.InteractionQueue.Add(repair);
                                      }
                             }
+                            foreach(var partOfCookingProcess in coffin.LotCurrent.GetObjects<IPartOfCookingProcess>()){
+                                     if(partOfCookingProcess is   BakingDish){
+                                                                      var cleanUp=  BakingDish_CleanUp.Singleton.CreateInstance(partOfCookingProcess,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(cleanUp);
+                                     }
+                                     if(partOfCookingProcess is CuttingBoard){
+                                                                      var cleanUp=Cuttingboard_CleanUp.Singleton.CreateInstance(partOfCookingProcess,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(cleanUp);
+                                     }
+                                     if(partOfCookingProcess is     FoodTray){
+                                                                      var cleanUp=    FoodTray_CleanUp.Singleton.CreateInstance(partOfCookingProcess,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(cleanUp);
+                                     }
+                                     if(partOfCookingProcess is    FryingPan){
+                                                                      var cleanUp=   FryingPan_CleanUp.Singleton.CreateInstance(partOfCookingProcess,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(cleanUp);
+                                     }
+                                     if(partOfCookingProcess is          Pot){
+                                                                      var cleanUp=         Pot_CleanUp.Singleton.CreateInstance(partOfCookingProcess,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(cleanUp);
+                                     }
+                                     if(partOfCookingProcess is ServingContainer){
+                                                                      var cleanUp=ServingContainer.ServingContainer_CleanUp.Singleton.CreateInstance(partOfCookingProcess,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(cleanUp);
+                                     }
+                                     if(partOfCookingProcess is   Grillable){
+                                                                      var cleanUp=     Grillable_Grill.Singleton.CreateInstance(partOfCookingProcess,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(cleanUp);
+                                     }
+                            }
+                            foreach(var barTray in coffin.LotCurrent.GetObjects<BarTray>()){
+                                                                      var cleanUp=BarTray.CleanUp.Singleton.CreateInstance(barTray,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(cleanUp);
+                            }
            }
            if(bonehilda==tasks[1]&&bonehilda.InteractionQueue.Count<=8){
                     try{
@@ -1241,7 +1277,7 @@ var line=frame.GetFileLineNumber();
                                                                       var feedOnFloor=FeedOnFloor.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
                                            bonehilda.InteractionQueue.Add(feedOnFloor);
                                                             }else{
-                                                                      var feedToddlerInHighChair=FeedToddlerInHighChair.Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                                                      var feedToddlerInHighChair=FeedToddlerInHighChair.Singleton.CreateInstanceWithCallbacks(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true,FeedToddlerInHighChairOnStarted,FeedToddlerInHighChairOnCompleted,FeedToddlerInHighChairOnFailed);
                                            bonehilda.InteractionQueue.Add(feedToddlerInHighChair);
                                                             }
                                        }
@@ -1367,6 +1403,44 @@ var line=frame.GetFileLineNumber();
                                  line);
                 }finally{
                 }
+        }
+        private static void FeedToddlerInHighChairOnStarted(Sim s,float x){
+        }
+        private static void FeedToddlerInHighChairOnCompleted(Sim s,float x){
+                try{
+                                                  if(s.LotCurrent!=null)
+                            foreach(var highChair in s.LotCurrent.GetObjects<HighChair>()){
+                                     if(highChair.Toddler!=null&&
+                                        highChair.Toddler.Motives!=null&&
+                                        highChair.Toddler.Motives.IsHungry()){
+                                                 if(!s.InteractionQueue.HasInteractionOfTypeAndTarget(HighChairBase.GiveBottle  .Singleton,highChair)&&
+                                                    !s.InteractionQueue.HasInteractionOfTypeAndTarget(HighChairBase.GiveBabyFood.Singleton,highChair)){
+                                                                    if(RandomUtil.CoinFlip()){
+                                                                              var giveBottle  =HighChairBase.GiveBottle  .Singleton.CreateInstance(highChair,s,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                                     s.InteractionQueue.Add(giveBottle);
+                                                                    }else{
+                                                                              var giveBabyFood=HighChairBase.GiveBabyFood.Singleton.CreateInstance(highChair,s,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                                     s.InteractionQueue.Add(giveBabyFood);
+                                                                    }
+                                                 }
+                                     }
+                            }
+                }catch(Exception exception){
+     //  Get stack trace for the exception. with source file information
+           var st=new StackTrace(exception,true);
+     //  Get the top stack frame
+     var frame=st.GetFrame(0);
+     //  Get the line number from the stack frame
+var line=frame.GetFileLineNumber();
+                  Alive.WriteLog(exception.Message+"\n\n"+
+                                 exception.StackTrace+"\n\n"+
+                                 exception.Source+"\n\n"+
+                                 line);
+                }finally{
+                }
+        }
+        private static void FeedToddlerInHighChairOnFailed(Sim s,float x){
+            Alive.WriteLog("Failed to FeedToddlerInHighChairOnFailed:"+s.ExitReason);
         }
         private static void GiveBottleOnStarted(Sim s,float x){
         }
@@ -1600,6 +1674,44 @@ var line=frame.GetFileLineNumber();
                  if(situation is GrimReaperSituation        ){continue;}
                  //
                  if(situation is ParentsLeavingTownSituation){continue;}
+                 //
+               if(!(situation is MovingSituation)){
+         bool ignore=false;
+ foreach(var sim in situation.mSimsWithInteractions){
+          if(sim.Key.IsSelectable&&
+            (sim.Key.IsSleeping||
+            (sim.Key.InteractionQueue?.GetCurrentInteraction() is WorkInRabbitHole)||
+            (sim.Key.InteractionQueue?.GetCurrentInteraction() is BedSleep))){
+              ignore=true;
+                    break;
+          }else 
+          if(sim.Key.SimDescription!=null&&
+             sim.Key.SimDescription.IsBonehilda){
+                    var coffin=BonehildaCoffin.FindBonehildaCoffin(sim.Key);
+                     if(coffin!=null&&
+                        coffin.LotCurrent==sim.Key.LotCurrent){
+              ignore=true;
+                    break;
+                     }
+          }else 
+          if(sim.Key.IsSelectable&&
+             sim.Key.Posture?.Container!=null&&
+             sim.Key.Posture?.Container!=sim.Key&&
+             sim.Key.SimDescription!=null&&
+             sim.Key.SimDescription.ToddlerOrBelow){
+              ignore=true;
+                    break;
+          }else 
+          if(sim.Key.IsSelectable&&
+             sim.Key.InteractionQueue!=null&&
+             sim.Key.InteractionQueue.HasInteractionOfType(typeof(Sleep))&&
+             sim.Key.SimDescription.ToddlerOrBelow){
+              ignore=true;
+                    break;
+          }
+ }
+           if(ignore){continue;}
+               }
                         try{
                     situation.Exit();
                         }catch(Exception exception){

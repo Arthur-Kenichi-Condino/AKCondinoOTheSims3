@@ -28,6 +28,7 @@ using Sims3.Gameplay.Objects.Electronics;
 using Sims3.Gameplay.Objects.Elevator;
 using Sims3.Gameplay.Objects.Environment;
 using Sims3.Gameplay.Objects.FoodObjects;
+using Sims3.Gameplay.Objects.Gardening;
 using Sims3.Gameplay.Objects.Lighting;
 using Sims3.Gameplay.Objects.Miscellaneous;
 using Sims3.Gameplay.Objects.Plumbing;
@@ -1370,6 +1371,31 @@ var line=frame.GetFileLineNumber();
                                          
                                      }
                                      }
+                            }
+                    }catch(Exception exception){
+         //  Get stack trace for the exception. with source file information
+               var st=new StackTrace(exception,true);
+         //  Get the top stack frame
+         var frame=st.GetFrame(0);
+         //  Get the line number from the stack frame
+    var line=frame.GetFileLineNumber();
+                      Alive.WriteLog(exception.Message+"\n\n"+
+                                     exception.StackTrace+"\n\n"+
+                                     exception.Source+"\n\n"+
+                                     line);
+                    }finally{
+                    }
+           }
+           if(bonehilda==tasks[2]&&bonehilda.InteractionQueue.Count<=8){
+                    try{
+                              Soil soil;
+                            foreach(var plant in coffin.LotCurrent.GetObjects<Plant>()){
+                               if((soil=plant.GetSoil())!=null&&
+                                   soil.Dampness!=SoilDampness.Wet&&
+                                        plant.Alive){
+                                                                      var water=Plant.WaterPlant.Singleton.CreateInstance(plant,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(water);
+                               }
                             }
                     }catch(Exception exception){
          //  Get stack trace for the exception. with source file information

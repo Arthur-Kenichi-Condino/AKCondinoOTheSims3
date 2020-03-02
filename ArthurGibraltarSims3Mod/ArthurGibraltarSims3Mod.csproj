@@ -43,6 +43,7 @@
     <Compile Include="CASParts.cs" />
     <Compile Include="DeepFixSim.cs" />
     <Compile Include="DoLaundryInteraction.cs" />
+    <Compile Include="Gardening.cs" />
     <Compile Include="Interaction.cs" />
     <Compile Include="PrivacyInteraction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

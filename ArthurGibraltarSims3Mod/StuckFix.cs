@@ -373,16 +373,10 @@ InteractionInstance
                                 //------------------------------------------------------
                 }
             catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source+"\n\n"+
-                                 line);
+                                 "tunnings");
                 }finally{
                 }
                 try{
@@ -410,16 +404,10 @@ List<Sim>
            }
                    }
                 }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source+"\n\n"+
-                                 line);
+                                 "stuckCheck_notMovingSims_simPosData_reset");
                 }finally{
                 }
                 try{
@@ -536,16 +524,10 @@ foreach(SimDescription sim in new List<SimDescription>(
                                   stairs.SetObjectToReset();
                    }
                 }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source+"\n\n"+
-                                 line);
+                                 "resetAllPortals");
                 }finally{
                 }
         }

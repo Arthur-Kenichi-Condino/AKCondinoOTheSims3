@@ -150,16 +150,10 @@ return Sims3.Gameplay.EventSystem.ListenerAction.Keep;}
                 try{
                       new DelayTask(e,func).AddToSimulator();
                 }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source+"\n\n"+
-                                 line);
+                                 "new DelayTask(e,func).AddToSimulator();");
                 }finally{
                 }
                   }
@@ -167,16 +161,10 @@ var line=frame.GetFileLineNumber();
                 try{
                         mFunc(mEvent);
                 }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source+"\n\n"+
-                                 line);
+                                 "mFunc(mEvent);");
                 }finally{
                 }
            }
@@ -194,54 +182,26 @@ protected Sims3.Gameplay.EventSystem.EventListener mListener;
                                       mFunc=func;
                                                                                             }
                 try{
-            
                                                    mListener=Sims3.Gameplay.EventSystem.EventTracker.AddListener(id,OnProcess);//  Must be immediate
                 }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source+"\n\n"+
-                                 line);
+                                 "mListener=Sims3.Gameplay.EventSystem.EventTracker.AddListener(id,OnProcess);");
                 }finally{
                 }
                        }
 protected abstract Sims3.Gameplay.EventSystem.ListenerAction OnProcess(Sims3.Gameplay.EventSystem.Event e);
             protected virtual void OnPerform(Sims3.Gameplay.EventSystem.Event e){
-                try{
-                    throw new NotImplementedException();
-                }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
-                  Alive.WriteLog(exception.Message+"\n\n"+
-                                 exception.StackTrace+"\n\n"+
-                                 exception.Source+"\n\n"+
-                                 line);
-                }finally{
-                }
             }
             public void Dispose(){
                 try{
       Sims3.Gameplay.EventSystem.EventTracker.RemoveListener(mListener);
                 }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source+"\n\n"+
-                                 line);
+                                 "Sims3.Gameplay.EventSystem.EventTracker.RemoveListener(mListener);");
                 }finally{
                 }
             }

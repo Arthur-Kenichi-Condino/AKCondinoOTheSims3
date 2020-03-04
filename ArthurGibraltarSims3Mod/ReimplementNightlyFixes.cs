@@ -58,16 +58,10 @@ namespace ArthurGibraltarSims3Mod{
                                                          }
                                 }
                     }catch(Exception exception){
-         //  Get stack trace for the exception. with source file information
-               var st=new StackTrace(exception,true);
-         //  Get the top stack frame
-         var frame=st.GetFrame(0);
-         //  Get the line number from the stack frame
-    var line=frame.GetFileLineNumber();
                       Alive.WriteLog(exception.Message+"\n\n"+
                                      exception.StackTrace+"\n\n"+
                                      exception.Source+"\n\n"+
-                                     line);
+                                     "CheckShowVenues_foreach_check");
                     }finally{
                     }
                  }
@@ -103,16 +97,10 @@ List<KeyValuePair<ShowVenue,ShowDetectedData>>toRemove=new List<KeyValuePair<Sho
                                               toRemove.Add(showDetectedData);
                                      }
                     }catch(Exception exception){
-         //  Get stack trace for the exception. with source file information
-               var st=new StackTrace(exception,true);
-         //  Get the top stack frame
-         var frame=st.GetFrame(0);
-         //  Get the line number from the stack frame
-    var line=frame.GetFileLineNumber();
                       Alive.WriteLog(exception.Message+"\n\n"+
                                      exception.StackTrace+"\n\n"+
                                      exception.Source+"\n\n"+
-                                     line);
+                                     "CheckShowVenues_foreach_end");
                     }finally{
                     }
                              }
@@ -121,16 +109,10 @@ List<KeyValuePair<ShowVenue,ShowDetectedData>>toRemove=new List<KeyValuePair<Sho
                                 }
                                               toRemove.Clear();
                 }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source+"\n\n"+
-                                 line);
+                                 "CheckShowVenues");
                 }finally{
                 }
         }
@@ -157,44 +139,26 @@ var line=frame.GetFileLineNumber();
                         sim.SetObjectToReset();
                    }
                         }catch(Exception exception){
-             //  Get stack trace for the exception. with source file information
-                   var st=new StackTrace(exception,true);
-             //  Get the top stack frame
-             var frame=st.GetFrame(0);
-             //  Get the line number from the stack frame
-        var line=frame.GetFileLineNumber();
                           Alive.WriteLog(exception.Message+"\n\n"+
                                          exception.StackTrace+"\n\n"+
                                          exception.Source+"\n\n"+
-                                         line);
+                                         "RecoverMissingSims_foreach_missing");
                         }finally{
                         }
                    }
                     }catch(Exception exception){
-         //  Get stack trace for the exception. with source file information
-               var st=new StackTrace(exception,true);
-         //  Get the top stack frame
-         var frame=st.GetFrame(0);
-         //  Get the line number from the stack frame
-    var line=frame.GetFileLineNumber();
                       Alive.WriteLog(exception.Message+"\n\n"+
                                      exception.StackTrace+"\n\n"+
                                      exception.Source+"\n\n"+
-                                     line);
+                                     "RecoverMissingSims_foreach");
                     }finally{
                     }
             }
                 }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source+"\n\n"+
-                                 line);
+                                 "RecoverMissingSims");
                 }finally{
                 }
                 try{
@@ -225,30 +189,18 @@ foreach(SimDescription description in allSimDescriptions){
 }
                   }
                     }catch(Exception exception){
-         //  Get stack trace for the exception. with source file information
-               var st=new StackTrace(exception,true);
-         //  Get the top stack frame
-         var frame=st.GetFrame(0);
-         //  Get the line number from the stack frame
-    var line=frame.GetFileLineNumber();
                       Alive.WriteLog(exception.Message+"\n\n"+
                                      exception.StackTrace+"\n\n"+
                                      exception.Source+"\n\n"+
-                                     line);
+                                     "RecoverMissingSims_households_foreach");
                     }finally{
                     }
             }  
                 }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source+"\n\n"+
-                                 line);
+                                 "RecoverMissingSims_households");
                 }finally{
                 }
         }
@@ -317,16 +269,10 @@ var line=frame.GetFileLineNumber();
                     else stuckSim.resetTask.Renew();
                                                                                                         }
                 }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source+"\n\n"+
-                                 line);
+                                 "RecoverMissingSim");
                 }finally{
                 }
         }
@@ -585,16 +531,10 @@ OccultWerewolf
 ThumbnailManager.GenerateHouseholdSimThumbnail(currentOutfit.Key,currentOutfit.Key.InstanceId,0x0,ThumbnailSizeMask.Large|ThumbnailSizeMask.ExtraLarge|ThumbnailSizeMask.Medium|ThumbnailSizeMask.Small,ThumbnailTechnique.Default,true,false,sim.AgeGenderSpecies);
      }
                 }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source+"\n\n"+
-                                 line);
+                                 "FixInvisibleSim");
                 }finally{
                 }
         }

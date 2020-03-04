@@ -104,7 +104,7 @@ namespace ArthurGibraltarSims3Mod{
     public class ShowerRepairShowerFix:Shower.RepairShower,IPreLoad,IAddInteraction{
         static InteractionDefinition sOldSingleton;
                                               public void AddInteraction(InteractionInjectorList interactions){
-                                                                                                 interactions.Replace<Shower,Shower.RepairShower.Definition>(Singleton);
+                                                                                                 interactions.ReplaceNoTest<Shower,Shower.RepairShower.Definition>(Singleton);
                                               }
                                    public void OnPreLoad(){
             Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ShowerBasic            ,Shower.RepairShower.Definition,Definition>(false);
@@ -134,7 +134,7 @@ namespace ArthurGibraltarSims3Mod{
     public class TakeShowerEx:Shower.TakeShower,IPreLoad,IAddInteraction{
         static InteractionDefinition sOldSingleton;
                                               public void AddInteraction(InteractionInjectorList interactions){
-                                                                                                 interactions.Replace<IShowerable,Shower.TakeShower.Definition>(Singleton);
+                                                                                                 interactions.ReplaceNoTest<IShowerable,Shower.TakeShower.Definition>(Singleton);
                                               }
                                    public void OnPreLoad(){
             Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ShowerBasic            ,Shower.TakeShower.Definition,Definition>(false);

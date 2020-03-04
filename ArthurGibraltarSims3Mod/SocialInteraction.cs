@@ -576,7 +576,7 @@ Simulator.Sleep(0U);
     public class GiveBottleFix:GiveBottle,IPreLoad,IAddInteraction{
         static InteractionDefinition sOldSingleton;
                                               public void AddInteraction(InteractionInjectorList interactions){
-                                                                                                 interactions.Replace<Sim,GiveBottle.Definition>(Singleton);
+                                                                                                 interactions.ReplaceNoTest<Sim,GiveBottle.Definition>(Singleton);
                                               }
                                    public void OnPreLoad(){
             Tunings.Inject<Sim,GiveBottle.Definition,Definition>(false);
@@ -761,7 +761,7 @@ this.EndCommodityUpdates(true);
     public class ChangeDiaperFix:ChangeDiaper,IPreLoad,IAddInteraction{
         static InteractionDefinition sOldSingleton;
                                               public void AddInteraction(InteractionInjectorList interactions){
-                                                                                                 interactions.Replace<Sim,ChangeDiaper.Definition>(Singleton);
+                                                                                                 interactions.ReplaceNoTest<Sim,ChangeDiaper.Definition>(Singleton);
                                               }
                                    public void OnPreLoad(){
             Tunings.Inject<Sim,ChangeDiaper.Definition,Definition>(false);
@@ -2028,16 +2028,10 @@ this.EndCommodityUpdates(true);
             return(interactionTestResult);
                         }
                     }catch(Exception exception){
-         //  Get stack trace for the exception. with source file information
-               var st=new StackTrace(exception,true);
-         //  Get the top stack frame
-         var frame=st.GetFrame(0);
-         //  Get the line number from the stack frame
-    var line=frame.GetFileLineNumber();
                       Alive.WriteLog(exception.Message+"\n\n"+
                                      exception.StackTrace+"\n\n"+
                                      exception.Source+"\n\n"+
-                                     line);
+                                     "AutonomyFix fix[...]");
             return(InteractionTestResult.GenericUnknown);
                     }finally{
                     }
@@ -2050,16 +2044,10 @@ this.EndCommodityUpdates(true);
             return(interactionTestResult1);
                 }
                     }catch(Exception exception){
-         //  Get stack trace for the exception. with source file information
-               var st=new StackTrace(exception,true);
-         //  Get the top stack frame
-         var frame=st.GetFrame(0);
-         //  Get the line number from the stack frame
-    var line=frame.GetFileLineNumber();
                       Alive.WriteLog(exception.Message+"\n\n"+
                                      exception.StackTrace+"\n\n"+
                                      exception.Source+"\n\n"+
-                                     line);
+                                     "AutonomyFix.CommonTests1((InteractionDefinition)this,actor2,target2,parameters);");
             return(InteractionTestResult.GenericUnknown);
                     }finally{
                     }
@@ -2170,16 +2158,10 @@ this.EndCommodityUpdates(true);
             return(interactionTestResult);
                         }
                     }catch(Exception exception){
-         //  Get stack trace for the exception. with source file information
-               var st=new StackTrace(exception,true);
-         //  Get the top stack frame
-         var frame=st.GetFrame(0);
-         //  Get the line number from the stack frame
-    var line=frame.GetFileLineNumber();
                       Alive.WriteLog(exception.Message+"\n\n"+
                                      exception.StackTrace+"\n\n"+
                                      exception.Source+"\n\n"+
-                                     line);
+                                     "AutonomyFix fix[...]");
             return(InteractionTestResult.GenericUnknown);
                     }finally{
                     }
@@ -2192,16 +2174,10 @@ this.EndCommodityUpdates(true);
             return(interactionTestResult1);
                 }
                     }catch(Exception exception){
-         //  Get stack trace for the exception. with source file information
-               var st=new StackTrace(exception,true);
-         //  Get the top stack frame
-         var frame=st.GetFrame(0);
-         //  Get the line number from the stack frame
-    var line=frame.GetFileLineNumber();
                       Alive.WriteLog(exception.Message+"\n\n"+
                                      exception.StackTrace+"\n\n"+
                                      exception.Source+"\n\n"+
-                                     line);
+                                     "AutonomyFix.CommonTests1((InteractionDefinition)this,actor2,target2,parameters);");
             return(InteractionTestResult.GenericUnknown);
                     }finally{
                     }
@@ -2710,16 +2686,10 @@ Simulator.Sleep(0U);
             return(interactionTestResult);
                         }
                     }catch(Exception exception){
-         //  Get stack trace for the exception. with source file information
-               var st=new StackTrace(exception,true);
-         //  Get the top stack frame
-         var frame=st.GetFrame(0);
-         //  Get the line number from the stack frame
-    var line=frame.GetFileLineNumber();
                       Alive.WriteLog(exception.Message+"\n\n"+
                                      exception.StackTrace+"\n\n"+
                                      exception.Source+"\n\n"+
-                                     line);
+                                     "AutonomyFix fix[...]");
             return(InteractionTestResult.GenericUnknown);
                     }finally{
                     }
@@ -2732,16 +2702,10 @@ Simulator.Sleep(0U);
             return(interactionTestResult1);
                 }
                     }catch(Exception exception){
-         //  Get stack trace for the exception. with source file information
-               var st=new StackTrace(exception,true);
-         //  Get the top stack frame
-         var frame=st.GetFrame(0);
-         //  Get the line number from the stack frame
-    var line=frame.GetFileLineNumber();
                       Alive.WriteLog(exception.Message+"\n\n"+
                                      exception.StackTrace+"\n\n"+
                                      exception.Source+"\n\n"+
-                                     line);
+                                     "AutonomyFix.CommonTests1((InteractionDefinition)this,actor2,target2,parameters);");
             return(InteractionTestResult.GenericUnknown);
                     }finally{
                     }
@@ -2919,16 +2883,10 @@ Simulator.Sleep(0U);
                 }
             return true;
                     }catch(Exception exception){
-         //  Get stack trace for the exception. with source file information
-               var st=new StackTrace(exception,true);
-         //  Get the top stack frame
-         var frame=st.GetFrame(0);
-         //  Get the line number from the stack frame
-    var line=frame.GetFileLineNumber();
                       Alive.WriteLog(exception.Message+"\n\n"+
                                      exception.StackTrace+"\n\n"+
                                      exception.Source+"\n\n"+
-                                     line);
+                                     "SimFix fix[...]");
             return false;
                     }finally{
                     }
@@ -3673,16 +3631,10 @@ Simulator.Sleep(0U);
             return(interactionTestResult);
                         }
                     }catch(Exception exception){
-         //  Get stack trace for the exception. with source file information
-               var st=new StackTrace(exception,true);
-         //  Get the top stack frame
-         var frame=st.GetFrame(0);
-         //  Get the line number from the stack frame
-    var line=frame.GetFileLineNumber();
                       Alive.WriteLog(exception.Message+"\n\n"+
                                      exception.StackTrace+"\n\n"+
                                      exception.Source+"\n\n"+
-                                     line);
+                                     "AutonomyFix fix[...]");
             return(InteractionTestResult.GenericUnknown);
                     }finally{
                     }
@@ -3695,16 +3647,10 @@ Simulator.Sleep(0U);
             return(interactionTestResult1);
                 }
                     }catch(Exception exception){
-         //  Get stack trace for the exception. with source file information
-               var st=new StackTrace(exception,true);
-         //  Get the top stack frame
-         var frame=st.GetFrame(0);
-         //  Get the line number from the stack frame
-    var line=frame.GetFileLineNumber();
                       Alive.WriteLog(exception.Message+"\n\n"+
                                      exception.StackTrace+"\n\n"+
                                      exception.Source+"\n\n"+
-                                     line);
+                                     "AutonomyFix.CommonTests1((InteractionDefinition)this,actor2,target2,parameters);");
             return(InteractionTestResult.GenericUnknown);
                     }finally{
                     }

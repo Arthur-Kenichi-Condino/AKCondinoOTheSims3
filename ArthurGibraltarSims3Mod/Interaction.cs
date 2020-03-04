@@ -1045,7 +1045,7 @@ Sims3.Gameplay.Autonomy.Tradeoff result=new Sims3.Gameplay.Autonomy.Tradeoff();
     public class TVRepairTVFix:TV.RepairTV,IPreLoad,IAddInteraction{
         static InteractionDefinition sOldSingleton;
                                               public void AddInteraction(InteractionInjectorList interactions){
-                                                                                                 interactions.Replace<TV,TV.RepairTV.Definition>(Singleton);
+                                                                                                 interactions.ReplaceNoTest<TV,TV.RepairTV.Definition>(Singleton);
                                               }
                                    public void OnPreLoad(){
             Tunings.Inject<Sims3.Gameplay.Objects.Electronics.TVCheap             ,TV.RepairTV.Definition,Definition>(false);
@@ -1072,7 +1072,7 @@ Sims3.Gameplay.Autonomy.Tradeoff result=new Sims3.Gameplay.Autonomy.Tradeoff();
     public class ComputerRepairComputerFix:Computer.RepairComputer,IPreLoad,IAddInteraction{
         static InteractionDefinition sOldSingleton;
                                               public void AddInteraction(InteractionInjectorList interactions){
-                                                                                                 interactions.Replace<Computer,Computer.RepairComputer.Definition>(Singleton);
+                                                                                                 interactions.ReplaceNoTest<Computer,Computer.RepairComputer.Definition>(Singleton);
                                               }
                                    public void OnPreLoad(){
             Tunings.Inject<Sims3.Gameplay.Objects.Electronics.ComputerCheap       ,Computer.RepairComputer.Definition,Definition>(false);

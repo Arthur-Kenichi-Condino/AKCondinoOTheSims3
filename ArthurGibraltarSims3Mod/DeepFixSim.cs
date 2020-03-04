@@ -101,16 +101,10 @@ return null;
                                        simDesc.SetPregnancy(0,false);
                                        simDesc.ClearMaternityOutfits();
                         }catch(Exception exception){
-             //  Get stack trace for the exception. with source file information
-                   var st=new StackTrace(exception,true);
-             //  Get the top stack frame
-             var frame=st.GetFrame(0);
-             //  Get the line number from the stack frame
-        var line=frame.GetFileLineNumber();
                           Alive.WriteLog(exception.Message+"\n\n"+
                                          exception.StackTrace+"\n\n"+
                                          exception.Source+"\n\n"+
-                                         line);
+                                         "mMaternityOutfits");
                         }finally{
                         }
                                     }
@@ -121,30 +115,18 @@ return null;
                                                sim.ChangeCommodityInteractionMap(sim.LotHome.Map);
                                             }
                         }catch(Exception exception){
-             //  Get stack trace for the exception. with source file information
-                   var st=new StackTrace(exception,true);
-             //  Get the top stack frame
-             var frame=st.GetFrame(0);
-             //  Get the line number from the stack frame
-        var line=frame.GetFileLineNumber();
                           Alive.WriteLog(exception.Message+"\n\n"+
                                          exception.StackTrace+"\n\n"+
                                          exception.Source+"\n\n"+
-                                         line);
+                                         "PlaceObjectOnLot");
                         }finally{
                         }
                             }
                     }catch(Exception exception){
-         //  Get stack trace for the exception. with source file information
-               var st=new StackTrace(exception,true);
-         //  Get the top stack frame
-         var frame=st.GetFrame(0);
-         //  Get the line number from the stack frame
-    var line=frame.GetFileLineNumber();
                       Alive.WriteLog(exception.Message+"\n\n"+
                                      exception.StackTrace+"\n\n"+
                                      exception.Source+"\n\n"+
-                                     line);
+                                     "simDesc.Fixup();");
                     }finally{
                     }
                                ResetSituations(sim);
@@ -182,16 +164,10 @@ Sleep();
                         PlumbBob.DoSelectActor(sim,true);
  }
                     }catch(Exception exception){
-         //  Get stack trace for the exception. with source file information
-               var st=new StackTrace(exception,true);
-         //  Get the top stack frame
-         var frame=st.GetFrame(0);
-         //  Get the line number from the stack frame
-    var line=frame.GetFileLineNumber();
                       Alive.WriteLog(exception.Message+"\n\n"+
                                      exception.StackTrace+"\n\n"+
                                      exception.Source+"\n\n"+
-                                     line);
+                                     "active");
                     }finally{
                     }
                    }
@@ -274,16 +250,10 @@ return sim;
                                                      }
 return null;
                 }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source+"\n\n"+
-                                 line);
+                                 "Perform");
                 return sim;
                 }finally{
                 }
@@ -325,16 +295,10 @@ var line=frame.GetFileLineNumber();
                     try{
                                            posture.OnReset(sim);
                     }catch(Exception exception){
-         //  Get stack trace for the exception. with source file information
-               var st=new StackTrace(exception,true);
-         //  Get the top stack frame
-         var frame=st.GetFrame(0);
-         //  Get the line number from the stack frame
-    var line=frame.GetFileLineNumber();
                       Alive.WriteLog(exception.Message+"\n\n"+
                                      exception.StackTrace+"\n\n"+
                                      exception.Source+"\n\n"+
-                                     line);
+                                     "posture.OnReset(sim);");
                     }finally{
                     }
                                                             count++;
@@ -346,30 +310,18 @@ var line=frame.GetFileLineNumber();
                     try{
                                                    sim.Posture=null;
                     }catch(Exception exception){
-         //  Get stack trace for the exception. with source file information
-               var st=new StackTrace(exception,true);
-         //  Get the top stack frame
-         var frame=st.GetFrame(0);
-         //  Get the line number from the stack frame
-    var line=frame.GetFileLineNumber();
                       Alive.WriteLog(exception.Message+"\n\n"+
                                      exception.StackTrace+"\n\n"+
                                      exception.Source+"\n\n"+
-                                     line);
+                                     "sim.Posture=null;");
                                                    sim.mPosture=null;
                     }
                                                 }
                 }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source+"\n\n"+
-                                 line);
+                                 "ResetPosture");
                 }finally{
                 }
             }
@@ -384,16 +336,10 @@ var line=frame.GetFileLineNumber();
              }
                                               }
                 }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source+"\n\n"+
-                                 line);
+                                 "ResetInventory");
                 }finally{
                 }
             }
@@ -440,30 +386,18 @@ var line=frame.GetFileLineNumber();
                                                }
                                           }
                     }catch(Exception exception){
-         //  Get stack trace for the exception. with source file information
-               var st=new StackTrace(exception,true);
-         //  Get the top stack frame
-         var frame=st.GetFrame(0);
-         //  Get the line number from the stack frame
-    var line=frame.GetFileLineNumber();
                       Alive.WriteLog(exception.Message+"\n\n"+
                                      exception.StackTrace+"\n\n"+
                                      exception.Source+"\n\n"+
-                                     line);
+                                     "CleanupSlots_foreach");
                     }finally{
                     }
                               }
                 }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source+"\n\n"+
-                                 line);
+                                 "CleanupSlots");
                 }finally{
                 }
                }
@@ -523,16 +457,10 @@ var line=frame.GetFileLineNumber();
                                        }
                                               }
                 }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source+"\n\n"+
-                                 line);
+                                 "CleanupBrokenSkills");
                 }finally{
                 }
             }
@@ -570,16 +498,10 @@ Dictionary<GameObject,bool>inventory=new Dictionary<GameObject,bool>();
                     try{
                                                          skill.OnSkillAddition(true);
                     }catch(Exception exception){
-         //  Get stack trace for the exception. with source file information
-               var st=new StackTrace(exception,true);
-         //  Get the top stack frame
-         var frame=st.GetFrame(0);
-         //  Get the line number from the stack frame
-    var line=frame.GetFileLineNumber();
                       Alive.WriteLog(exception.Message+"\n\n"+
                                      exception.StackTrace+"\n\n"+
                                      exception.Source+"\n\n"+
-                                     line);
+                                     "skill.OnSkillAddition(true);");
                     }finally{
                                         GameStates.sIsChangingWorlds=isChangingWorlds;
                     }
@@ -608,31 +530,19 @@ Dictionary<GameObject,bool>inventory=new Dictionary<GameObject,bool>();
                                                           vampire.SunsetCallback();
                                                               }
                     }catch(Exception exception){
-         //  Get stack trace for the exception. with source file information
-               var st=new StackTrace(exception,true);
-         //  Get the top stack frame
-         var frame=st.GetFrame(0);
-         //  Get the line number from the stack frame
-    var line=frame.GetFileLineNumber();
                       Alive.WriteLog(exception.Message+"\n\n"+
                                      exception.StackTrace+"\n\n"+
                                      exception.Source+"\n\n"+
-                                     line);
+                                     "vampire.SunsetCallback();");
                     }finally{
                     }
                                                       }
                                                                }
                 }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source+"\n\n"+
-                                 line);
+                                 "ResetSkillModifiers");
                 }finally{
                 }
             }
@@ -658,16 +568,10 @@ var line=frame.GetFileLineNumber();
                                                    }
                                                    }
                 }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source+"\n\n"+
-                                 line);
+                                 "ResetCareer");
                 }finally{
                 }
             }
@@ -681,30 +585,18 @@ var line=frame.GetFileLineNumber();
                                         role.mIsActive=false;
                                         role.StartRole();
                     }catch(Exception exception){
-         //  Get stack trace for the exception. with source file information
-               var st=new StackTrace(exception,true);
-         //  Get the top stack frame
-         var frame=st.GetFrame(0);
-         //  Get the line number from the stack frame
-    var line=frame.GetFileLineNumber();
                       Alive.WriteLog(exception.Message+"\n\n"+
                                      exception.StackTrace+"\n\n"+
                                      exception.Source+"\n\n"+
-                                     line);
+                                     "role.StartRole();");
                     }finally{
                     }              
                                      }
                 }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source+"\n\n"+
-                                 line);
+                                 "ResetRole");
                 }finally{
                 }
             }
@@ -739,16 +631,10 @@ var line=frame.GetFileLineNumber();
                                                                           }
                                                      }
                 }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source+"\n\n"+
-                                 line);
+                                 "CleanupOpportunities");
                 }finally{
                 }
                 return true;
@@ -772,31 +658,19 @@ var line=frame.GetFileLineNumber();
                                  }
                     situation.Exit();
                     }catch(Exception exception){
-         //  Get stack trace for the exception. with source file information
-               var st=new StackTrace(exception,true);
-         //  Get the top stack frame
-         var frame=st.GetFrame(0);
-         //  Get the line number from the stack frame
-    var line=frame.GetFileLineNumber();
                       Alive.WriteLog(exception.Message+"\n\n"+
                                      exception.StackTrace+"\n\n"+
                                      exception.Source+"\n\n"+
-                                     line);
+                                     "ResetSituations_foreach");
                     }finally{
                     }
   }
                                                }
                 }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source+"\n\n"+
-                                 line);
+                                 "ResetSituations");
                 }finally{
                 }
             }
@@ -820,16 +694,10 @@ PortalComponent portalComponent=
                                       component.LockedDoorsDuringPlan=new List<Door>();
                                    }
                 }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source+"\n\n"+
-                                 line);
+                                 "ResetRouting");
                 }finally{
                 }
             }
@@ -846,16 +714,10 @@ var line=frame.GetFileLineNumber();
                                                    sim.Household.HouseholdSimsChanged(Sims3.Gameplay.CAS.HouseholdEvent.kSimAdded,sim,null);
                                                }
                 }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source+"\n\n"+
-                                 line);
+                                 "UpdateInterface");
                 }finally{
                 }
             }
@@ -940,16 +802,10 @@ SafeStore.Flag flags=(SafeStore.Flag.None);
                                                        sim.mGenealogy=new Genealogy(sim);
                     //=========================================================================
                 }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source+"\n\n"+
-                                 line);
+                                 "CreationProtection");
                 }finally{
                 }
               }
@@ -1020,16 +876,10 @@ SafeStore mSafeStore=null;
                                                   mSim.CreatedSim.ReservedVehicle=mReservedVehicle;
                     }
                 }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source+"\n\n"+
-                                 line);
+                                 "Dispose");
                 }finally{
                 }
                 try{
@@ -1039,16 +889,10 @@ var line=frame.GetFileLineNumber();
                                                                         OpportunityTrackerModel.gSingleton.OpportunitiesChanged=mOpportunitiesChanged;
                                               }
                 }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source+"\n\n"+
-                                 line);
+                                 "mOpportunitiesChanged");
                 }finally{
                 }
                 try{
@@ -1060,46 +904,28 @@ var line=frame.GetFileLineNumber();
                                               }
                                  }
                 }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source+"\n\n"+
-                                 line);
+                                 "!postLoad");
                 }finally{
                 }
                 try{
                     EventTracker.sCurrentlyUpdatingDreamsAndPromisesManagers=false;
                 }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source+"\n\n"+
-                                 line);
+                                 "EventTracker.sCurrentlyUpdatingDreamsAndPromisesManagers=false;");
                 }finally{
                 }
                 try{
                                                   mSim.mGenealogy=mGenealogy;
                 }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source+"\n\n"+
-                                 line);
+                                 "mSim.mGenealogy=mGenealogy;");
                 }finally{
                 }
                 try{
@@ -1111,47 +937,29 @@ var line=frame.GetFileLineNumber();
                     try{
                                    mDoll.OnOwnerBecameSelectable();
                     }catch(Exception exception){
-         //  Get stack trace for the exception. with source file information
-               var st=new StackTrace(exception,true);
-         //  Get the top stack frame
-         var frame=st.GetFrame(0);
-         //  Get the line number from the stack frame
-    var line=frame.GetFileLineNumber();
                       Alive.WriteLog(exception.Message+"\n\n"+
                                      exception.StackTrace+"\n\n"+
                                      exception.Source+"\n\n"+
-                                     line);
+                                     "mDoll.OnOwnerBecameSelectable();");
                         try{
                 SimDescription sim=mDoll.GetLiveFormSimDescription();
                             if(sim!=null){
             new DeepFixSimTask(sim).AddToSimulator();
                             }
                         }catch(Exception exception_){
-             //  Get stack trace for the exception. with source file information
-                  var st_=new StackTrace(exception_,true);
-             //  Get the top stack frame
-            var frame_=st_.GetFrame(0);
-             //  Get the line number from the stack frame
-       var line_=frame_.GetFileLineNumber();
                           Alive.WriteLog(exception_.Message+"\n\n"+
                                          exception_.StackTrace+"\n\n"+
                                          exception_.Source+"\n\n"+
-                                         line_);
+                                         "mDoll.GetLiveFormSimDescription();");
                         }
                     }
                                              }
                                 }
                 }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source+"\n\n"+
-                                 line);
+                                 "mDoll!=null");
                 }finally{
                 }
                 try{
@@ -1173,31 +981,19 @@ var line=frame.GetFileLineNumber();
                                 }
                                             }
                 }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source+"\n\n"+
-                                 line);
+                                 "mAcademicPerformance");
                 }finally{
                 }
                 try{
                                RestoreRelations(mSim,mRelations);
                 }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source+"\n\n"+
-                                 line);
+                                 "RestoreRelations(mSim,mRelations);");
                 }finally{
                 }
                 try{
@@ -1208,46 +1004,28 @@ var line=frame.GetFileLineNumber();
                     try{
                                                 mSim.TraitChipManager.AddTraitChip(mChips[i],i);
                     }catch(Exception exception){
-         //  Get stack trace for the exception. with source file information
-               var st=new StackTrace(exception,true);
-         //  Get the top stack frame
-         var frame=st.GetFrame(0);
-         //  Get the line number from the stack frame
-    var line=frame.GetFileLineNumber();
                       Alive.WriteLog(exception.Message+"\n\n"+
                                      exception.StackTrace+"\n\n"+
                                      exception.Source+"\n\n"+
-                                     line);
+                                     "mSim.TraitChipManager_foreach");
                     }finally{
                     }
                                     }
                                             }
                 }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source+"\n\n"+
-                                 line);
+                                 "mSim.TraitChipManager");
                 }finally{
                 }
                 try{
                     sChangingWorldsSuppression.Pop();
                 }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source+"\n\n"+
-                                 line);
+                                 "sChangingWorldsSuppression.Pop();");
                 }finally{
                 }
                 try{
@@ -1256,16 +1034,10 @@ var line=frame.GetFileLineNumber();
                                      mChangedHousehold.HouseholdSimsChanged=mChangedCallback;
                                  }
                 }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source+"\n\n"+
-                                 line);
+                                 "mChangedHousehold.HouseholdSimsChanged=mChangedCallback;");
                 }finally{
                 }
             }
@@ -1428,16 +1200,10 @@ var line=frame.GetFileLineNumber();
                 try{
                                                                return genealogy.SimDescription;
                 }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source+"\n\n"+
-                                 line);
+                                 "return genealogy.SimDescription;");
                 }finally{
                 }
                                                                return null;
@@ -1539,16 +1305,10 @@ if(!GlobalFunctions.FindGoodLocation(ths.CreatedSim,fglParams,out position,out f
                                                         }
                                                         }
                 }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source+"\n\n"+
-                                 line);
+                                 "GlobalFunctions.FindGoodLocation");
                                                 position=foundPosition; 
                 }
                                                 bool noSim=(false);
@@ -1573,16 +1333,10 @@ var line=frame.GetFileLineNumber();
                                     return DeepInstantiate(ths,position,outfitKey,outfit);
                                                  }
                 }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source+"\n\n"+
-                                 line);
+                                 "outfitTest");
                                                            ths.mSim=null;
                                                            ths.mDefaultOutfitKey=ResourceKey.kInvalidResourceKey;
                                                      noSim=( true);
@@ -1679,16 +1433,10 @@ GeneticsPet.SpeciesSpecificData speciesData=OutfitUtils.GetSpeciesSpecificData(s
                                                       }
                                                  }
                     }catch(Exception exception){
-         //  Get stack trace for the exception. with source file information
-               var st=new StackTrace(exception,true);
-         //  Get the top stack frame
-         var frame=st.GetFrame(0);
-         //  Get the line number from the stack frame
-    var line=frame.GetFileLineNumber();
                       Alive.WriteLog(exception.Message+"\n\n"+
                                      exception.StackTrace+"\n\n"+
                                      exception.Source+"\n\n"+
-                                     line);
+                                     "Genetics");
 return;
                     }
                                                       if(sim.IsRobot){
@@ -1823,16 +1571,10 @@ goto _Reset;
                                        simDesc.SetPregnancy(0,false);
                                        simDesc.ClearMaternityOutfits();
                         }catch(Exception exception){
-             //  Get stack trace for the exception. with source file information
-                   var st=new StackTrace(exception,true);
-             //  Get the top stack frame
-             var frame=st.GetFrame(0);
-             //  Get the line number from the stack frame
-        var line=frame.GetFileLineNumber();
                           Alive.WriteLog(exception.Message+"\n\n"+
                                          exception.StackTrace+"\n\n"+
                                          exception.Source+"\n\n"+
-                                         line);
+                                         "mMaternityOutfits");
                         }finally{
                         }
                                     }
@@ -1843,30 +1585,18 @@ goto _Reset;
                                                sim.CreatedSim.ChangeCommodityInteractionMap(sim.LotHome.Map);
                                             }
                         }catch(Exception exception){
-             //  Get stack trace for the exception. with source file information
-                   var st=new StackTrace(exception,true);
-             //  Get the top stack frame
-             var frame=st.GetFrame(0);
-             //  Get the line number from the stack frame
-        var line=frame.GetFileLineNumber();
                           Alive.WriteLog(exception.Message+"\n\n"+
                                          exception.StackTrace+"\n\n"+
                                          exception.Source+"\n\n"+
-                                         line);
+                                         "PlaceObjectOnLot");
                         }finally{
                         }
                             }
                     }catch(Exception exception){
-         //  Get stack trace for the exception. with source file information
-               var st=new StackTrace(exception,true);
-         //  Get the top stack frame
-         var frame=st.GetFrame(0);
-         //  Get the line number from the stack frame
-    var line=frame.GetFileLineNumber();
                       Alive.WriteLog(exception.Message+"\n\n"+
                                      exception.StackTrace+"\n\n"+
                                      exception.Source+"\n\n"+
-                                     line);
+                                     "simDesc.Fixup();");
                     }finally{
                     }
              ResetClearSimTask.ResetSituations(sim.CreatedSim);
@@ -1937,16 +1667,10 @@ goto _Reset;
                                             }
 goto _Reset;
                 }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source+"\n\n"+
-                                 line);
+                                 "_Reset");
 goto _Reset;
                 }finally{
                 }
@@ -1955,16 +1679,10 @@ _Reset:{}
                     try{
                                                          sim.CreatedSim.SwitchToOutfitWithoutSpin(Sim.ClothesChangeReason.GoingOutside,OutfitCategories.Everyday,true);
                     }catch(Exception exception){
-         //  Get stack trace for the exception. with source file information
-               var st=new StackTrace(exception,true);
-         //  Get the top stack frame
-         var frame=st.GetFrame(0);
-         //  Get the line number from the stack frame
-    var line=frame.GetFileLineNumber();
                       Alive.WriteLog(exception.Message+"\n\n"+
                                      exception.StackTrace+"\n\n"+
                                      exception.Source+"\n\n"+
-                                     line);
+                                     "sim.CreatedSim.SwitchToOutfitWithoutSpin(Sim.ClothesChangeReason.GoingOutside,OutfitCategories.Everyday,true);");
                     }
                                            currentOutfit=sim.CreatedSim.CurrentOutfit;
                                                       }else{
@@ -1974,16 +1692,10 @@ _Reset:{}
 ThumbnailManager.GenerateHouseholdSimThumbnail(currentOutfit.Key,currentOutfit.Key.InstanceId,0x0,ThumbnailSizeMask.Large|ThumbnailSizeMask.ExtraLarge|ThumbnailSizeMask.Medium|ThumbnailSizeMask.Small,ThumbnailTechnique.Default,true,false,sim.AgeGenderSpecies);
                                         }
                 }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source+"\n\n"+
-                                 line);
+                                 "DeepFixSim");
                 }
             }
         //  [NRaas]From SimDescription.Instantiate
@@ -2008,16 +1720,10 @@ var line=frame.GetFileLineNumber();
                                                                                                outfitKey=outfit.Key;
                                                                                                                 }
                 }catch(Exception exception){
-     //  Get stack trace for the exception. with source file information
-           var st=new StackTrace(exception,true);
-     //  Get the top stack frame
-     var frame=st.GetFrame(0);
-     //  Get the line number from the stack frame
-var line=frame.GetFileLineNumber();
                   Alive.WriteLog(exception.Message+"\n\n"+
                                  exception.StackTrace+"\n\n"+
                                  exception.Source+"\n\n"+
-                                 line);
+                                 "outfitInvalid");
                                                            ths.mSim=null;
                                                            ths.mDefaultOutfitKey=ResourceKey.kInvalidResourceKey;
             return null;

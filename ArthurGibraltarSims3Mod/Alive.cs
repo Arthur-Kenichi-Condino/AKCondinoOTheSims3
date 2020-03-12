@@ -1024,6 +1024,38 @@ foreach(GameObject obj in results){
            }
            if(bonehilda==tasks[2]&&bonehilda.InteractionQueue.Count<=8){
                     try{
+                            foreach(var sim in coffin.LotCurrent.GetObjects<Sim>()){
+                                     if(sim.SimDescription==null||
+                                        sim.Motives==null){
+                                        continue;
+                                     }
+                                     if(sim.Motives.IsHungry()){
+                                     if(sim.SimDescription.IsFoal){
+                                     }else
+                                     if(sim.SimDescription.IsCat||
+                                        sim.SimDescription.IsADogSpecies||
+                                        sim.SimDescription.IsHorse){
+                                                                      var feed=new FeedTreatFix.FeedTreatDefinition(true).CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(feed);
+                                     }
+                                     }
+                                    if((sim.Motives.HasMotive(CommodityKind.Social)&&sim.Motives.GetValue(CommodityKind.Social)<=0)){
+                                     if(sim.SimDescription.IsFoal){
+                                     }else
+                                     if(sim.SimDescription.IsCat||
+                                        sim.SimDescription.IsADogSpecies||
+                                        sim.SimDescription.IsHorse){
+                                     }
+                                    }
+                            }
+                    }catch(Exception exception){
+                      Alive.WriteLog(exception.Message+"\n\n"+
+                                     exception.StackTrace+"\n\n"+
+                                     exception.Source+"\n\n"+
+                                     "bonehildaTasks_2_pets");
+                    }finally{
+                    }
+                    try{
                               Soil soil;
                             foreach(var plant in coffin.LotCurrent.GetObjects<Plant>()){
                                if((soil=plant.GetSoil())!=null&&
@@ -1037,7 +1069,7 @@ foreach(GameObject obj in results){
                       Alive.WriteLog(exception.Message+"\n\n"+
                                      exception.StackTrace+"\n\n"+
                                      exception.Source+"\n\n"+
-                                     "bonehildaTasks_2");
+                                     "bonehildaTasks_2_plants");
                     }finally{
                     }
            }

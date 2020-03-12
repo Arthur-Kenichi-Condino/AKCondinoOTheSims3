@@ -301,6 +301,10 @@ InteractionInstance
                 Sim.kPortalPushMaxDistance=16f;
                 Sim.kIdleTimeAmount=10f;
             //------------------------------------------------------
+                SimUpdate.kBonehildaFreakoutTraits=new TraitNames[]{
+                    TraitNames.Coward,
+                };
+            //------------------------------------------------------
                 ElevatorInterior.kElevatorToElevatorPortalCost=20f;
                 Ladder.kPortalCost=22f;
                 Door.kMinimumTimeBeforeClosingDoor=30f;

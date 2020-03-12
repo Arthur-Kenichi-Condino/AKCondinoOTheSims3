@@ -19,7 +19,7 @@ namespace ArthurGibraltarSims3Mod{
     public class ClothingPileDryCleanUpEx:ClothingPileDry.CleanUp,IPreLoad,IAddInteraction{
         static InteractionDefinition sOldSingleton;
                                               public void AddInteraction(InteractionInjectorList interactions){
-                                                                                                 interactions.ReplaceNoTest<ClothingPileDry,ClothingPileDry.CleanUp.Definition>(Singleton);
+                                                                                                 interactions.Replace<ClothingPileDry,ClothingPileDry.CleanUp.Definition>(Singleton);
                                               }
                                    public void OnPreLoad(){
             Tunings.Inject<Sims3.Gameplay.Objects.Miscellaneous.ClothingPileDry,ClothingPileDry.CleanUp.Definition,Definition>(false);
@@ -95,7 +95,7 @@ this.EndCommodityUpdates(false);
     public class ClothingPileWetDryClothesInDryerEx:ClothingPileWet.DryClothesInDryer,IPreLoad,IAddInteraction{
         static InteractionDefinition sOldSingleton;
                                               public void AddInteraction(InteractionInjectorList interactions){
-                                                                                                 interactions.ReplaceNoTest<ClothingPileWet,ClothingPileWet.DryClothesInDryer.Definition>(Singleton);
+                                                                                                 interactions.Replace<ClothingPileWet,ClothingPileWet.DryClothesInDryer.Definition>(Singleton);
                                               }
                                    public void OnPreLoad(){
             Tunings.Inject<Sims3.Gameplay.Objects.Miscellaneous.ClothingPileWet,ClothingPileWet.DryClothesInDryer.Definition,Definition>(false);
@@ -124,7 +124,7 @@ this.EndCommodityUpdates(false);
     public class ClothingPileWetDryClothesOnClotheslineEx:ClothingPileWet.DryClothesOnClothesline,IPreLoad,IAddInteraction{
         static InteractionDefinition sOldSingleton;
                                               public void AddInteraction(InteractionInjectorList interactions){
-                                                                                                 interactions.ReplaceNoTest<ClothingPileWet,ClothingPileWet.DryClothesOnClothesline.Definition>(Singleton);
+                                                                                                 interactions.Replace<ClothingPileWet,ClothingPileWet.DryClothesOnClothesline.Definition>(Singleton);
                                               }
                                    public void OnPreLoad(){
             Tunings.Inject<Sims3.Gameplay.Objects.Miscellaneous.ClothingPileWet,ClothingPileWet.DryClothesOnClothesline.Definition,Definition>(false);
@@ -153,7 +153,7 @@ this.EndCommodityUpdates(false);
     public class HamperPickUpEx:Hamper.PickUp,IPreLoad,IAddInteraction{
         static InteractionDefinition sOldSingleton;
                                               public void AddInteraction(InteractionInjectorList interactions){
-                                                                                                 interactions.ReplaceNoTest<Hamper,Hamper.PickUp.Definition>(Singleton);
+                                                                                                 interactions.Replace<Hamper,Hamper.PickUp.Definition>(Singleton);
                                               }
                                    public void OnPreLoad(){
             Tunings.Inject<Sims3.Gameplay.Objects.Miscellaneous.Hamper,Hamper.PickUp.Definition,Definition>(false);
@@ -182,7 +182,7 @@ if(!this.Target.RouteToHamper(this.Actor)||!this.Target.HasClothingPiles())
     public class HamperDoLaundryEx:Hamper.DoLaundry,IPreLoad,IAddInteraction{
         static InteractionDefinition sOldSingleton;
                                               public void AddInteraction(InteractionInjectorList interactions){
-                                                                                                 interactions.ReplaceNoTest<Hamper,Hamper.DoLaundry.Definition>(Singleton);
+                                                                                                 interactions.Replace<Hamper,Hamper.DoLaundry.Definition>(Singleton);
                                               }
                                    public void OnPreLoad(){
             Tunings.Inject<Sims3.Gameplay.Objects.Miscellaneous.Hamper,Hamper.DoLaundry.Definition,Definition>(false);
@@ -218,7 +218,7 @@ if(Sims3.Gameplay.Queries.CountObjects<WashingMachine>(target.LotCurrent)==0U||t
     public class WashingMachineDoLaundryEx:WashingMachine.DoLaundry,IPreLoad,IAddInteraction{
         static InteractionDefinition sOldSingleton;
                                               public void AddInteraction(InteractionInjectorList interactions){
-                                                                                                 interactions.ReplaceNoTest<WashingMachine,WashingMachine.DoLaundry.Definition>(Singleton);
+                                                                                                 interactions.Replace<WashingMachine,WashingMachine.DoLaundry.Definition>(Singleton);
                                               }
                                    public void OnPreLoad(){
             Tunings.Inject<Sims3.Gameplay.Objects.Appliances.WashingMachineCheap    ,WashingMachine.DoLaundry.Definition,Definition>(false);
@@ -263,7 +263,7 @@ if(Sims3.Gameplay.Queries.CountObjects<WashingMachine>(target.LotCurrent)==0U||t
     public class WashingMachineDryClothesInDryerEx:WashingMachine.DryClothesInDryer,IPreLoad,IAddInteraction{
         static InteractionDefinition sOldSingleton;
                                               public void AddInteraction(InteractionInjectorList interactions){
-                                                                                                 interactions.ReplaceNoTest<WashingMachine,WashingMachine.DryClothesInDryer.Definition>(Singleton);
+                                                                                                 interactions.Replace<WashingMachine,WashingMachine.DryClothesInDryer.Definition>(Singleton);
                                               }
                                    public void OnPreLoad(){
             Tunings.Inject<Sims3.Gameplay.Objects.Appliances.WashingMachineCheap    ,WashingMachine.DryClothesInDryer.Definition,Definition>(false);
@@ -297,7 +297,7 @@ if(Sims3.Gameplay.Queries.CountObjects<WashingMachine>(target.LotCurrent)==0U||t
     public class WashingMachineDryClothesOnClotheslineEx:WashingMachine.DryClothesOnClothesline,IPreLoad,IAddInteraction{
         static InteractionDefinition sOldSingleton;
                                               public void AddInteraction(InteractionInjectorList interactions){
-                                                                                                 interactions.ReplaceNoTest<WashingMachine,WashingMachine.DryClothesOnClothesline.Definition>(Singleton);
+                                                                                                 interactions.Replace<WashingMachine,WashingMachine.DryClothesOnClothesline.Definition>(Singleton);
                                               }
                                    public void OnPreLoad(){
             Tunings.Inject<Sims3.Gameplay.Objects.Appliances.WashingMachineCheap    ,WashingMachine.DryClothesOnClothesline.Definition,Definition>(false);
@@ -331,7 +331,7 @@ if(Sims3.Gameplay.Queries.CountObjects<WashingMachine>(target.LotCurrent)==0U||t
     public class ClotheslineDryClothingEx:Clothesline.DryClothing,IPreLoad,IAddInteraction{
         static InteractionDefinition sOldSingleton;
                                               public void AddInteraction(InteractionInjectorList interactions){
-                                                                                                 interactions.ReplaceNoTest<Clothesline,Clothesline.DryClothing.Definition>(Singleton);
+                                                                                                 interactions.Replace<Clothesline,Clothesline.DryClothing.Definition>(Singleton);
                                               }
                                    public void OnPreLoad(){
             Tunings.Inject<Sims3.Gameplay.Objects.Appliances.Clothesline,Clothesline.DryClothing.Definition,Definition>(false);
@@ -388,7 +388,7 @@ this.StandardExit();
     public class DryerDryClothingEx:Dryer.DryClothing,IPreLoad,IAddInteraction{
         static InteractionDefinition sOldSingleton;
                                               public void AddInteraction(InteractionInjectorList interactions){
-                                                                                                 interactions.ReplaceNoTest<Dryer,Dryer.DryClothing.Definition>(Singleton);
+                                                                                                 interactions.Replace<Dryer,Dryer.DryClothing.Definition>(Singleton);
                                               }
                                    public void OnPreLoad(){
             Tunings.Inject<Sims3.Gameplay.Objects.Appliances.DryerCheap    ,Dryer.DryClothing.Definition,Definition>(false);
@@ -451,7 +451,7 @@ this.StandardExit();
     public class ClotheslineGetCleanLaundryEx:Clothesline.GetCleanLaundry,IPreLoad,IAddInteraction{
         static InteractionDefinition sOldSingleton;
                                               public void AddInteraction(InteractionInjectorList interactions){
-                                                                                                 interactions.ReplaceNoTest<Clothesline,Clothesline.GetCleanLaundry.Definition>(Singleton);
+                                                                                                 interactions.Replace<Clothesline,Clothesline.GetCleanLaundry.Definition>(Singleton);
                                               }
                                    public void OnPreLoad(){
             Tunings.Inject<Sims3.Gameplay.Objects.Appliances.Clothesline,Clothesline.GetCleanLaundry.Definition,Definition>(false);
@@ -472,7 +472,7 @@ this.StandardExit();
     public class DryerGetCleanLaundryEx:Dryer.GetCleanLaundry,IPreLoad,IAddInteraction{
         static InteractionDefinition sOldSingleton;
                                               public void AddInteraction(InteractionInjectorList interactions){
-                                                                                                 interactions.ReplaceNoTest<Dryer,Dryer.GetCleanLaundry.Definition>(Singleton);
+                                                                                                 interactions.Replace<Dryer,Dryer.GetCleanLaundry.Definition>(Singleton);
                                               }
                                    public void OnPreLoad(){
             Tunings.Inject<Sims3.Gameplay.Objects.Appliances.DryerCheap    ,Dryer.GetCleanLaundry.Definition,Definition>(false);
@@ -498,7 +498,7 @@ this.StandardExit();
     public class WashingMachineRepairFix:WashingMachine.Repair,IPreLoad,IAddInteraction{
         static InteractionDefinition sOldSingleton;
                                               public void AddInteraction(InteractionInjectorList interactions){
-                                                                                                 interactions.ReplaceNoTest<WashingMachine,WashingMachine.Repair.Definition>(Singleton);
+                                                                                                 interactions.Replace<WashingMachine,WashingMachine.Repair.Definition>(Singleton);
                                               }
                                    public void OnPreLoad(){
             Tunings.Inject<Sims3.Gameplay.Objects.Appliances.WashingMachineCheap    ,WashingMachine.Repair.Definition,Definition>(false);

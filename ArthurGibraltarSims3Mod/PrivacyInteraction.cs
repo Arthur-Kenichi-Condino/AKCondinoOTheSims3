@@ -20,7 +20,7 @@ namespace ArthurGibraltarSims3Mod{
     public class ToiletRepairFix:Toilet.Repair,IPreLoad,IAddInteraction{
         static InteractionDefinition sOldSingleton;
                                               public void AddInteraction(InteractionInjectorList interactions){
-                                                                                                 interactions.ReplaceNoTest<Toilet,Toilet.Repair.Definition>(Singleton);
+                                                                                                 interactions.Replace<Toilet,Toilet.Repair.Definition>(Singleton);
                                               }
                                    public void OnPreLoad(){
             Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ToiletCheap            ,Toilet.Repair.Definition,Definition>(false);
@@ -53,7 +53,7 @@ namespace ArthurGibraltarSims3Mod{
     public class AllInOneBathroomRepairAllInOneBathroomFix:AllInOneBathroom.RepairAllInOneBathroom,IPreLoad,IAddInteraction{
         static InteractionDefinition sOldSingleton;
                                               public void AddInteraction(InteractionInjectorList interactions){
-                                                                                                 interactions.ReplaceNoTest<AllInOneBathroom,AllInOneBathroom.RepairAllInOneBathroom.Definition>(Singleton);
+                                                                                                 interactions.Replace<AllInOneBathroom,AllInOneBathroom.RepairAllInOneBathroom.Definition>(Singleton);
                                               }
                                    public void OnPreLoad(){
             Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.AllInOneBathroom,AllInOneBathroom.RepairAllInOneBathroom.Definition,Definition>(false);
@@ -74,7 +74,7 @@ namespace ArthurGibraltarSims3Mod{
     public class HotTubBaseRepairHotTubFix:HotTubBase.RepairHotTub,IPreLoad,IAddInteraction{
         static InteractionDefinition sOldSingleton;
                                               public void AddInteraction(InteractionInjectorList interactions){
-                                                                                                 interactions.ReplaceNoTest<HotTubBase,HotTubBase.RepairHotTub.Definition>(Singleton);
+                                                                                                 interactions.Replace<HotTubBase,HotTubBase.RepairHotTub.Definition>(Singleton);
                                               }
                                    public void OnPreLoad(){
             Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.HotTubGrottoLightRim       ,HotTubBase.RepairHotTub.Definition,Definition>(false);
@@ -104,7 +104,7 @@ namespace ArthurGibraltarSims3Mod{
     public class ShowerRepairShowerFix:Shower.RepairShower,IPreLoad,IAddInteraction{
         static InteractionDefinition sOldSingleton;
                                               public void AddInteraction(InteractionInjectorList interactions){
-                                                                                                 interactions.ReplaceNoTest<Shower,Shower.RepairShower.Definition>(Singleton);
+                                                                                                 interactions.Replace<Shower,Shower.RepairShower.Definition>(Singleton);
                                               }
                                    public void OnPreLoad(){
             Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ShowerBasic            ,Shower.RepairShower.Definition,Definition>(false);
@@ -134,7 +134,7 @@ namespace ArthurGibraltarSims3Mod{
     public class TakeShowerEx:Shower.TakeShower,IPreLoad,IAddInteraction{
         static InteractionDefinition sOldSingleton;
                                               public void AddInteraction(InteractionInjectorList interactions){
-                                                                                                 interactions.ReplaceNoTest<IShowerable,Shower.TakeShower.Definition>(Singleton);
+                                                                                                 interactions.Replace<IShowerable,Shower.TakeShower.Definition>(Singleton);
                                               }
                                    public void OnPreLoad(){
             Tunings.Inject<Sims3.Gameplay.Objects.Plumbing.Mimics.ShowerBasic            ,Shower.TakeShower.Definition,Definition>(false);

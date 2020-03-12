@@ -15,7 +15,7 @@ namespace ArthurGibraltarSims3Mod{
     public class WaterPlantFix:WaterPlant,IPreLoad,IAddInteraction{
         static InteractionDefinition sOldSingleton;
                                               public void AddInteraction(InteractionInjectorList interactions){
-                                                                                                 interactions.ReplaceNoTest<Plant,WaterPlant.Definition>(Singleton);
+                                                                                                 interactions.Replace<Plant,WaterPlant.Definition>(Singleton);
                                               }
                                    public void OnPreLoad(){
             Tunings.Inject<Plant,WaterPlant.Definition,Definition>(false);

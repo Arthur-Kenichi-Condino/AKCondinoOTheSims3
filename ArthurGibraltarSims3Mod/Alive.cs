@@ -31,6 +31,7 @@ using Sims3.Gameplay.Objects.FoodObjects;
 using Sims3.Gameplay.Objects.Gardening;
 using Sims3.Gameplay.Objects.Lighting;
 using Sims3.Gameplay.Objects.Miscellaneous;
+using Sims3.Gameplay.Objects.Pets;
 using Sims3.Gameplay.Objects.Plumbing;
 using Sims3.Gameplay.Objects.Seating;
 using Sims3.Gameplay.Objects.Vehicles;
@@ -1024,6 +1025,46 @@ foreach(GameObject obj in results){
            }
            if(bonehilda==tasks[2]&&bonehilda.InteractionQueue.Count<=8){
                     try{
+                            foreach(var petBowl in coffin.LotCurrent.GetObjects<PetBowl>()){
+                                    if(!petBowl.IsFull){
+                                       if(!bonehilda.InteractionQueue.HasInteractionOfTypeAndTarget(PetBowl.FillBowl.FillSingleton,petBowl)){
+                                                                      var feed=PetBowl.FillBowl.FillSingleton.CreateInstance(petBowl,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(feed);
+                                       }
+                                    }
+                            }
+                            foreach(var litterBox in coffin.LotCurrent.GetObjects<LitterBox>()){
+                                     if(litterBox.Cleanable.NeedsToBeCleaned){
+                                       if(!bonehilda.InteractionQueue.HasInteractionOfTypeAndTarget(LitterBox.CleanLitterBox.Singleton,litterBox)){
+                                                                      var clean=LitterBox.CleanLitterBox.Singleton.CreateInstance(litterBox,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(clean);
+                                       }
+                                     }
+                            }
+                            foreach(var waterTrough in coffin.LotCurrent.GetObjects<WaterTrough>()){
+                        try{
+                                     if(waterTrough.GetCurrentState()!=WaterTrough.TroughState.Full){
+                                       if(!bonehilda.InteractionQueue.HasInteractionOfTypeAndTarget(WaterTrough.FillWater.Singleton,waterTrough)){
+                                                                      var feed=WaterTrough.FillWater.Singleton.CreateInstance(waterTrough,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(feed);
+                                       }
+                                     }
+                        }catch(Exception exception){
+                          Alive.WriteLog(exception.Message+"\n\n"+
+                                         exception.StackTrace+"\n\n"+
+                                         exception.Source+"\n\n"+
+                                         "bonehildaTasks_2_pets_WaterTrough");
+                        }finally{
+                        }
+                            }
+                            foreach(var boxStall in coffin.LotCurrent.GetObjects<BoxStall>()){
+                                     if(boxStall.IsDirty){
+                                       if(!bonehilda.InteractionQueue.HasInteractionOfTypeAndTarget(BoxStall.Clean.Singleton,boxStall)){
+                                                                      var clean=BoxStall.Clean.Singleton.CreateInstance(boxStall,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(clean);
+                                       }
+                                     }
+                            }
                             foreach(var sim in coffin.LotCurrent.GetObjects<Sim>()){
                                      if(sim.SimDescription==null||
                                         sim.Motives==null){
@@ -1031,20 +1072,56 @@ foreach(GameObject obj in results){
                                      }
                                      if(sim.Motives.IsHungry()){
                                      if(sim.SimDescription.IsFoal){
+                                       if(!bonehilda.InteractionQueue.HasInteractionOfTypeAndTarget(BottleFeedFoalFix.SimActor_Singleton,sim)){
+                                                                      var feed=BottleFeedFoalFix.SimActor_Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(feed);
+                                       }
                                      }else
                                      if(sim.SimDescription.IsCat||
                                         sim.SimDescription.IsADogSpecies||
                                         sim.SimDescription.IsHorse){
+                                       if(!bonehilda.InteractionQueue.HasInteractionOfTypeAndTarget(FeedTreatFix.Singleton,sim)){
                                                                       var feed=new FeedTreatFix.FeedTreatDefinition(true).CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
                                            bonehilda.InteractionQueue.Add(feed);
+                                       }
                                      }
                                      }
                                     if((sim.Motives.HasMotive(CommodityKind.Social)&&sim.Motives.GetValue(CommodityKind.Social)<=0)){
                                      if(sim.SimDescription.IsFoal){
+                                       if(!bonehilda.InteractionQueue.HasInteractionOfTypeAndTarget(BottleFeedFoalFix.SimActor_Singleton,sim)){
+                                                                      var feed=BottleFeedFoalFix.SimActor_Singleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(feed);
+                                       }
+                                       if(!bonehilda.InteractionQueue.HasInteractionOfTypeAndTarget(BrushPetFix.BrushHorseSingleton,sim)){
+                                                                      var brush=BrushPetFix.BrushHorseSingleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(brush);
+                                       }
                                      }else
                                      if(sim.SimDescription.IsCat||
                                         sim.SimDescription.IsADogSpecies||
                                         sim.SimDescription.IsHorse){
+                                       if(!bonehilda.InteractionQueue.HasInteractionOfTypeAndTarget(FeedTreatFix.Singleton,sim)){
+                                                                      var feed=new FeedTreatFix.FeedTreatDefinition(true).CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(feed);
+                                       }
+                                     if(sim.SimDescription.IsCat){
+                                       if(!bonehilda.InteractionQueue.HasInteractionOfTypeAndTarget(BrushPetFix.BrushCatSingleton,sim)){
+                                                                      var brush=BrushPetFix.BrushCatSingleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(brush);
+                                       }
+                                     }
+                                     if(sim.SimDescription.IsADogSpecies){
+                                       if(!bonehilda.InteractionQueue.HasInteractionOfTypeAndTarget(BrushPetFix.BrushDogSingleton,sim)){
+                                                                      var brush=BrushPetFix.BrushDogSingleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(brush);
+                                       }
+                                     }
+                                     if(sim.SimDescription.IsHorse){
+                                       if(!bonehilda.InteractionQueue.HasInteractionOfTypeAndTarget(BrushPetFix.BrushHorseSingleton,sim)){
+                                                                      var brush=BrushPetFix.BrushHorseSingleton.CreateInstance(sim,bonehilda,new InteractionPriority(InteractionPriorityLevel.UserDirected),false,true);
+                                           bonehilda.InteractionQueue.Add(brush);
+                                       }
+                                     }
                                      }
                                     }
                             }

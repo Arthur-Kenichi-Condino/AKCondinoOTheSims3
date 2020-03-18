@@ -5359,7 +5359,8 @@ Simulator.Sleep(0U);
                             break;
                        }
                     }
-                    this.Target.Motives.ChangeValue(CommodityKind.Social,20);
+                    if((this.Target.SimDescription==null||!this.Target.SimDescription.IsBonehilda)&&this.Target.Motives.HasMotive(CommodityKind.Social))
+                        this.Target.Motives.ChangeValue(CommodityKind.Social,20);
                     this.Actor .CheckAndAddDislikesChildrenBuff(this.Target);
                     this.Target.CheckAndAddDislikesChildrenBuff(this.Actor );
                     this.Actor .CheckForPetSpreadingFleas(this.Target);
